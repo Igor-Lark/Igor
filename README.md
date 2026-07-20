@@ -144,6 +144,7 @@ PUBLIC_URL=https://bot.ваш-домен.ru
     ├── ai.js         # YandexGPT / OpenAI
     ├── knowledge.js  # Загрузка базы знаний
     ├── leads.js      # Детект заявок + уведомления в MAX
+    ├── bookings.js   # Черновики броней (напоминания пока выкл.)
     ├── chat-log.js   # Сохранение всех диалогов на диск
     ├── max.js        # Отправка в мессенджер MAX
     ├── telegram.js   # Telegram-бот (опционально)
