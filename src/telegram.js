@@ -19,44 +19,7 @@ function pushMessage(chatId, role, content) {
   if (hist.length > 20) hist.splice(0, hist.length - 20);
 }
 
-/**
- * @param {import('express').Express} app
- */
-function startTelegram(app) {
-  if (!config.hasTelegram) {
-    console.log('[telegram] TELEGRAM_BOT_TOKEN не задан — бот отключён');
-    return null;
-  }
-
-  const useWebhook = Boolean(config.publicUrl && !config.publicUrl.includes('ваш-домен'));
-  /** @type {TelegramBot} */
-  let bot;
-
-  if (useWebhook) {
-    bot = new TelegramBot(config.telegram.token, { webHook: false });
-    const hookPath = `/telegram/webhook/${config.telegram.token}`;
-    const hookUrl = `${config.publicUrl}${hookPath}`;
-
-    app.post(hookPath, (req, res) => {
-      bot.processUpdate(req.body);
-      res.sendStatus(200);
-    });
-
-    bot
-      .setWebHook(hookUrl)
-      .then(() => console.log('[telegram] webhook:', hookUrl))
-      .catch((err) => console.error('[telegram] setWebHook failed:', err.message));
-  } else {
-    bot = new TelegramBot(config.telegram.token, { polling: true });
-    console.log('[telegram] polling mode');
-  }
-
-  if (hasSiriusMapFile()) {
-    console.log('[telegram] схема причала Сириус: найдена, будет отправляться по запросу');
-  } else {
-    console.log('[telegram] схема причала Сириус: файл пока отсутствует (public/maps/sirius-line1.jpg)');
-  }
-
+function attachHandlers(bot) {
   bot.onText(/\/start/, async (msg) => {
     sessions.set(msg.chat.id, []);
     await bot.sendMessage(
@@ -100,12 +63,83 @@ function startTelegram(app) {
       await bot.sendMessage(chatId, reply);
     } catch (err) {
       console.error('[telegram] chat error:', err.message);
-      await bot.sendMessage(
-        chatId,
-        'Сейчас не могу ответить. Босс Олег: +7 917 675 0555, мадам Наталья: +7 918 304-40-00'
-      );
+      try {
+        await bot.sendMessage(
+          chatId,
+          'Сейчас не могу ответить. Босс Олег: +7 917 675 0555, мадам Наталья: +7 918 304-40-00'
+        );
+      } catch (sendErr) {
+        console.error('[telegram] fallback send failed:', sendErr.message);
+      }
     }
   });
+}
+
+/**
+ * Polling иногда рвётся (сеть). Перезапускаем long-polling без перезапуска всего сервера.
+ * @param {TelegramBot} bot
+ */
+function watchPolling(bot) {
+  let restarting = false;
+  bot.on('polling_error', async (err) => {
+    console.error('[telegram] polling_error:', err.message || err);
+    if (restarting) return;
+    restarting = true;
+    try {
+      await bot.stopPolling({ cancel: true }).catch(() => {});
+      await new Promise((r) => setTimeout(r, 2000));
+      await bot.startPolling({ restart: true });
+      console.log('[telegram] polling restarted after error');
+    } catch (e) {
+      console.error('[telegram] polling restart failed:', e.message);
+    } finally {
+      setTimeout(() => {
+        restarting = false;
+      }, 5000);
+    }
+  });
+}
+
+/**
+ * @param {import('express').Express} app
+ */
+function startTelegram(app) {
+  if (!config.hasTelegram) {
+    console.log('[telegram] TELEGRAM_BOT_TOKEN не задан — бот отключён');
+    return null;
+  }
+
+  const useWebhook = Boolean(config.publicUrl && !config.publicUrl.includes('ваш-домен'));
+  /** @type {TelegramBot} */
+  let bot;
+
+  if (useWebhook) {
+    bot = new TelegramBot(config.telegram.token, { webHook: false });
+    const hookPath = `/telegram/webhook/${config.telegram.token}`;
+    const hookUrl = `${config.publicUrl}${hookPath}`;
+
+    app.post(hookPath, (req, res) => {
+      bot.processUpdate(req.body);
+      res.sendStatus(200);
+    });
+
+    bot
+      .setWebHook(hookUrl)
+      .then(() => console.log('[telegram] webhook:', hookUrl))
+      .catch((err) => console.error('[telegram] setWebHook failed:', err.message));
+  } else {
+    bot = new TelegramBot(config.telegram.token, { polling: true });
+    console.log('[telegram] polling mode');
+    watchPolling(bot);
+  }
+
+  if (hasSiriusMapFile()) {
+    console.log('[telegram] схема причала Сириус: найдена, будет отправляться по запросу');
+  } else {
+    console.log('[telegram] схема причала Сириус: файл пока отсутствует (public/maps/sirius-line1.jpg)');
+  }
+
+  attachHandlers(bot);
 
   return bot;
 }
