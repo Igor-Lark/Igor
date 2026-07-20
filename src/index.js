@@ -6,7 +6,7 @@ const cors = require('cors');
 const config = require('./config');
 const { handleChat } = require('./chat');
 const { startTelegram } = require('./telegram');
-const { loadKnowledge } = require('./knowledge');
+const { loadKnowledge, buildGreeting } = require('./knowledge');
 
 const app = express();
 
@@ -60,8 +60,7 @@ app.post('/api/chat', async (req, res) => {
 app.get('/api/widget-config', (_req, res) => {
   res.json({
     name: config.botName,
-    greeting:
-      'Здравствуйте! Помогу выбрать катер или яхту.\nБосс Олег часто в море — связь может быть слабой. Мадам Наталья: +7 918 304-40-00. Спрашивайте — или оставите контакт, свяжемся )',
+    greeting: buildGreeting(),
   });
 });
 
