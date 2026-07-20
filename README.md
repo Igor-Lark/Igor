@@ -2,6 +2,9 @@
 
 ИИ-бот для [boat-sochi.ru](https://boat-sochi.ru/): чат на сайте (Tilda) + опционально Telegram. Ответы через **YandexGPT** (или OpenAI), база знаний с сайта, заявки менеджеру в **MAX**.
 
+> Ветка `cursor/boat-sochi-max-5814` — заявки в MAX.  
+> Параллельная ветка `cursor/boat-sochi-telegram-5814` — заявки в Telegram (сейчас основная для работы).
+
 ## Что внутри
 
 | Компонент | Назначение |
