@@ -6,3 +6,5 @@ npm-debug.log*
 .idea/
 .vscode/
 data/avito-reviews-state.json
+data/chats/*.jsonl
+data/chats/sessions/

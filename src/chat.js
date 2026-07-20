@@ -3,6 +3,7 @@
 const { buildSystemPrompt } = require('./knowledge');
 const { completeChat } = require('./ai');
 const { shouldNotifyLead, notifyManager } = require('./leads');
+const { logChatTurn } = require('./chat-log');
 
 /**
  * @param {{
@@ -42,6 +43,18 @@ async function handleChat(input) {
       reply,
     });
   }
+
+  // Все диалоги — на диск (даже без заявки)
+  logChatTurn({
+    sessionId: input.sessionId,
+    source: input.source || 'web',
+    username: input.username,
+    userText: lastUser ? lastUser.content : '',
+    reply,
+    provider,
+    leadSent: Boolean(lead?.sent),
+    history: cleaned,
+  });
 
   return { reply, provider, lead };
 }
