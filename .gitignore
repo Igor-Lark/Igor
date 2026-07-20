@@ -8,3 +8,4 @@ npm-debug.log*
 data/avito-reviews-state.json
 data/chats/*.jsonl
 data/chats/sessions/
+data/bookings/

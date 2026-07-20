@@ -4,6 +4,7 @@ const { buildSystemPrompt } = require('./knowledge');
 const { completeChat } = require('./ai');
 const { shouldNotifyLead, notifyManager } = require('./leads');
 const { logChatTurn } = require('./chat-log');
+const { upsertBookingFromLead } = require('./bookings');
 
 /**
  * @param {{
@@ -34,14 +35,21 @@ async function handleChat(input) {
 
   let lead = null;
   if (lastUser && shouldNotifyLead({ text: lastUser.content })) {
-    lead = await notifyManager({
+    const leadPayload = {
       text: lastUser.content,
       source: input.source || 'web',
       sessionId: input.sessionId,
       username: input.username,
       history: cleaned,
       reply,
-    });
+    };
+    lead = await notifyManager(leadPayload);
+    // Черновик брони (для будущих напоминаний). Отправка напоминаний — отдельно, пока выкл.
+    try {
+      upsertBookingFromLead(leadPayload);
+    } catch (err) {
+      console.error('[bookings] upsert failed', err.message);
+    }
   }
 
   // Все диалоги — на диск (даже без заявки)

@@ -28,6 +28,14 @@ const config = {
     chatId: process.env.MAX_CHAT_ID || '',
     userId: process.env.MAX_USER_ID || '',
   },
+
+  // Напоминания о выходе (по умолчанию ВЫКЛЮЧЕНЫ)
+  bookings: {
+    remindersEnabled: ['1', 'true', 'yes'].includes(
+      String(process.env.BOOKING_REMINDERS_ENABLED || '0').trim().toLowerCase()
+    ),
+    reminderHours: Number(process.env.BOOKING_REMINDER_HOURS || 3) || 3,
+  },
 };
 
 config.hasYandex = Boolean(config.yandex.apiKey && config.yandex.folderId);
