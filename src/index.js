@@ -21,6 +21,7 @@ app.get('/health', (_req, res) => {
     bot: config.botName,
     ai: config.hasYandex ? 'yandex' : config.hasOpenAI ? 'openai' : 'none',
     telegram: config.hasTelegram,
+    telegramNotify: config.hasTelegramNotify,
     maxNotify: config.hasMaxNotify,
     knowledgeChars: kb.combined.length,
   });
@@ -50,7 +51,7 @@ app.post('/api/chat', async (req, res) => {
       error: 'Не удалось получить ответ',
       detail: process.env.NODE_ENV === 'development' ? err.message : undefined,
       reply:
-        'Извините, сервис временно недоступен. Напишите менеджеру Олегу: +7 917 675 0555',
+        'Извините, сервис временно недоступен. Напишите капитану: +7 917 675 0555',
     });
   }
 });
