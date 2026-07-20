@@ -20,9 +20,10 @@ const config = {
 
   telegram: {
     token: process.env.TELEGRAM_BOT_TOKEN || '',
+    managerChatId: process.env.TELEGRAM_MANAGER_CHAT_ID || '',
   },
 
-  // Заявки менеджеру + Avito → тот же групповой чат MAX (где бот Тильды)
+  // Avito-отзывы → MAX (опционально; заявки от ИИ в этой ветке идут в Telegram)
   max: {
     token: process.env.MAX_BOT_TOKEN || '',
     chatId: process.env.MAX_CHAT_ID || '',
@@ -33,6 +34,7 @@ const config = {
 config.hasYandex = Boolean(config.yandex.apiKey && config.yandex.folderId);
 config.hasOpenAI = Boolean(config.openai.apiKey);
 config.hasTelegram = Boolean(config.telegram.token);
+config.hasTelegramNotify = Boolean(config.telegram.token && config.telegram.managerChatId);
 config.hasMaxNotify = Boolean(
   config.max.token && (config.max.chatId || config.max.userId)
 );

@@ -21,6 +21,7 @@ app.get('/health', (_req, res) => {
     bot: config.botName,
     ai: config.hasYandex ? 'yandex' : config.hasOpenAI ? 'openai' : 'none',
     telegram: config.hasTelegram,
+    telegramNotify: config.hasTelegramNotify,
     maxNotify: config.hasMaxNotify,
     knowledgeChars: kb.combined.length,
   });
