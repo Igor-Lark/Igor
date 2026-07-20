@@ -30,12 +30,65 @@ function loadKnowledge() {
   return cached;
 }
 
+/** Текущие дата/время по Москве (для подсказок боту). */
+function nowMoscow(date = new Date()) {
+  const fmt = new Intl.DateTimeFormat('ru-RU', {
+    timeZone: 'Europe/Moscow',
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Moscow',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+      .formatToParts(date)
+      .filter((p) => p.type !== 'literal')
+      .map((p) => [p.type, p.value])
+  );
+  const hour = Number(parts.hour);
+  const minute = Number(parts.minute);
+  return {
+    label: fmt.format(date),
+    hour,
+    minute,
+    /** окно «расскажи про закат»: 15:00–17:00 МСК */
+    suggestSunset: hour >= 15 && hour < 17,
+  };
+}
+
+function buildGreeting() {
+  const now = nowMoscow();
+  const base =
+    'Здравствуйте! Помогу с катером или яхтой.\nБосс Олег часто в море — связь может быть слабой. Мадам Наталья: +7 918 304-40-00.';
+  if (now.suggestSunset) {
+    return (
+      base +
+      '\nСейчас как раз время подумать о выходе на закат в море сегодня вечером — интересно?\nСпрашивайте — или оставите контакт, свяжемся )'
+    );
+  }
+  return base + '\nСпрашивайте — или оставите контакт, свяжемся )';
+}
+
 function buildSystemPrompt() {
   const { combined } = loadKnowledge();
+  const now = nowMoscow();
 
   return [
     'Ты — вежливый консультант сервиса аренды яхт и катеров boat-sochi.ru (Сочи / Сириус / Адлер).',
     'Босс Олег: +7 917 675 0555. Мадам Наталья (запасной): +7 918 304-40-00.',
+    '',
+    `Сейчас по Москве: ${now.label} (час=${now.hour}). Используй это для уместных предложений.`,
+    now.suggestSunset
+      ? 'СЕЙЧАС 15:00–17:00 МСК: в первом ответе диалога коротко предложи выход на закат в море (сегодня вечером). Не повторяй про закат в каждом следующем сообщении, если клиент не продолжил тему.'
+      : 'Сейчас не окно 15:00–17:00: про закат говори только если клиент сам спросил про вечер/закат.',
     '',
     'ТЕСТОВЫЙ РЕЖИМ ОБУЧЕНИЯ (временно, высший приоритет):',
     '- В КАЖДОМ ответе клиенту: только «босс Олег» и «мадам Наталья».',
@@ -72,6 +125,7 @@ function buildSystemPrompt() {
     '5. Не обещай гарантированную встречу с дельфинами.',
     '6. Про акцию «Дельфины» всегда говори: время выхода с 6:00 до 12:00 (и скидка 500 ₽/час от 2 часов на «Сириусе»).',
     '7. Короткие вопросы про море/дельфинов/погоду у берега — отвечай по базе знаний; если факта нет, честно скажи и предложи мадам Наталью / босса Олега.',
+    '8. Закат в море — популярный вечерний формат; точное время выхода подтверждает босс Олег.',
     '',
     '=== БАЗА ЗНАНИЙ ===',
     combined ||
@@ -82,4 +136,6 @@ function buildSystemPrompt() {
 module.exports = {
   loadKnowledge,
   buildSystemPrompt,
+  buildGreeting,
+  nowMoscow,
 };

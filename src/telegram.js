@@ -4,6 +4,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const config = require('./config');
 const { handleChat } = require('./chat');
 const { isMapIntent, hasSiriusMapFile, SIRIUS_MAP_FILE, siriusMapCaption } = require('./maps');
+const { buildGreeting } = require('./knowledge');
 
 /** @type {Map<number, { role: string, content: string }[]>} */
 const sessions = new Map();
@@ -22,10 +23,7 @@ function pushMessage(chatId, role, content) {
 function attachHandlers(bot) {
   bot.onText(/\/start/, async (msg) => {
     sessions.set(msg.chat.id, []);
-    await bot.sendMessage(
-      msg.chat.id,
-      '👋 Здравствуйте! Помогу с катером или яхтой.\n\nБосс Олег часто в море — связь может быть слабой. Мадам Наталья: +7 918 304-40-00. Спрашивайте — или оставите контакт, свяжемся )'
-    );
+    await bot.sendMessage(msg.chat.id, '👋 ' + buildGreeting());
   });
 
   bot.onText(/\/reset/, async (msg) => {
