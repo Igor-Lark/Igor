@@ -134,3 +134,31 @@ PUBLIC_URL=https://bot.ваш-домен.ru
 
 - `/start` — приветствие
 - `/reset` — очистить историю диалога
+
+## Мониторинг отзывов Avito → MAX
+
+Раз в сутки скрипт проверяет свежие отзывы на объявлении и пишет в мессенджер **MAX**, если появились новые.
+
+```bash
+# локально / на VPS
+cp .env.example .env
+# заполните MAX_BOT_TOKEN + MAX_USER_ID (или MAX_CHAT_ID)
+npm run check:avito
+npm run check:avito -- --notify-always   # отчёт даже без новых
+npm run check:avito -- --dry-run         # без отправки в MAX
+```
+
+**GitHub Actions:** workflow `.github/workflows/avito-reviews-max.yml`  
+Cron: каждый день в 06:00 UTC (09:00 МСК). Можно запустить вручную (Actions → Avito reviews → MAX).
+
+Секреты репозитория:
+
+| Secret | Описание |
+|--------|----------|
+| `MAX_BOT_TOKEN` | токен бота MAX |
+| `MAX_USER_ID` | ваш user id в MAX (личный диалог) |
+| `MAX_CHAT_ID` | альтернатива — id группового чата |
+| `AVITO_ITEM_URL` | опционально, URL объявления |
+
+Как получить токен MAX: [dev.max.ru](https://dev.max.ru) / мини-приложение «MAX для бизнеса» → бот → токен.  
+`user_id` берётся из входящего сообщения боту (напишите боту «привет» и посмотрите webhook/логи) либо из кабинета разработчика.
