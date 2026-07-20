@@ -3,6 +3,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const config = require('./config');
 const { handleChat } = require('./chat');
+const { isMapIntent, hasSiriusMapFile, SIRIUS_MAP_FILE, siriusMapCaption } = require('./maps');
 
 /** @type {Map<number, { role: string, content: string }[]>} */
 const sessions = new Map();
@@ -50,6 +51,12 @@ function startTelegram(app) {
     console.log('[telegram] polling mode');
   }
 
+  if (hasSiriusMapFile()) {
+    console.log('[telegram] схема причала Сириус: найдена, будет отправляться по запросу');
+  } else {
+    console.log('[telegram] схема причала Сириус: файл пока отсутствует (public/maps/sirius-line1.jpg)');
+  }
+
   bot.onText(/\/start/, async (msg) => {
     sessions.set(msg.chat.id, []);
     await bot.sendMessage(
@@ -75,6 +82,14 @@ function startTelegram(app) {
 
     try {
       await bot.sendChatAction(chatId, 'typing');
+
+      // Схема прохода к причалу — картинкой, если файл есть
+      if (isMapIntent(msg.text) && hasSiriusMapFile()) {
+        await bot.sendPhoto(chatId, SIRIUS_MAP_FILE, { caption: siriusMapCaption() });
+        pushMessage(chatId, 'assistant', siriusMapCaption());
+        return;
+      }
+
       const { reply } = await handleChat({
         messages: getHistory(chatId),
         source: 'telegram',
