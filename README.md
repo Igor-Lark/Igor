@@ -137,28 +137,27 @@ PUBLIC_URL=https://bot.ваш-домен.ru
 
 ## Мониторинг отзывов Avito → MAX
 
-Раз в сутки скрипт проверяет свежие отзывы на объявлении и пишет в мессенджер **MAX**, если появились новые.
+Раз в сутки скрипт проверяет свежие отзывы на объявлении и пишет в **тот же групповой чат MAX**, куда Тильда шлёт заявки с сайта.
+
+Важно: бот Тильды и наш бот — разные. Наш бот нужно **добавить в тот же чат**.
 
 ```bash
-# локально / на VPS
 cp .env.example .env
-# заполните MAX_BOT_TOKEN + MAX_USER_ID (или MAX_CHAT_ID)
+# 1) MAX_BOT_TOKEN
+# 2) добавьте бота в чат с заявками Тильды
+# 3) узнайте chat_id:
+npm run max:chat-id
+# 4) пропишите MAX_CHAT_ID=... в .env
+
 npm run check:avito
-npm run check:avito -- --notify-always   # отчёт даже без новых
-npm run check:avito -- --dry-run         # без отправки в MAX
+npm run check:avito -- --notify-always
+npm run check:avito -- --dry-run
 ```
 
-**GitHub Actions:** workflow `.github/workflows/avito-reviews-max.yml`  
-Cron: каждый день в 06:00 UTC (09:00 МСК). Можно запустить вручную (Actions → Avito reviews → MAX).
-
-Секреты репозитория:
+**GitHub Actions:** `.github/workflows/avito-reviews-max.yml` — каждый день в 06:00 UTC (09:00 МСК).
 
 | Secret | Описание |
 |--------|----------|
-| `MAX_BOT_TOKEN` | токен бота MAX |
-| `MAX_USER_ID` | ваш user id в MAX (личный диалог) |
-| `MAX_CHAT_ID` | альтернатива — id группового чата |
+| `MAX_BOT_TOKEN` | токен **вашего** бота MAX |
+| `MAX_CHAT_ID` | id группового чата с ботом Тильды |
 | `AVITO_ITEM_URL` | опционально, URL объявления |
-
-Как получить токен MAX: [dev.max.ru](https://dev.max.ru) / мини-приложение «MAX для бизнеса» → бот → токен.  
-`user_id` берётся из входящего сообщения боту (напишите боту «привет» и посмотрите webhook/логи) либо из кабинета разработчика.

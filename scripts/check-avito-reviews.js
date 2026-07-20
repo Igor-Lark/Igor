@@ -10,7 +10,8 @@
  * Нужны в .env:
  *   AVITO_ITEM_URL
  *   MAX_BOT_TOKEN
- *   MAX_USER_ID  (или MAX_CHAT_ID)
+ *   MAX_CHAT_ID   ← групповой чат с ботом Тильды (заявки с сайта)
+ *   (или MAX_USER_ID — если писать в личку)
  */
 
 require('dotenv').config();
@@ -154,9 +155,20 @@ async function main() {
     process.exitCode = 2;
     return;
   }
+  if (!chatId && !userId) {
+    console.warn('[avito] Нужен MAX_CHAT_ID (чат с ботом Тильды) или MAX_USER_ID');
+    process.exitCode = 2;
+    return;
+  }
 
-  await sendMaxMessage({ token, userId, chatId, text });
-  console.log('[avito] отправлено в MAX');
+  // Приоритет — групповой чат (заявки Тильды)
+  await sendMaxMessage({
+    token,
+    chatId: chatId || undefined,
+    userId: chatId ? undefined : userId,
+    text,
+  });
+  console.log(chatId ? `[avito] отправлено в MAX chat_id=${chatId}` : `[avito] отправлено в MAX user_id=${userId}`);
 }
 
 main().catch((err) => {

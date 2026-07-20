@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "check:avito": "node scripts/check-avito-reviews.js"
+    "check:avito": "node scripts/check-avito-reviews.js",
+    "max:chat-id": "node scripts/max-find-chat-id.js"
   },
   "engines": {
     "node": ">=18"
