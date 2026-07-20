@@ -1,6 +1,6 @@
 # Boat Sochi Bot
 
-ИИ-бот для [boat-sochi.ru](https://boat-sochi.ru/): чат на сайте (Tilda) + Telegram. Ответы через **YandexGPT** (или OpenAI), база знаний с сайта, заявки менеджеру в Telegram.
+ИИ-бот для [boat-sochi.ru](https://boat-sochi.ru/): чат на сайте (Tilda) + опционально Telegram. Ответы через **YandexGPT** (или OpenAI), база знаний с сайта, заявки менеджеру в **MAX**.
 
 ## Что внутри
 
@@ -8,9 +8,9 @@
 |-----------|------------|
 | Node.js API | `POST /api/chat` — ответы через YandexGPT или OpenAI |
 | Виджет | Кнопка 💬 на сайте Tilda (`/embed.js`) |
-| Telegram-бот | Тот же ИИ в мессенджере |
+| Telegram-бот | Опционально: тот же ИИ в Telegram |
 | База знаний | `knowledge/llms-full.txt` + `knowledge/faq-extra.md` |
-| Заявки | При «хочу забронировать» / телефоне → уведомление менеджеру в Telegram |
+| Заявки | При «хочу забронировать» / телефоне → уведомление в **MAX** (тот же чат, что у Тильды) |
 
 ## Быстрый старт (4 шага)
 
@@ -21,17 +21,20 @@
 
 *(Альтернатива: заполните `OPENAI_API_KEY`, если Yandex не используете.)*
 
-### 2. Telegram
+### 2. MAX (заявки менеджеру)
 
-1. [@BotFather](https://t.me/BotFather) → `/newbot` → токен
-2. [@userinfobot](https://t.me/userinfobot) → ваш **Chat ID** (для уведомлений о заявках)
+1. Создайте бота MAX → `MAX_BOT_TOKEN`
+2. Добавьте бота в **тот же групповой чат**, куда Тильда шлёт заявки с сайта
+3. Узнайте id чата: `npm run max:chat-id` → `MAX_CHAT_ID`
+
+*(Telegram для чата с клиентами — по желанию: `TELEGRAM_BOT_TOKEN`.)*
 
 ### 3. Настройка
 
 ```bash
 cp .env.example .env
 # заполните YANDEX_API_KEY, YANDEX_FOLDER_ID,
-# TELEGRAM_BOT_TOKEN, TELEGRAM_MANAGER_CHAT_ID
+# MAX_BOT_TOKEN, MAX_CHAT_ID
 
 npm install
 npm start
@@ -47,7 +50,7 @@ npm start
 PUBLIC_URL=https://bot.ваш-домен.ru
 ```
 
-При заданном `PUBLIC_URL` Telegram переключается на webhook. Без него — polling (удобно для локальной разработки).
+При заданном `PUBLIC_URL` и токене Telegram переключается на webhook. Без него — polling (удобно для локальной разработки).
 
 #### Виджет на Tilda
 
@@ -106,7 +109,7 @@ PUBLIC_URL=https://bot.ваш-домен.ru
 1. **Yandex Cloud** — API-ключ и Folder ID  
 2. **VPS или хостинг** — куда выложить бота  
 3. **Домен для бота** — например `bot.boat-sochi.ru`  
-4. **Telegram** — токен бота и Chat ID менеджера  
+4. **MAX** — токен бота и Chat ID группового чата (с заявками Тильды)  
 
 Можно помочь с деплоем на Timeweb/Railway и настройкой `.env`, когда будут ключи.
 
@@ -125,19 +128,20 @@ PUBLIC_URL=https://bot.ваш-домен.ru
     ├── chat.js       # Оркестрация диалога
     ├── ai.js         # YandexGPT / OpenAI
     ├── knowledge.js  # Загрузка базы знаний
-    ├── leads.js      # Детект заявок + уведомления
-    ├── telegram.js   # Telegram-бот
+    ├── leads.js      # Детект заявок + уведомления в MAX
+    ├── max.js        # Отправка в мессенджер MAX
+    ├── telegram.js   # Telegram-бот (опционально)
     └── config.js
 ```
 
-## Команды Telegram
+## Команды Telegram (если подключён)
 
 - `/start` — приветствие
 - `/reset` — очистить историю диалога
 
-## Мониторинг отзывов Avito → MAX
+## Заявки и отзывы Avito → MAX
 
-Раз в сутки скрипт проверяет свежие отзывы на объявлении и пишет в **тот же групповой чат MAX**, куда Тильда шлёт заявки с сайта.
+Заявки от ИИ-бота (сайт / Telegram) и свежие отзывы Avito пишутся в **тот же групповой чат MAX**, куда Тильда шлёт заявки с сайта.
 
 Важно: бот Тильды и наш бот — разные. Наш бот нужно **добавить в тот же чат**.
 
