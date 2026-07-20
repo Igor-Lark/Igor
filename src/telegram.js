@@ -102,7 +102,7 @@ function startTelegram(app) {
       console.error('[telegram] chat error:', err.message);
       await bot.sendMessage(
         chatId,
-        'Сейчас не могу ответить. Напишите капитану: +7 917 675 0555'
+        'Сейчас не могу ответить. Капитан Олег: +7 917 675 0555, Наталья: +7 918 304-40-00'
       );
     }
   });

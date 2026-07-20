@@ -123,12 +123,12 @@
         });
       })
       .then(function (data) {
-        var reply = data.reply || 'Не удалось получить ответ. Телефон капитана: +7 917 675 0555';
+        var reply = data.reply || 'Не удалось получить ответ. Капитан Олег: +7 917 675 0555, Наталья: +7 918 304-40-00';
         messages.push({ role: 'assistant', content: reply });
         addBubble(reply, 'bot');
       })
       .catch(function () {
-        addBubble('Связь прервалась. Напишите капитану: +7 917 675 0555', 'sys');
+        addBubble('Связь прервалась. Капитан Олег: +7 917 675 0555, Наталья: +7 918 304-40-00', 'sys');
       })
       .finally(function () {
         sending = false;
