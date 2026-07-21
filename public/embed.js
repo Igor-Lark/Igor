@@ -50,9 +50,28 @@
       .replace(/"/g, '&quot;');
   }
 
-  /** Телефоны и https-ссылки (WhatsApp / Telegram / MAX) → кликабельные. */
+  /** Телефоны, https-ссылки и заявка на обратный звонок → кликабельные. */
   function linkifyText(text) {
     var escaped = escapeHtml(text);
+    // заявка на обратный звонок → /#zakaz на сайте
+    escaped = escaped.replace(
+      /(заявк[ауеиы]?\s+на\s+обратный\s+звонок|оставить\s+заявку\s+на\s+обратный\s+звонок)/gi,
+      function (m) {
+        return (
+          '<a class="bsb-link" href="https://boat-sochi.ru/#zakaz" target="_blank" rel="noopener noreferrer">' +
+          m +
+          '</a>'
+        );
+      }
+    );
+    escaped = escaped.replace(/(\/#zakaz\b|https?:\/\/boat-sochi\.ru\/#zakaz)/gi, function (url) {
+      var href = url.indexOf('http') === 0 ? url : 'https://boat-sochi.ru/#zakaz';
+      return (
+        '<a class="bsb-link" href="' +
+        href +
+        '" target="_blank" rel="noopener noreferrer">заявку на обратный звонок</a>'
+      );
+    });
     escaped = escaped.replace(/(https?:\/\/[^\s<>"']+)/g, function (url) {
       var clean = url.replace(/[),.;]+$/g, '');
       var trail = url.slice(clean.length);
@@ -60,6 +79,7 @@
       if (/wa\.me\//i.test(clean)) label = 'WhatsApp';
       else if (/t\.me\//i.test(clean)) label = 'Telegram';
       else if (/max\.ru\//i.test(clean)) label = 'MAX';
+      else if (/#zakaz/i.test(clean)) label = 'заявку на обратный звонок';
       return (
         '<a class="bsb-link" href="' +
         clean +
@@ -97,21 +117,23 @@
     var sending = false;
     var botName = 'Boat Sochi';
     var greeting =
-      'Здравствуйте! Помогу с выбором яхты или катера.\nБосс Олег часто в море — связь может быть слабой. Мадам Наталья: +7 918 304-40-00. Спрашивайте у меня — или оставите контакт, свяжемся )';
+      'Здравствуйте! Помогу с выбором яхты или катера.\nКапитан Олег часто в море — связь может быть слабой. Наталья: +7 918 304-40-00.\nСпрашивайте у меня — или оставьте заявку на обратный звонок на сайте.';
     var unavailableReply = [
       'Сейчас помощник временно недоступен. Свяжитесь с нами:',
       '',
-      'Босс Олег',
+      'Капитан Олег',
       '+7 917 675 0555',
       'https://wa.me/79176750555',
       'https://t.me/Oleg_700',
       'https://max.ru/u/f9LHodD0cOLfwfVnOTd4z8W-cQP1Wvx427sjPPALmFsnT4at-1pMe4Y5NF4',
       '',
-      'Мадам Наталья',
+      'Наталья',
       '+7 918 304-40-00',
       'https://wa.me/79183044000',
       'https://t.me/nata_rybiy',
       'https://max.ru/u/f9LHodD0cOI8OH4kIB7PsiV6jWNHRWg_O33iJTe5q_TJs73hHe1YBcSMwKk',
+      '',
+      'Или оставьте заявку на обратный звонок: https://boat-sochi.ru/#zakaz',
     ].join('\n');
 
     var ICON_ARROW =
@@ -121,6 +143,7 @@
     var BTN_AI_LABEL =
       '<span class="bsb-ai-label">AI</span><span class="bsb-ai-sub">помощник</span>';
     var AVATAR_URL = API_BASE + '/avatar-oleg.jpg';
+    var LOGO_URL = API_BASE + '/logo-stripes.svg';
 
     var style = document.createElement('style');
     style.textContent = [
@@ -137,11 +160,17 @@
       '#bsb-btn .bsb-ai-sub{font-size:10px;font-weight:600;opacity:.95;letter-spacing:.01em;line-height:1;white-space:nowrap}',
       '#bsb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
       '#bsb-panel.open{transform:translateX(0)}',
-      '#bsb-head{position:relative;background:#204360;color:#fff;min-height:96px;height:96px;padding:10px 48px;font-weight:600;font-size:15px;display:flex;justify-content:center;align-items:center;flex-shrink:0}',
-      '#bsb-head-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0}',
-      '#bsb-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:center 20%;display:block;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.25);background:#18344c}',
+      '#bsb-head{position:relative;background:#204360;color:#fff;min-height:96px;padding:12px 44px 12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}',
+      '#bsb-head-left,#bsb-head-right{display:flex;align-items:center;gap:10px;min-width:0}',
+      '#bsb-head-right{margin-left:auto;padding-right:4px}',
+      '#bsb-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:center 20%;display:block;flex-shrink:0;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.25);background:#18344c}',
+      '.bsb-oleg-text,.bsb-helper-text{display:flex;flex-direction:column;justify-content:center;line-height:1.15;gap:2px}',
+      '.bsb-oleg-name{font-size:15px;font-weight:700}',
+      '.bsb-oleg-role{font-size:13px;font-weight:500;opacity:.92}',
+      '#bsb-head .bsb-logo{display:block;flex-shrink:0;width:36px;height:33px}',
+      '.bsb-helper-line{font-size:14px;font-weight:700;line-height:1.15}',
       '#bsb-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}',
-      '#bsb-close{position:absolute;right:10px;top:10px;background:transparent;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px;display:flex;align-items:center;justify-content:center;z-index:2}',
+      '#bsb-close{position:absolute;right:8px;top:8px;background:transparent;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px;display:flex;align-items:center;justify-content:center;z-index:2}',
       '#bsb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
       '.bsb-msg{max-width:88%;padding:10px 12px;border-radius:5px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}',
       '.bsb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#0f172a}',
@@ -157,9 +186,8 @@
       '#bsb-send{border:0;border-radius:5px;background:#204360;color:#fff;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}',
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
-      /* телефон + планшет: панель 90% ширины; кнопка выше виджета «позвонить» (bottom задаётся JS + visualViewport) */
       '@media (max-width:1024px){#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}}',
-      '@media (max-width:480px){#bsb-panel{height:60vh;max-height:60vh}}',
+      '@media (max-width:480px){#bsb-panel{height:60vh;max-height:60vh}#bsb-avatar{width:56px;height:56px}.bsb-oleg-name,.bsb-helper-line{font-size:13px}.bsb-oleg-role{font-size:12px}#bsb-head .bsb-logo{width:30px;height:28px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
@@ -169,12 +197,15 @@
       '<div id="bsb-backdrop" aria-hidden="true"></div>',
       '<div id="bsb-panel" role="dialog" aria-label="Чат" aria-hidden="true">',
       '  <div id="bsb-head">',
-      '    <div id="bsb-head-center">',
-      '      <img id="bsb-avatar" src="' +
-        AVATAR_URL +
-        '" width="72" height="72" alt="" />',
-      '      <span id="bsb-title">Boat Sochi</span>',
+      '    <div id="bsb-head-left">',
+      '      <img id="bsb-avatar" src="' + AVATAR_URL + '" width="64" height="64" alt="Капитан Олег" />',
+      '      <div class="bsb-oleg-text"><span class="bsb-oleg-name">Это Олег</span><span class="bsb-oleg-role">Капитан</span></div>',
       '    </div>',
+      '    <div id="bsb-head-right">',
+      '      <img class="bsb-logo" src="' + LOGO_URL + '" width="36" height="33" alt="" />',
+      '      <div class="bsb-helper-text"><span class="bsb-helper-line">А я его</span><span class="bsb-helper-line">помощник</span></div>',
+      '    </div>',
+      '    <span id="bsb-title">Boat Sochi</span>',
       '    <button id="bsb-close" type="button" aria-label="Закрыть">' + ICON_CLOSE + '</button>',
       '  </div>',
       '  <div id="bsb-msgs"></div>',
