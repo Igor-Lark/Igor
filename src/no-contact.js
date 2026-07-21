@@ -208,7 +208,7 @@ async function flushIdleSessions(now = Date.now()) {
     if (s.username) lines.push(`Пользователь: ${s.username}`);
     if (s.sessionId) lines.push(`Сессия: ${s.sessionId}`);
 
-    const ok = await sendTelegram(lines.join('\n'));
+    const ok = await sendManager(lines.join('\n'));
     if (!ok) {
       // вернём флаг, чтобы попробовать снова
       s.notified = false;
