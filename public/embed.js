@@ -179,7 +179,7 @@
       '#bsb-avatar-zoom.open{display:flex;pointer-events:auto}',
       '#bsb-avatar-zoom-box{position:relative;flex-shrink:0;cursor:default}',
       '#bsb-avatar-zoom-box img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center 20%;border:3px solid rgba(255,255,255,.95);box-shadow:0 8px 32px rgba(0,0,0,.45);background:#18344c;cursor:zoom-out}',
-      '#bsb-avatar-zoom-close{position:absolute;top:0;right:0;z-index:2;width:36px;height:36px;margin:0;padding:0;border:0;border-radius:5px;background:rgba(15,23,42,.75);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transform:translate(35%,-35%)}',
+      '#bsb-avatar-zoom-close{position:absolute;top:0;right:0;z-index:2;width:36px;height:36px;margin:0;padding:0;border:0;border-radius:5px;background:rgba(15,23,42,.75);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}',
       '#bsb-avatar-zoom-close:hover{background:#18344c}',
       '#bsb-avatar-zoom-close .bsb-ico{width:18px;height:18px}',
       '.bsb-oleg-text,.bsb-helper-text{display:flex;flex-direction:column;justify-content:center;line-height:1.15;gap:2px;white-space:nowrap}',
