@@ -74,28 +74,60 @@ function attachHandlers(bot) {
 }
 
 /**
- * Polling иногда рвётся (сеть). Перезапускаем long-polling без перезапуска всего сервера.
+ * Polling иногда рвётся или «замирает» без ошибки.
+ * Перезапускаем long-polling; дополнительно смотрим pending_update_count.
  * @param {TelegramBot} bot
  */
 function watchPolling(bot) {
   let restarting = false;
-  bot.on('polling_error', async (err) => {
-    console.error('[telegram] polling_error:', err.message || err);
+  let lastActivity = Date.now();
+
+  async function restartPolling(reason) {
     if (restarting) return;
     restarting = true;
+    console.error('[telegram] restarting polling:', reason);
     try {
       await bot.stopPolling({ cancel: true }).catch(() => {});
       await new Promise((r) => setTimeout(r, 2000));
       await bot.startPolling({ restart: true });
-      console.log('[telegram] polling restarted after error');
+      lastActivity = Date.now();
+      console.log('[telegram] polling restarted OK');
     } catch (e) {
       console.error('[telegram] polling restart failed:', e.message);
     } finally {
       setTimeout(() => {
         restarting = false;
-      }, 5000);
+      }, 8000);
     }
+  }
+
+  bot.on('polling_error', (err) => {
+    restartPolling(err.message || String(err));
   });
+
+  // любое входящее сообщение = polling жив
+  bot.on('message', () => {
+    lastActivity = Date.now();
+  });
+
+  // Раз в минуту: если у Telegram копятся апдейты — polling завис
+  setInterval(async () => {
+    try {
+      const token = config.telegram.token;
+      const res = await fetch(`https://api.telegram.org/bot${token}/getWebhookInfo`);
+      const body = await res.json();
+      const pending = body.result?.pending_update_count || 0;
+      if (pending > 0) {
+        await restartPolling(`pending_update_count=${pending}`);
+      } else if (Date.now() - lastActivity > 45 * 60 * 1000) {
+        // раз в ~45 мин мягкий refresh, чтобы long-poll не «засыпал»
+        await restartPolling('periodic refresh');
+        lastActivity = Date.now();
+      }
+    } catch (e) {
+      console.error('[telegram] watchdog check failed:', e.message);
+    }
+  }, 60 * 1000).unref?.();
 }
 
 /**
