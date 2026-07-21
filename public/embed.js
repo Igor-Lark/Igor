@@ -116,7 +116,8 @@
       '#bsb-root *{box-sizing:border-box;font-family:inherit}',
       '#bsb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#bsb-btn{position:absolute !important;right:16px !important;bottom:20px !important;min-width:56px !important;height:56px !important;border:0 !important;border-radius:5px !important;cursor:pointer;background:#204360 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.4);display:flex !important;flex-direction:column !important;align-items:center;justify-content:center;gap:2px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2;padding:6px 12px !important}',
+      '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:20px !important;min-width:56px !important;height:56px !important;border:0 !important;border-radius:5px !important;cursor:pointer;background:#204360 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.4);display:flex !important;flex-direction:column !important;align-items:center;justify-content:center;gap:2px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 12px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#bsb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
       '#bsb-btn:hover{background:#18344c !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
       '#bsb-btn .bsb-ai-label{font-size:16px;font-weight:800;letter-spacing:.04em;line-height:1}',
@@ -143,9 +144,9 @@
       '#bsb-send{border:0;border-radius:5px;background:#204360;color:#fff;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}',
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
-      /* телефон + планшет: панель 90% ширины, кнопка выше виджета «позвонить» */
-      '@media (max-width:1024px){#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-btn{bottom:100px !important;right:16px !important}}',
-      '@media (max-width:480px){#bsb-panel{height:60vh;max-height:60vh}#bsb-btn{bottom:110px !important}}',
+      /* телефон + планшет: панель 90% ширины; кнопка выше виджета «позвонить» (bottom задаётся JS + visualViewport) */
+      '@media (max-width:1024px){#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}}',
+      '@media (max-width:480px){#bsb-panel{height:60vh;max-height:60vh}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
@@ -164,21 +165,66 @@
       '    <button id="bsb-send" type="submit" aria-label="Отправить">' + ICON_ARROW + '</button>',
       '  </form>',
       '</div>',
-      '<button id="bsb-btn" type="button" aria-label="Открыть ИИ-помощника" title="ИИ-помощник">' +
-        BTN_AI_LABEL +
-        '</button>',
     ].join('');
     document.body.appendChild(root);
 
+    // Кнопка вне #bsb-root: иначе на мобиле прыгает вместе с inset:0 при скрытии/показе панели браузера
+    var btn = document.createElement('button');
+    btn.id = 'bsb-btn';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Открыть ИИ-помощника');
+    btn.title = 'ИИ-помощник';
+    btn.innerHTML = BTN_AI_LABEL;
+    document.body.appendChild(btn);
+
     var panel = root.querySelector('#bsb-panel');
     var backdrop = root.querySelector('#bsb-backdrop');
-    var btn = root.querySelector('#bsb-btn');
     var closeBtn = root.querySelector('#bsb-close');
     var msgs = root.querySelector('#bsb-msgs');
     var form = root.querySelector('#bsb-form');
     var input = root.querySelector('#bsb-input');
     var sendBtn = root.querySelector('#bsb-send');
     var title = root.querySelector('#bsb-title');
+
+    function fabBaseBottom() {
+      if (window.matchMedia('(max-width:480px)').matches) return 110;
+      if (window.matchMedia('(max-width:1024px)').matches) return 100;
+      return 20;
+    }
+
+    /** Держим кнопку у нижнего края visual viewport — без прыжка при скролле на мобиле. */
+    function pinFab() {
+      var base = fabBaseBottom();
+      var vv = window.visualViewport;
+      btn.style.right = '16px';
+      btn.style.left = 'auto';
+      if (!vv) {
+        btn.style.top = 'auto';
+        btn.style.bottom = base + 'px';
+        return;
+      }
+      var h = btn.offsetHeight || 56;
+      var top = vv.offsetTop + vv.height - base - h;
+      btn.style.bottom = 'auto';
+      btn.style.top = Math.max(0, top) + 'px';
+    }
+
+    var pinFabRaf = 0;
+    function schedulePinFab() {
+      if (pinFabRaf) return;
+      pinFabRaf = requestAnimationFrame(function () {
+        pinFabRaf = 0;
+        pinFab();
+      });
+    }
+
+    pinFab();
+    window.addEventListener('resize', schedulePinFab);
+    window.addEventListener('orientationchange', schedulePinFab);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', schedulePinFab);
+      window.visualViewport.addEventListener('scroll', schedulePinFab);
+    }
 
     function addBubble(text, kind) {
       var el = document.createElement('div');
@@ -197,6 +243,7 @@
       btn.setAttribute('aria-label', open ? 'Закрыть чат' : 'Открыть ИИ-помощника');
       btn.classList.toggle('bsb-btn-open', open);
       document.documentElement.style.overflow = open ? 'hidden' : '';
+      schedulePinFab();
     }
 
     btn.addEventListener('click', function () {
