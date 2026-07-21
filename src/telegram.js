@@ -97,13 +97,12 @@ function attachHandlers(bot) {
 }
 
 /**
- * Polling иногда рвётся или «замирает» без ошибки.
- * Перезапускаем long-polling; дополнительно смотрим pending_update_count.
+ * Polling иногда рвётся (сеть / IPv6). Перезапускаем ТОЛЬКО по polling_error.
+ * Не трогаем pending_update_count — из‑за этого бот «крутился» и не отвечал.
  * @param {TelegramBot} bot
  */
 function watchPolling(bot) {
   let restarting = false;
-  let lastActivity = Date.now();
 
   async function restartPolling(reason) {
     if (restarting) return;
@@ -111,46 +110,27 @@ function watchPolling(bot) {
     console.error('[telegram] restarting polling:', reason);
     try {
       await bot.stopPolling({ cancel: true }).catch(() => {});
-      await new Promise((r) => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 2500));
       await bot.startPolling({ restart: true });
-      lastActivity = Date.now();
       console.log('[telegram] polling restarted OK');
     } catch (e) {
       console.error('[telegram] polling restart failed:', e.message);
     } finally {
       setTimeout(() => {
         restarting = false;
-      }, 8000);
+      }, 10000);
     }
   }
 
   bot.on('polling_error', (err) => {
-    restartPolling(err.message || String(err));
-  });
-
-  // любое входящее сообщение = polling жив
-  bot.on('message', () => {
-    lastActivity = Date.now();
-  });
-
-  // Раз в минуту: если у Telegram копятся апдейты — polling завис
-  setInterval(async () => {
-    try {
-      const token = config.telegram.token;
-      const res = await fetch(`https://api.telegram.org/bot${token}/getWebhookInfo`);
-      const body = await res.json();
-      const pending = body.result?.pending_update_count || 0;
-      if (pending > 0) {
-        await restartPolling(`pending_update_count=${pending}`);
-      } else if (Date.now() - lastActivity > 45 * 60 * 1000) {
-        // раз в ~45 мин мягкий refresh, чтобы long-poll не «засыпал»
-        await restartPolling('periodic refresh');
-        lastActivity = Date.now();
-      }
-    } catch (e) {
-      console.error('[telegram] watchdog check failed:', e.message);
+    const msg = err && err.message ? err.message : String(err);
+    // 409 = второй экземпляр бота; просто логируем
+    if (/409/.test(msg)) {
+      console.error('[telegram] polling_error 409 (другой getUpdates). Проверьте, что бот запущен в одном месте.');
+      return;
     }
-  }, 60 * 1000).unref?.();
+    restartPolling(msg);
+  });
 }
 
 /**
@@ -162,12 +142,27 @@ function startTelegram(app) {
     return null;
   }
 
-  const useWebhook = Boolean(config.publicUrl && !config.publicUrl.includes('ваш-домен'));
+  // webhook только если PUBLIC_URL боевой И не форсирован polling
+  const forcePolling = ['1', 'true', 'yes', 'polling'].includes(
+    String(process.env.TELEGRAM_MODE || '').trim().toLowerCase()
+  );
+  const useWebhook =
+    !forcePolling &&
+    Boolean(config.publicUrl && !config.publicUrl.includes('ваш-домен'));
+
   /** @type {TelegramBot} */
   let bot;
 
+  // request family 4 — на VPS Telegram часто ломается на IPv6
+  const botOpts = {
+    request: {
+      // node-telegram-bot-api / tunnel
+      agentOptions: { family: 4 },
+    },
+  };
+
   if (useWebhook) {
-    bot = new TelegramBot(config.telegram.token, { webHook: false });
+    bot = new TelegramBot(config.telegram.token, { webHook: false, ...botOpts });
     const hookPath = `/telegram/webhook/${config.telegram.token}`;
     const hookUrl = `${config.publicUrl}${hookPath}`;
 
@@ -181,7 +176,7 @@ function startTelegram(app) {
       .then(() => console.log('[telegram] webhook:', hookUrl))
       .catch((err) => console.error('[telegram] setWebHook failed:', err.message));
   } else {
-    bot = new TelegramBot(config.telegram.token, { polling: true });
+    bot = new TelegramBot(config.telegram.token, { polling: true, ...botOpts });
     console.log('[telegram] polling mode');
     watchPolling(bot);
   }
