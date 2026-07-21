@@ -141,7 +141,7 @@
       '#bsb-send .bsb-ico{width:20px;height:20px}',
       /* телефон + планшет: панель 90% ширины, кнопка выше виджета «позвонить» */
       '@media (max-width:1024px){#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-btn{bottom:100px !important;right:16px !important}}',
-      '@media (max-width:480px){#bsb-btn{bottom:110px !important}}',
+      '@media (max-width:480px){#bsb-panel{height:60vh;max-height:60vh}#bsb-btn{bottom:110px !important}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
