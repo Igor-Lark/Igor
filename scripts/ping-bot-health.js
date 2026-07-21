@@ -12,11 +12,12 @@
 require('dotenv').config();
 
 const config = require('../src/config');
+const { telegramFetch } = require('../src/telegram-net');
 
 async function tg(method) {
   const token = config.telegram.token;
   if (!token) throw new Error('TELEGRAM_BOT_TOKEN не задан');
-  const res = await fetch(`https://api.telegram.org/bot${token}/${method}`);
+  const res = await telegramFetch(`https://api.telegram.org/bot${token}/${method}`);
   const body = await res.json();
   if (!body.ok) throw new Error(`Telegram ${method}: ${JSON.stringify(body)}`);
   return body.result;
@@ -39,7 +40,7 @@ async function notify(text) {
   const chatId = config.telegram.managerChatId;
   const token = config.telegram.token;
   if (!chatId || !token) return;
-  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  await telegramFetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: chatId, text }),

@@ -1,6 +1,7 @@
 'use strict';
 
 const config = require('./config');
+const { telegramFetch } = require('./telegram-net');
 
 const PHONE_RE =
   /(?:\+?7|8)[\s\-()]*(?:\d[\s\-()]*){10}|\b\d{3}[\s\-()]?\d{3}[\s\-()]?\d{2}[\s\-()]?\d{2}\b/;
@@ -73,7 +74,7 @@ async function notifyManager(lead) {
     chatId
   )}&text=${body}`;
 
-  const res = await fetch(url);
+  const res = await telegramFetch(url);
   if (!res.ok) {
     const errText = await res.text();
     console.error('[leads] Telegram notify failed:', errText);

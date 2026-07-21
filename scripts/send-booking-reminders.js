@@ -14,6 +14,7 @@
 require('dotenv').config();
 
 const config = require('../src/config');
+const { telegramFetch } = require('../src/telegram-net');
 const {
   remindersEnabled,
   reminderHours,

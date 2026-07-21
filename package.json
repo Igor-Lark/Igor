@@ -9,7 +9,8 @@
     "check:avito": "node scripts/check-avito-reviews.js",
     "max:chat-id": "node scripts/max-find-chat-id.js",
     "remind:bookings": "node scripts/send-booking-reminders.js",
-    "health:ping": "node scripts/ping-bot-health.js"
+    "health:ping": "node scripts/ping-bot-health.js",
+    "check:telegram": "node scripts/check-telegram-net.js"
   },
   "engines": {
     "node": ">=18"
@@ -18,6 +19,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "node-telegram-bot-api": "^0.66.0"
+    "https-proxy-agent": "^7.0.6",
+    "node-telegram-bot-api": "^0.66.0",
+    "socks-proxy-agent": "^8.0.5"
   }
 }

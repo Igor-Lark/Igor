@@ -150,7 +150,8 @@ async function sendManager(text) {
   if (config.hasTelegramNotify) {
     const token = config.telegram.token;
     const chatId = config.telegram.managerChatId;
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const { telegramFetch } = require('./telegram-net');
+    const res = await telegramFetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, text }),
