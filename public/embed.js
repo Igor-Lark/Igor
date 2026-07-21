@@ -160,8 +160,8 @@
       '#bsb-root *{box-sizing:border-box;font-family:inherit}',
       '#bsb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:20px !important;min-width:56px !important;height:56px !important;border:0 !important;border-radius:5px !important;cursor:pointer;background:#204360 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.4);display:flex !important;flex-direction:column !important;align-items:center;justify-content:center;gap:2px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 12px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
-      '#bsb-btn.bsb-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
+      '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:20px !important;min-width:56px !important;height:56px !important;border:2px solid #EF1F1F !important;border-radius:5px !important;cursor:pointer;background:#204360 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.4);display:flex !important;flex-direction:column !important;align-items:center;justify-content:center;gap:2px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 12px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#bsb-btn.bsb-hidden,#bsb-btn.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       '#bsb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
       '#bsb-btn:hover{background:#18344c !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
@@ -234,6 +234,7 @@
     btn.setAttribute('aria-label', 'Открыть ИИ-помощника');
     btn.title = 'ИИ-помощник';
     btn.innerHTML = BTN_AI_LABEL;
+    btn.classList.add('bsb-scroll-hidden');
     document.body.appendChild(btn);
 
     var panel = root.querySelector('#bsb-panel');
@@ -244,6 +245,20 @@
     var input = root.querySelector('#bsb-input');
     var sendBtn = root.querySelector('#bsb-send');
     var title = root.querySelector('#bsb-title');
+    var SCROLL_SHOW_PX = 80;
+
+    function pageScrollY() {
+      return (
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0
+      );
+    }
+
+    function updateFabScrollVisibility() {
+      btn.classList.toggle('bsb-scroll-hidden', pageScrollY() < SCROLL_SHOW_PX);
+    }
 
     function fabBaseBottom() {
       if (window.matchMedia('(max-width:480px)').matches) return 110;
@@ -251,19 +266,31 @@
       return 20;
     }
 
+    /** Вертикальный планшет: 600–1024px в портрете. */
+    function isPortraitTablet() {
+      return window.matchMedia(
+        '(min-width:600px) and (max-width:1024px) and (orientation:portrait)'
+      ).matches;
+    }
+
     /** Держим кнопку у нижнего края visual viewport — без прыжка при скролле на мобиле. */
     function pinFab() {
       var base = fabBaseBottom();
       var vv = window.visualViewport;
-      btn.style.right = '16px';
+      var w = btn.offsetWidth || 56;
+      var h = btn.offsetHeight || 56;
+      var tablet = isPortraitTablet();
+      // планшет портрет: влево на ½ ширины, вверх на высоту кнопки
+      var right = 16 + (tablet ? w / 2 : 0);
+      var lift = tablet ? h : 0;
+      btn.style.right = right + 'px';
       btn.style.left = 'auto';
       if (!vv) {
         btn.style.top = 'auto';
-        btn.style.bottom = base + 'px';
+        btn.style.bottom = base + lift + 'px';
         return;
       }
-      var h = btn.offsetHeight || 56;
-      var top = vv.offsetTop + vv.height - base - h;
+      var top = vv.offsetTop + vv.height - base - lift - h;
       btn.style.bottom = 'auto';
       btn.style.top = Math.max(0, top) + 'px';
     }
@@ -277,7 +304,12 @@
       });
     }
 
+    updateFabScrollVisibility();
     pinFab();
+    window.addEventListener('scroll', function () {
+      updateFabScrollVisibility();
+      schedulePinFab();
+    }, { passive: true });
     window.addEventListener('resize', schedulePinFab);
     window.addEventListener('orientationchange', schedulePinFab);
     if (window.visualViewport) {
