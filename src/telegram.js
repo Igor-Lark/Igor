@@ -21,31 +21,46 @@ function pushMessage(chatId, role, content) {
 }
 
 function attachHandlers(bot) {
-  bot.onText(/\/start/, async (msg) => {
-    sessions.set(msg.chat.id, []);
-    await bot.sendMessage(msg.chat.id, '👋 ' + buildGreeting());
+  async function sendGreeting(chatId) {
+    sessions.set(chatId, []);
+    await bot.sendMessage(chatId, '👋 ' + buildGreeting());
+  }
+
+  // /start, /start@BotName, /start payload
+  bot.onText(/\/start(?:@\w+)?(?:\s|$)/i, async (msg) => {
+    await sendGreeting(msg.chat.id);
   });
 
-  bot.onText(/\/reset/, async (msg) => {
+  bot.onText(/\/reset(?:@\w+)?(?:\s|$)/i, async (msg) => {
     sessions.set(msg.chat.id, []);
     await bot.sendMessage(msg.chat.id, 'Диалог очищен. Чем помочь?');
   });
 
   bot.on('message', async (msg) => {
-    if (!msg.text || msg.text.startsWith('/')) return;
-
+    if (!msg.text) return;
+    const text = msg.text.trim();
     const chatId = msg.chat.id;
+
+    // Кнопка «Запустить» в Telegram = /start; также ловим текст «запустить бота»
+    if (/^\/start(?:@\w+)?(?:\s|$)/i.test(text) || /^(запустить(\s+бота)?|старт|start)$/i.test(text)) {
+      // /start уже обработан onText; текстовые варианты — здесь
+      if (!text.startsWith('/')) await sendGreeting(chatId);
+      return;
+    }
+
+    if (text.startsWith('/')) return;
+
     const username = [msg.from?.username && `@${msg.from.username}`, msg.from?.first_name]
       .filter(Boolean)
       .join(' ');
 
-    pushMessage(chatId, 'user', msg.text);
+    pushMessage(chatId, 'user', text);
 
     try {
       await bot.sendChatAction(chatId, 'typing');
 
-      // Схема прохода к причалу — картинкой, если файл есть
-      if (isMapIntent(msg.text) && hasSiriusMapFile()) {
+      // Схема прохода к причалу — картинкой
+      if (isMapIntent(text) && hasSiriusMapFile()) {
         await bot.sendPhoto(chatId, SIRIUS_MAP_FILE, { caption: siriusMapCaption() });
         pushMessage(chatId, 'assistant', siriusMapCaption());
         return;
