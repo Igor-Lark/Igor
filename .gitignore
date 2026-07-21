@@ -10,3 +10,4 @@ data/chats/*.jsonl
 data/chats/sessions/
 data/bookings/
 data/no-contact/
+data/ai-alert-state.json
