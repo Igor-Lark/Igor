@@ -117,7 +117,7 @@
       '#bsb-btn{position:absolute !important;right:20px !important;bottom:20px !important;width:56px !important;height:56px !important;border:0 !important;border-radius:5px !important;cursor:pointer;background:#204360 !important;color:#fff !important;line-height:1 !important;box-shadow:0 8px 24px rgba(32,67,96,.4);display:flex !important;align-items:center;justify-content:center;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2;padding:0 !important}',
       '#bsb-btn:hover{background:#18344c !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
-      '#bsb-panel{position:absolute;top:100px;right:0;bottom:0;height:auto;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 5px;overflow:hidden}',
+      '#bsb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
       '#bsb-panel.open{transform:translateX(0)}',
       '#bsb-head{background:#204360;color:#fff;padding:12px 14px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:10px}',
       '#bsb-head-left{display:flex;align-items:center;gap:10px;min-width:0}',
@@ -140,8 +140,8 @@
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
       /* телефон + планшет: панель 90% ширины, кнопка выше виджета «позвонить» */
-      '@media (max-width:1024px){#bsb-panel{width:90vw;max-width:90vw;top:100px;border-radius:5px 0 0 5px}#bsb-btn{bottom:100px !important;right:16px !important}}',
-      '@media (max-width:480px){#bsb-panel{top:80px}#bsb-btn{bottom:110px !important}}',
+      '@media (max-width:1024px){#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-btn{bottom:100px !important;right:16px !important}}',
+      '@media (max-width:480px){#bsb-btn{bottom:110px !important}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
