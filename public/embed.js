@@ -190,7 +190,6 @@
       btn.innerHTML = open ? ICON_CLOSE : ICON_ARROW;
       btn.setAttribute('aria-label', open ? 'Закрыть чат' : 'Открыть чат');
       document.documentElement.style.overflow = open ? 'hidden' : '';
-      if (open) input.focus();
     }
 
     btn.addEventListener('click', function () {
