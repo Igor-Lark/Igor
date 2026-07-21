@@ -127,7 +127,7 @@
       '#bsb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
       '.bsb-msg{max-width:88%;padding:10px 12px;border-radius:5px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}',
       '.bsb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#0f172a}',
-      '.bsb-msg.user{align-self:flex-end;background:#204360;color:#fff}',
+      '.bsb-msg.user{align-self:flex-end;background:#5a7f9c;color:#fff}',
       '.bsb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:12px}',
       '.bsb-tel,.bsb-link{color:#204360;font-weight:600;text-decoration:underline;text-underline-offset:2px}',
       '.bsb-msg.user .bsb-tel,.bsb-msg.user .bsb-link{color:#fff}',
@@ -139,7 +139,9 @@
       '#bsb-send{border:0;border-radius:5px;background:#204360;color:#fff;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}',
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
-      '@media (max-width:480px){#bsb-panel{width:100vw;top:80px;border-radius:5px 0 0 0}}',
+      /* телефон + планшет: панель 90% ширины, кнопка выше виджета «позвонить» */
+      '@media (max-width:1024px){#bsb-panel{width:90vw;max-width:90vw;top:100px;border-radius:5px 0 0 5px}#bsb-btn{bottom:100px !important;right:16px !important}}',
+      '@media (max-width:480px){#bsb-panel{top:80px}#bsb-btn{bottom:110px !important}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
