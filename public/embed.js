@@ -353,6 +353,16 @@
       setOpen(false);
     });
 
+    // Клик по «заявку на обратный звонок» (#bot) — закрыть чат, чтобы заполнить форму на странице
+    msgs.addEventListener('click', function (e) {
+      var t = e.target;
+      var a = t && t.closest ? t.closest('a.bsb-link') : null;
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      if (href !== '#bot' && href !== '#zakaz' && !/#(?:bot|zakaz)$/i.test(href)) return;
+      setOpen(false);
+    });
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var text = (input.value || '').trim();
