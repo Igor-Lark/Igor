@@ -8,6 +8,7 @@
     "dev": "node --watch src/index.js",
     "check:avito": "node scripts/check-avito-reviews.js",
     "max:chat-id": "node scripts/max-find-chat-id.js",
+    "max:user-id": "node scripts/max-find-user-id.js",
     "remind:bookings": "node scripts/send-booking-reminders.js",
     "health:ping": "node scripts/ping-bot-health.js"
   },

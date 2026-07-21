@@ -120,6 +120,13 @@ function upsertBookingFromLead(lead) {
     lead.source === 'telegram' && lead.sessionId && /^\d+$/.test(String(lead.sessionId))
       ? String(lead.sessionId)
       : null;
+  // В MAX личка адресуется по user_id (не chat_id группы).
+  const maxUserId =
+    lead.source === 'max' && lead.sessionId && /^\d+$/.test(String(lead.sessionId))
+      ? String(lead.sessionId)
+      : lead.maxUserId
+        ? String(lead.maxUserId)
+        : null;
 
   const bookings = loadAll();
   // обновить свежий черновик той же сессии за последний час
@@ -150,6 +157,7 @@ function upsertBookingFromLead(lead) {
   existing.phone = phone || existing.phone || null;
   existing.contact = contact || existing.contact || null;
   existing.telegramChatId = telegramChatId || existing.telegramChatId || null;
+  existing.maxUserId = maxUserId || existing.maxUserId || null;
   existing.rawText = String(lead.text || '').slice(0, 1000);
   if (startAt) existing.startAt = startAt;
   existing.status = existing.startAt ? 'scheduled' : 'draft';
@@ -171,7 +179,7 @@ function findDueReminders(opts = {}) {
 
   return loadAll().filter((b) => {
     if (b.cancelled || b.reminder3hSentAt || !b.startAt) return false;
-    if (!b.telegramChatId && !b.phone) return false;
+    if (!b.telegramChatId && !b.maxUserId && !b.phone) return false;
     const start = new Date(b.startAt).getTime();
     if (Number.isNaN(start)) return false;
     const delta = start - now.getTime();
