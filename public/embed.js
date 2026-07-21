@@ -369,7 +369,10 @@
       btn.classList.toggle('bsb-hidden', open);
       btn.setAttribute('aria-hidden', open ? 'true' : 'false');
       document.documentElement.style.overflow = open ? 'hidden' : '';
-      if (!open) schedulePinFab();
+      if (!open) {
+        setAvatarZoom(false);
+        schedulePinFab();
+      }
     }
 
     btn.addEventListener('click', function () {
