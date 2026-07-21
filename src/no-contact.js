@@ -202,7 +202,7 @@ async function flushIdleSessions(now = Date.now()) {
     const duration = formatDuration((s.lastAt || now) - (s.startedAt || now));
     const lines = [
       `Клиент${clientNo} · ${when.dayMonth} ${when.time}`,
-      `Клиент общался ${duration}, контакт не оставил`,
+      `Продолжительность общения: ${duration}, контакт не оставил`,
       `Источник: ${s.source || 'unknown'}`,
     ];
     if (s.username) lines.push(`Пользователь: ${s.username}`);
