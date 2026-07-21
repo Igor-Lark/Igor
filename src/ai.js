@@ -2,9 +2,10 @@
 
 const config = require('./config');
 
-async function completeYandex(messages) {
+async function completeYandex(messages, options = {}) {
   const { apiKey, folderId, model } = config.yandex;
   const modelUri = `gpt://${folderId}/${model}`;
+  const maxTokens = options.maxTokens != null ? options.maxTokens : 800;
 
   const yandexMessages = messages.map((m) => ({
     role: m.role === 'assistant' ? 'assistant' : m.role === 'system' ? 'system' : 'user',
@@ -23,7 +24,7 @@ async function completeYandex(messages) {
       completionOptions: {
         stream: false,
         temperature: 0.3,
-        maxTokens: 800,
+        maxTokens,
       },
       messages: yandexMessages,
     }),
@@ -40,8 +41,9 @@ async function completeYandex(messages) {
   return text.trim();
 }
 
-async function completeOpenAI(messages) {
+async function completeOpenAI(messages, options = {}) {
   const { apiKey, model } = config.openai;
+  const max_tokens = options.maxTokens != null ? options.maxTokens : 800;
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -52,7 +54,7 @@ async function completeOpenAI(messages) {
     body: JSON.stringify({
       model,
       temperature: 0.3,
-      max_tokens: 800,
+      max_tokens,
       messages,
     }),
   });
@@ -66,6 +68,23 @@ async function completeOpenAI(messages) {
   const text = data?.choices?.[0]?.message?.content;
   if (!text) throw new Error('OpenAI: пустой ответ');
   return text.trim();
+}
+
+/**
+ * Короткий пинг ИИ (для health-check).
+ * @returns {Promise<{ provider: string, reply: string }>}
+ */
+async function pingAi() {
+  const messages = [{ role: 'user', content: 'Ответь одним словом: ок' }];
+  if (config.hasYandex) {
+    const reply = await completeYandex(messages, { maxTokens: 10 });
+    return { provider: 'yandex', reply };
+  }
+  if (config.hasOpenAI) {
+    const reply = await completeOpenAI(messages, { maxTokens: 10 });
+    return { provider: 'openai', reply };
+  }
+  throw new Error('Не настроен ни YandexGPT, ни OpenAI');
 }
 
 /**
@@ -88,4 +107,5 @@ module.exports = {
   completeChat,
   completeYandex,
   completeOpenAI,
+  pingAi,
 };
