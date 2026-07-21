@@ -39,6 +39,17 @@ async function httpHealth() {
 }
 
 async function notify(text) {
+  // MAX-ветка: заявки/алерты в MAX
+  if (config.hasMaxNotify) {
+    const { sendMaxMessage } = require('../src/max');
+    await sendMaxMessage({
+      token: config.max.token,
+      chatId: config.max.chatId || undefined,
+      userId: config.max.userId || undefined,
+      text,
+    });
+    return;
+  }
   const chatId = config.telegram.managerChatId;
   const token = config.telegram.token;
   if (!chatId || !token) return;
