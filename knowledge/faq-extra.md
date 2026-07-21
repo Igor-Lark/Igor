@@ -103,12 +103,24 @@ VIP-яхта «Алексум»: **Сочи, Морпорт, Войкова 1, �
 
 ## Не могу дозвониться / босс Олег в море
 
-Босс Олег часто в море — связь плохая.  
-Звоните мадам Наталье: **+7 918 304-40-00**.  
-Или напишите контакт в чат — свяжемся.  
-Босс Олег: +7 917 675 0555.
+Босс Олег часто в море — связь плохая. Пишите мадам Наталье:
+- телефон: **+7 918 304-40-00**
+- WhatsApp: https://wa.me/79183044000
+- Telegram: https://t.me/nata_rybiy
+- MAX: https://max.ru/u/f9LHodD0cOI8OH4kIB7PsiV6jWNHRWg_O33iJTe5q_TJs73hHe1YBcSMwKk  
+Или оставьте контакт в чат — свяжемся. Босс Олег: +7 917 675 0555.
+
+## Контакты / как связаться / WhatsApp / Telegram / MAX
+
+Мадам Наталья:
+- телефон: +7 918 304-40-00
+- WhatsApp: https://wa.me/79183044000
+- Telegram: https://t.me/nata_rybiy
+- MAX: https://max.ru/u/f9LHodD0cOI8OH4kIB7PsiV6jWNHRWg_O33iJTe5q_TJs73hHe1YBcSMwKk
+
+Босс Олег (если спросили именно его): +7 917 675 0555, WhatsApp https://wa.me/79176750555, Telegram https://t.me/Oleg_700, MAX https://max.ru/u/f9LHodD0cOLfwfVnOTd4z8W-cQP1Wvx427sjPPALmFsnT4at-1pMe4Y5NF4
 
 ## Как забронировать через бота?
 
 Напишите дату, время, число гостей и судно. Оставите контакт? Свяжемся.  
-Срочно: мадам Наталья +7 918 304-40-00 или босс Олег +7 917 675 0555 (в море связь может быть плохой).
+Срочно — мадам Наталья: +7 918 304-40-00, WhatsApp https://wa.me/79183044000, Telegram https://t.me/nata_rybiy, MAX https://max.ru/u/f9LHodD0cOI8OH4kIB7PsiV6jWNHRWg_O33iJTe5q_TJs73hHe1YBcSMwKk.
