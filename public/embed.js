@@ -51,11 +51,8 @@
   }
 
   function zakazLink(label) {
-    return (
-      '<a class="bsb-link" href="https://boat-sochi.ru/#zakaz" target="_blank" rel="noopener noreferrer">' +
-      label +
-      '</a>'
-    );
+    // #bot — якорь на текущей странице (без перехода на другой URL)
+    return '<a class="bsb-link" href="#bot">' + label + '</a>';
   }
 
   /** Обработка только текстовых кусков вне HTML-тегов. */
@@ -65,19 +62,22 @@
     });
   }
 
+  var ZAKAZ_URL_RE =
+    /(?:https?:\/\/boat-sochi\.ru\/)?#(?:bot|zakaz)\b/gi;
+
   /** Телефоны, https-ссылки и заявка на обратный звонок → кликабельные. */
   function linkifyText(text) {
     var escaped = escapeHtml(text);
-    // фраза (+ опционально URL рядом) → одна ссылка
+    // фраза (+ опционально URL/#bot рядом) → одна ссылка на #bot
     escaped = escaped.replace(
-      /((?:оставить\s+)?заявк[ауеиы]?\s+на\s+обратный\s+звонок)(?:\s+на\s+сайте)?(?:\s*:\s*)?(?:https?:\/\/boat-sochi\.ru\/#zakaz|\/#zakaz)?/gi,
+      /((?:оставить\s+)?заявк[ауеиы]?\s+на\s+обратный\s+звонок)(?:\s+на\s+сайте)?(?:\s*:\s*)?(?:https?:\/\/boat-sochi\.ru\/#(?:bot|zakaz)|#(?:bot|zakaz))?/gi,
       function (_m, phrase) {
         return zakazLink(phrase);
       }
     );
-    // оставшиеся /#zakaz только вне тегов
+    // оставшиеся #bot / #zakaz только вне тегов
     escaped = mapTextOutsideTags(escaped, function (part) {
-      return part.replace(/(https?:\/\/boat-sochi\.ru\/#zakaz|\/#zakaz\b)/gi, function () {
+      return part.replace(ZAKAZ_URL_RE, function () {
         return zakazLink('заявку на обратный звонок');
       });
     });
@@ -86,11 +86,13 @@
       return part.replace(/(https?:\/\/[^\s<>"']+)/g, function (url) {
         var clean = url.replace(/[),.;]+$/g, '');
         var trail = url.slice(clean.length);
+        if (/#(?:bot|zakaz)\b/i.test(clean)) {
+          return zakazLink('заявку на обратный звонок') + trail;
+        }
         var label = clean;
         if (/wa\.me\//i.test(clean)) label = 'WhatsApp';
         else if (/t\.me\//i.test(clean)) label = 'Telegram';
         else if (/max\.ru\//i.test(clean)) label = 'MAX';
-        else if (/#zakaz/i.test(clean)) label = 'заявку на обратный звонок';
         return (
           '<a class="bsb-link" href="' +
           clean +
@@ -142,7 +144,7 @@
       'https://t.me/nata_rybiy',
       'https://max.ru/u/f9LHodD0cOI8OH4kIB7PsiV6jWNHRWg_O33iJTe5q_TJs73hHe1YBcSMwKk',
       '',
-      'Или оставьте заявку на обратный звонок: https://boat-sochi.ru/#zakaz',
+      'Или оставьте заявку на обратный звонок: https://boat-sochi.ru/#bot',
     ].join('\n');
 
     var ICON_ARROW =
@@ -283,8 +285,8 @@
       var w = btn.offsetWidth || 56;
       var h = btn.offsetHeight || 56;
       var tablet = isPortraitTablet();
-      // планшет портрет: влево на ½ ширины, вверх на высоту кнопки
-      var right = 16 + (tablet ? w / 2 : 0);
+      // планшет портрет: влево на ширину кнопки (½+½), вверх на её высоту
+      var right = 16 + (tablet ? w : 0);
       var lift = tablet ? h : 0;
       btn.style.right = right + 'px';
       btn.style.left = 'auto';
