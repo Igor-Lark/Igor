@@ -219,7 +219,7 @@
       '  <div id="bsb-head">',
       '    <div id="bsb-head-left">',
       '      <img id="bsb-avatar" src="' + AVATAR_URL + '" width="64" height="64" alt="Капитан Олег" />',
-      '      <div class="bsb-oleg-text"><span class="bsb-oleg-name">Это Олег</span><span class="bsb-oleg-role">Капитан</span></div>',
+      '      <div class="bsb-oleg-text"><span class="bsb-oleg-name">Олег</span><span class="bsb-oleg-role">Капитан</span></div>',
       '    </div>',
       '    <div id="bsb-head-right">',
       '      <img class="bsb-logo" src="' + LOGO_URL + '" width="36" height="33" alt="" />',
