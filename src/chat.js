@@ -6,6 +6,8 @@ const { shouldNotifyLead, notifyManager } = require('./leads');
 const { logChatTurn } = require('./chat-log');
 const { upsertBookingFromLead } = require('./bookings');
 const { isMapIntent, hasSiriusMapFile, siriusMapCaption, siriusMapPublicUrl } = require('./maps');
+const { touchSession, markContact } = require('./no-contact');
+const { extractPhone } = require('./leads');
 
 /**
  * @param {{
@@ -30,6 +32,16 @@ async function handleChat(input) {
   }
 
   const lastUser = [...cleaned].reverse().find((m) => m.role === 'user');
+
+  if (lastUser) {
+    touchSession({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      history: cleaned,
+    });
+  }
 
   // «Как пройти / как вас найти» — сразу схема (без ИИ)
   if (lastUser && isMapIntent(lastUser.content) && hasSiriusMapFile()) {
@@ -68,6 +80,9 @@ async function handleChat(input) {
       upsertBookingFromLead(leadPayload);
     } catch (err) {
       console.error('[bookings] upsert failed', err.message);
+    }
+    if (extractPhone(leadPayload.text) || extractPhone((leadPayload.history || []).map((m) => m.content).join('\n'))) {
+      markContact(input.sessionId, input.source || 'web');
     }
   }
 
