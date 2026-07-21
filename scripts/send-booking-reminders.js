@@ -50,7 +50,7 @@ async function sendTelegram(chatId, text) {
   const token = config.telegram.token;
   if (!token) throw new Error('TELEGRAM_BOT_TOKEN не задан');
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
-  const res = await fetch(url, {
+  const res = await telegramFetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: chatId, text }),
