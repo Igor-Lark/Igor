@@ -7,6 +7,7 @@ const config = require('./config');
 const { handleChat } = require('./chat');
 const { startTelegram } = require('./telegram');
 const { loadKnowledge, buildGreeting } = require('./knowledge');
+const { startNoContactWatcher } = require('./no-contact');
 
 const app = express();
 
@@ -66,6 +67,7 @@ app.get('/api/widget-config', (_req, res) => {
 });
 
 startTelegram(app);
+startNoContactWatcher();
 
 app.listen(config.port, () => {
   console.log(`[server] http://localhost:${config.port}`);

@@ -5,6 +5,7 @@ const config = require('./config');
 const { handleChat } = require('./chat');
 const { isMapIntent, hasSiriusMapFile, SIRIUS_MAP_FILE, siriusMapCaption } = require('./maps');
 const { buildGreeting } = require('./knowledge');
+const { touchSession } = require('./no-contact');
 
 /** @type {Map<number, { role: string, content: string }[]>} */
 const sessions = new Map();
@@ -61,6 +62,13 @@ function attachHandlers(bot) {
 
       // Схема прохода к причалу — картинкой
       if (isMapIntent(text) && hasSiriusMapFile()) {
+        touchSession({
+          sessionId: String(chatId),
+          source: 'telegram',
+          username,
+          userText: text,
+          history: getHistory(chatId),
+        });
         await bot.sendPhoto(chatId, SIRIUS_MAP_FILE, { caption: siriusMapCaption() });
         pushMessage(chatId, 'assistant', siriusMapCaption());
         return;
