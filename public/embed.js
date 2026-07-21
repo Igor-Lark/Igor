@@ -132,7 +132,7 @@
       '#bsb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
       '.bsb-msg{max-width:88%;padding:10px 12px;border-radius:5px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}',
       '.bsb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#0f172a}',
-      '.bsb-msg.user{align-self:flex-end;background:#5a7f9c;color:#fff}',
+      '.bsb-msg.user{align-self:flex-end;background:#5a7f9c;color:#fff;border-radius:15px}',
       '.bsb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:12px}',
       '.bsb-tel,.bsb-link{color:#204360;font-weight:600;text-decoration:underline;text-underline-offset:2px}',
       '.bsb-msg.user .bsb-tel,.bsb-msg.user .bsb-link{color:#fff}',
