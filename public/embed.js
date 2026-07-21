@@ -257,7 +257,10 @@
     }
 
     function updateFabScrollVisibility() {
-      btn.classList.toggle('bsb-scroll-hidden', pageScrollY() < SCROLL_SHOW_PX);
+      var wasHidden = btn.classList.contains('bsb-scroll-hidden');
+      var hide = pageScrollY() < SCROLL_SHOW_PX;
+      btn.classList.toggle('bsb-scroll-hidden', hide);
+      if (wasHidden && !hide) schedulePinFab();
     }
 
     function fabBaseBottom() {
