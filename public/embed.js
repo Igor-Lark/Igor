@@ -43,6 +43,7 @@
     '.bsb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#0f172a}',
     '.bsb-msg.user{align-self:flex-end;background:#0ea5e9;color:#fff}',
     '.bsb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:12px}',
+    '.bsb-map{max-width:100%;border-radius:12px;margin-top:8px;display:block}',
     '#bsb-form{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e8f0;background:#fff}',
     '#bsb-input{flex:1;border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;font-size:14px;outline:none}',
     '#bsb-input:focus{border-color:#0ea5e9}',
@@ -126,6 +127,14 @@
         var reply = data.reply || 'Не удалось получить ответ. Босс Олег: +7 917 675 0555, мадам Наталья: +7 918 304-40-00';
         messages.push({ role: 'assistant', content: reply });
         addBubble(reply, 'bot');
+        if (data.mapUrl) {
+          var img = document.createElement('img');
+          img.className = 'bsb-map';
+          img.alt = 'Схема прохода к причалу';
+          img.src = data.mapUrl.indexOf('http') === 0 ? data.mapUrl : API_BASE + data.mapUrl;
+          msgs.appendChild(img);
+          msgs.scrollTop = msgs.scrollHeight;
+        }
       })
       .catch(function () {
         addBubble('Связь прервалась. Босс Олег: +7 917 675 0555, мадам Наталья: +7 918 304-40-00', 'sys');

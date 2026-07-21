@@ -44,6 +44,7 @@ app.post('/api/chat', async (req, res) => {
       reply: result.reply,
       provider: result.provider,
       leadNotified: Boolean(result.lead?.sent),
+      mapUrl: result.mapUrl || undefined,
     });
   } catch (err) {
     console.error('[api/chat]', err.message);

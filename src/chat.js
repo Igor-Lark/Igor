@@ -5,6 +5,7 @@ const { completeChat } = require('./ai');
 const { shouldNotifyLead, notifyManager } = require('./leads');
 const { logChatTurn } = require('./chat-log');
 const { upsertBookingFromLead } = require('./bookings');
+const { isMapIntent, hasSiriusMapFile, siriusMapCaption, siriusMapPublicUrl } = require('./maps');
 
 /**
  * @param {{
@@ -29,6 +30,24 @@ async function handleChat(input) {
   }
 
   const lastUser = [...cleaned].reverse().find((m) => m.role === 'user');
+
+  // «Как пройти / как вас найти» — сразу схема (без ИИ)
+  if (lastUser && isMapIntent(lastUser.content) && hasSiriusMapFile()) {
+    const reply = siriusMapCaption();
+    const mapUrl = siriusMapPublicUrl() || '/maps/sirius-line1.jpg';
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'map',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'map', lead: null, mapUrl };
+  }
+
   const system = buildSystemPrompt();
 
   const { reply, provider } = await completeChat([{ role: 'system', content: system }, ...cleaned]);
