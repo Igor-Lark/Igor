@@ -120,10 +120,7 @@
       '<svg class="bsb-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.4 6.4l11.2 11.2M17.6 6.4L6.4 17.6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
     var BTN_AI_LABEL =
       '<span class="bsb-ai-label">AI</span><span class="bsb-ai-sub">помощник</span>';
-    var LOGO_STRIPES =
-      '<img class="bsb-logo" src="' +
-      API_BASE +
-      '/logo-stripes.svg" width="28" height="26" alt="" />';
+    var AVATAR_URL = API_BASE + '/avatar-oleg.jpg';
 
     var style = document.createElement('style');
     style.textContent = [
@@ -140,11 +137,11 @@
       '#bsb-btn .bsb-ai-sub{font-size:10px;font-weight:600;opacity:.95;letter-spacing:.01em;line-height:1;white-space:nowrap}',
       '#bsb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
       '#bsb-panel.open{transform:translateX(0)}',
-      '#bsb-head{background:#204360;color:#fff;padding:12px 14px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:10px}',
-      '#bsb-head-left{display:flex;align-items:center;gap:10px;min-width:0}',
-      '#bsb-head .bsb-logo{display:block;flex-shrink:0;width:28px;height:26px}',
-      '#bsb-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-      '#bsb-close{background:transparent;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px;display:flex;align-items:center;justify-content:center}',
+      '#bsb-head{position:relative;background:#204360;color:#fff;min-height:96px;height:96px;padding:10px 48px;font-weight:600;font-size:15px;display:flex;justify-content:center;align-items:center;flex-shrink:0}',
+      '#bsb-head-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0}',
+      '#bsb-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:center 20%;display:block;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.25);background:#18344c}',
+      '#bsb-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}',
+      '#bsb-close{position:absolute;right:10px;top:10px;background:transparent;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px;display:flex;align-items:center;justify-content:center;z-index:2}',
       '#bsb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
       '.bsb-msg{max-width:88%;padding:10px 12px;border-radius:5px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}',
       '.bsb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#0f172a}',
@@ -172,7 +169,12 @@
       '<div id="bsb-backdrop" aria-hidden="true"></div>',
       '<div id="bsb-panel" role="dialog" aria-label="Чат" aria-hidden="true">',
       '  <div id="bsb-head">',
-      '    <div id="bsb-head-left">' + LOGO_STRIPES + '<span id="bsb-title">Boat Sochi</span></div>',
+      '    <div id="bsb-head-center">',
+      '      <img id="bsb-avatar" src="' +
+        AVATAR_URL +
+        '" width="72" height="72" alt="" />',
+      '      <span id="bsb-title">Boat Sochi</span>',
+      '    </div>',
       '    <button id="bsb-close" type="button" aria-label="Закрыть">' + ICON_CLOSE + '</button>',
       '  </div>',
       '  <div id="bsb-msgs"></div>',
