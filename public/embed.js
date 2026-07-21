@@ -117,7 +117,7 @@
       '#bsb-btn{position:absolute !important;right:20px !important;bottom:20px !important;width:56px !important;height:56px !important;border:0 !important;border-radius:5px !important;cursor:pointer;background:#204360 !important;color:#fff !important;line-height:1 !important;box-shadow:0 8px 24px rgba(32,67,96,.4);display:flex !important;align-items:center;justify-content:center;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2;padding:0 !important}',
       '#bsb-btn:hover{background:#18344c !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
-      '#bsb-panel{position:absolute;top:0;right:0;height:100%;width:min(400px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 5px;overflow:hidden}',
+      '#bsb-panel{position:absolute;top:100px;right:0;bottom:0;height:auto;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 5px;overflow:hidden}',
       '#bsb-panel.open{transform:translateX(0)}',
       '#bsb-head{background:#204360;color:#fff;padding:12px 14px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:10px}',
       '#bsb-head-left{display:flex;align-items:center;gap:10px;min-width:0}',
@@ -139,7 +139,7 @@
       '#bsb-send{border:0;border-radius:5px;background:#204360;color:#fff;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}',
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
-      '@media (max-width:480px){#bsb-panel{width:100vw;border-radius:0}}',
+      '@media (max-width:480px){#bsb-panel{width:100vw;top:80px;border-radius:5px 0 0 0}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
