@@ -174,7 +174,10 @@
       '#bsb-head{--bsb-avatar:64px;position:relative;background:#204360;color:#fff;min-height:96px;padding:12px 44px 12px 14px;display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-shrink:0;flex-wrap:nowrap}',
       '#bsb-head-left,#bsb-head-right{display:flex;align-items:center;gap:10px;min-width:0;flex-shrink:1}',
       '#bsb-head-right{margin-left:var(--bsb-avatar);padding-right:4px}',
-      '#bsb-avatar{width:var(--bsb-avatar);height:var(--bsb-avatar);border-radius:50%;object-fit:cover;object-position:center 20%;display:block;flex-shrink:0;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.25);background:#18344c}',
+      '#bsb-avatar{width:var(--bsb-avatar);height:var(--bsb-avatar);border-radius:50%;object-fit:cover;object-position:center 20%;display:block;flex-shrink:0;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.25);background:#18344c;cursor:zoom-in}',
+      '#bsb-avatar-zoom{position:absolute;inset:0;z-index:40;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;pointer-events:none;cursor:zoom-out}',
+      '#bsb-avatar-zoom.open{display:flex;pointer-events:auto}',
+      '#bsb-avatar-zoom img{border-radius:50%;object-fit:cover;object-position:center 20%;border:3px solid rgba(255,255,255,.95);box-shadow:0 8px 32px rgba(0,0,0,.45);background:#18344c;cursor:zoom-out}',
       '.bsb-oleg-text,.bsb-helper-text{display:flex;flex-direction:column;justify-content:center;line-height:1.15;gap:2px;white-space:nowrap}',
       '.bsb-oleg-name{font-size:15px;font-weight:700}',
       '.bsb-oleg-role{font-size:13px;font-weight:500;opacity:.92}',
@@ -207,6 +210,7 @@
     root.id = 'bsb-root';
     root.innerHTML = [
       '<div id="bsb-backdrop" aria-hidden="true"></div>',
+      '<div id="bsb-avatar-zoom" aria-hidden="true"><img src="' + AVATAR_URL + '" alt="Капитан Олег" /></div>',
       '<div id="bsb-panel" role="dialog" aria-label="Чат" aria-hidden="true">',
       '  <div id="bsb-head">',
       '    <div id="bsb-head-left">',
@@ -247,7 +251,33 @@
     var input = root.querySelector('#bsb-input');
     var sendBtn = root.querySelector('#bsb-send');
     var title = root.querySelector('#bsb-title');
+    var avatar = root.querySelector('#bsb-avatar');
+    var avatarZoom = root.querySelector('#bsb-avatar-zoom');
+    var avatarZoomImg = avatarZoom ? avatarZoom.querySelector('img') : null;
     var SCROLL_SHOW_PX = 80;
+
+    function setAvatarZoom(v) {
+      if (!avatarZoom || !avatarZoomImg || !avatar) return;
+      if (v) {
+        var size = Math.round((avatar.getBoundingClientRect().width || 64) * 3);
+        avatarZoomImg.style.width = size + 'px';
+        avatarZoomImg.style.height = size + 'px';
+      }
+      avatarZoom.classList.toggle('open', v);
+      avatarZoom.setAttribute('aria-hidden', v ? 'false' : 'true');
+    }
+
+    if (avatar) {
+      avatar.addEventListener('click', function (e) {
+        e.stopPropagation();
+        setAvatarZoom(true);
+      });
+    }
+    if (avatarZoom) {
+      avatarZoom.addEventListener('click', function () {
+        setAvatarZoom(false);
+      });
+    }
 
     function pageScrollY() {
       return (
@@ -339,7 +369,10 @@
       btn.classList.toggle('bsb-hidden', open);
       btn.setAttribute('aria-hidden', open ? 'true' : 'false');
       document.documentElement.style.overflow = open ? 'hidden' : '';
-      if (!open) schedulePinFab();
+      if (!open) {
+        setAvatarZoom(false);
+        schedulePinFab();
+      }
     }
 
     btn.addEventListener('click', function () {
