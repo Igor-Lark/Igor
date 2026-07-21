@@ -8,6 +8,7 @@ const { upsertBookingFromLead } = require('./bookings');
 const { isMapIntent, hasSiriusMapFile, siriusMapCaption, siriusMapPublicUrl } = require('./maps');
 const { touchSession, markContact } = require('./no-contact');
 const { extractPhone } = require('./leads');
+const { alertAiFailure } = require('./ai-alert');
 
 /**
  * @param {{
@@ -62,7 +63,17 @@ async function handleChat(input) {
 
   const system = buildSystemPrompt();
 
-  const { reply, provider } = await completeChat([{ role: 'system', content: system }, ...cleaned]);
+  let reply;
+  let provider;
+  try {
+    const out = await completeChat([{ role: 'system', content: system }, ...cleaned]);
+    reply = out.reply;
+    provider = out.provider;
+  } catch (err) {
+    console.error('[chat] AI failed:', err.message);
+    alertAiFailure(err, { source: input.source || 'web' }).catch(() => {});
+    throw err;
+  }
 
   let lead = null;
   if (lastUser && shouldNotifyLead({ text: lastUser.content })) {
@@ -81,7 +92,10 @@ async function handleChat(input) {
     } catch (err) {
       console.error('[bookings] upsert failed', err.message);
     }
-    if (extractPhone(leadPayload.text) || extractPhone((leadPayload.history || []).map((m) => m.content).join('\n'))) {
+    if (
+      extractPhone(leadPayload.text) ||
+      extractPhone((leadPayload.history || []).map((m) => m.content).join('\n'))
+    ) {
       markContact(input.sessionId, input.source || 'web');
     }
   }

@@ -5,14 +5,17 @@
  *
  *   npm run health:ping
  *   npm run health:ping -- --notify   # в группу менеджеру, только если плохо
+ *   npm run health:ping -- --notify --force-ai-alert  # сразу алерт по ИИ (без кулдауна)
  *
- * Проверяет: Telegram getMe + (если задан) HTTP /health
+ * Проверяет: Telegram getMe + HTTP /health + короткий пинг YandexGPT/OpenAI
  */
 
 require('dotenv').config();
 
 const config = require('../src/config');
 const { telegramFetch } = require('../src/telegram-net');
+const { pingAi } = require('../src/ai');
+const { alertAiFailure } = require('../src/ai-alert');
 
 async function tg(method) {
   const token = config.telegram.token;
@@ -26,7 +29,6 @@ async function tg(method) {
 async function httpHealth() {
   const base = config.publicUrl || `http://127.0.0.1:${config.port}`;
   if (base.includes('ваш-домен')) {
-    // локальная проверка
     const res = await fetch(`http://127.0.0.1:${config.port}/health`);
     if (!res.ok) throw new Error(`health HTTP ${res.status}`);
     return res.json();
@@ -49,7 +51,10 @@ async function notify(text) {
 
 async function main() {
   const doNotify = process.argv.includes('--notify');
+  const forceAiAlert = process.argv.includes('--force-ai-alert');
+  const skipAi = process.argv.includes('--skip-ai');
   const problems = [];
+  let aiError = null;
 
   try {
     const me = await tg('getMe');
@@ -67,6 +72,17 @@ async function main() {
     problems.push('HTTP: ' + e.message);
   }
 
+  if (!skipAi) {
+    try {
+      const ai = await pingAi();
+      console.log('[health] ai ok', ai.provider, String(ai.reply).slice(0, 40));
+    } catch (e) {
+      aiError = e;
+      problems.push('AI: ' + e.message);
+      console.error('[health] ai FAIL', e.message);
+    }
+  }
+
   if (!problems.length) {
     console.log('[health] ALL GOOD');
     return;
@@ -76,6 +92,9 @@ async function main() {
   if (doNotify) {
     await notify('⚠️ Бот Boat Sochi: проблемы\n- ' + problems.join('\n- '));
     console.log('[health] notified manager chat');
+    if (aiError) {
+      await alertAiFailure(aiError, { source: 'health:ping', force: forceAiAlert });
+    }
   }
   process.exit(1);
 }

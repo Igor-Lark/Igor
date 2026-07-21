@@ -198,11 +198,19 @@ npm run check:avito -- --dry-run
 ## Жив ли бот? (контроль)
 
 ```bash
-npm run health:ping           # проверка Telegram + /health
-npm run health:ping -- --notify   # если плохо — сообщение в группу менеджеру
+npm run health:ping           # Telegram + /health + пинг YandexGPT
+npm run health:ping -- --notify   # если плохо — сообщение менеджеру
+npm run health:ping -- --skip-ai  # без пинга ИИ (дешевле/быстрее)
 ```
 
-На VPS удобно поставить cron раз в 10–15 мин.  
+На VPS поставьте cron каждые 10–15 мин:
+
+```bash
+*/10 * * * * cd /var/www/boat-sochi-bot && npm run health:ping -- --notify >> /var/log/boat-sochi-health.log 2>&1
+```
+
+Дополнительно: если ИИ падает при ответе клиенту (квота/баланс Yandex и т.п.) — в чат менеджеру уходит алерт (не чаще раза в `AI_ALERT_COOLDOWN_MINUTES`, по умолчанию 30).
+
 Сейчас бот на тестовом сервере слушает Telegram через **polling** — связь иногда рвётся; в коде есть автоперезапуск polling. На постоянном VPS с HTTPS лучше **webhook** (`PUBLIC_URL=https://bot...`).
 
 ## Клиент ушёл без контакта
