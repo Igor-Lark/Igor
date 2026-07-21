@@ -103,6 +103,8 @@
       '<svg class="bsb-ico" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.9 11.1c.5.5.5 1.3 0 1.8l-6.3 6.3-1.5-1.5 4.7-4.7H3.2v-2.1h14.6l-4.7-4.7 1.5-1.5 6.3 6.4z" fill="currentColor"/></svg>';
     var ICON_CLOSE =
       '<svg class="bsb-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.4 6.4l11.2 11.2M17.6 6.4L6.4 17.6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
+    var BTN_AI_LABEL =
+      '<span class="bsb-ai-label">AI</span><span class="bsb-ai-sub">помощник</span>';
     var LOGO_STRIPES =
       '<img class="bsb-logo" src="' +
       API_BASE +
@@ -114,9 +116,11 @@
       '#bsb-root *{box-sizing:border-box;font-family:inherit}',
       '#bsb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.4);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#bsb-btn{position:absolute !important;right:20px !important;bottom:20px !important;width:56px !important;height:56px !important;border:0 !important;border-radius:5px !important;cursor:pointer;background:#204360 !important;color:#fff !important;line-height:1 !important;box-shadow:0 8px 24px rgba(32,67,96,.4);display:flex !important;align-items:center;justify-content:center;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2;padding:0 !important}',
+      '#bsb-btn{position:absolute !important;right:16px !important;bottom:20px !important;min-width:56px !important;height:56px !important;border:0 !important;border-radius:5px !important;cursor:pointer;background:#204360 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.4);display:flex !important;flex-direction:column !important;align-items:center;justify-content:center;gap:2px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2;padding:6px 12px !important}',
       '#bsb-btn:hover{background:#18344c !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
+      '#bsb-btn .bsb-ai-label{font-size:16px;font-weight:800;letter-spacing:.04em;line-height:1}',
+      '#bsb-btn .bsb-ai-sub{font-size:10px;font-weight:600;opacity:.95;letter-spacing:.01em;line-height:1;white-space:nowrap}',
       '#bsb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
       '#bsb-panel.open{transform:translateX(0)}',
       '#bsb-head{background:#204360;color:#fff;padding:12px 14px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:10px}',
@@ -160,7 +164,9 @@
       '    <button id="bsb-send" type="submit" aria-label="Отправить">' + ICON_ARROW + '</button>',
       '  </form>',
       '</div>',
-      '<button id="bsb-btn" type="button" aria-label="Открыть чат">' + ICON_ARROW + '</button>',
+      '<button id="bsb-btn" type="button" aria-label="Открыть ИИ-помощника" title="ИИ-помощник">' +
+        BTN_AI_LABEL +
+        '</button>',
     ].join('');
     document.body.appendChild(root);
 
@@ -187,8 +193,9 @@
       panel.classList.toggle('open', open);
       backdrop.classList.toggle('open', open);
       panel.setAttribute('aria-hidden', open ? 'false' : 'true');
-      btn.innerHTML = open ? ICON_CLOSE : ICON_ARROW;
-      btn.setAttribute('aria-label', open ? 'Закрыть чат' : 'Открыть чат');
+      btn.innerHTML = open ? ICON_CLOSE : BTN_AI_LABEL;
+      btn.setAttribute('aria-label', open ? 'Закрыть чат' : 'Открыть ИИ-помощника');
+      btn.classList.toggle('bsb-btn-open', open);
       document.documentElement.style.overflow = open ? 'hidden' : '';
     }
 
