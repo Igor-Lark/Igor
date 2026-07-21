@@ -98,6 +98,21 @@
     var botName = 'Boat Sochi';
     var greeting =
       'Здравствуйте! Помогу с выбором яхты или катера.\nБосс Олег часто в море — связь может быть слабой. Мадам Наталья: +7 918 304-40-00. Спрашивайте у меня — или оставите контакт, свяжемся )';
+    var unavailableReply = [
+      'Сейчас помощник временно недоступен. Свяжитесь с нами:',
+      '',
+      'Босс Олег',
+      '+7 917 675 0555',
+      'https://wa.me/79176750555',
+      'https://t.me/Oleg_700',
+      'https://max.ru/u/f9LHodD0cOLfwfVnOTd4z8W-cQP1Wvx427sjPPALmFsnT4at-1pMe4Y5NF4',
+      '',
+      'Мадам Наталья',
+      '+7 918 304-40-00',
+      'https://wa.me/79183044000',
+      'https://t.me/nata_rybiy',
+      'https://max.ru/u/f9LHodD0cOI8OH4kIB7PsiV6jWNHRWg_O33iJTe5q_TJs73hHe1YBcSMwKk',
+    ].join('\n');
 
     var ICON_ARROW =
       '<svg class="bsb-ico" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.9 11.1c.5.5.5 1.3 0 1.8l-6.3 6.3-1.5-1.5 4.7-4.7H3.2v-2.1h14.6l-4.7-4.7 1.5-1.5 6.3 6.4z" fill="currentColor"/></svg>';
@@ -284,9 +299,7 @@
           });
         })
         .then(function (data) {
-          var reply =
-            data.reply ||
-            'Не удалось получить ответ. Босс Олег: +7 917 675 0555, мадам Наталья: +7 918 304-40-00';
+          var reply = data.reply || unavailableReply;
           messages.push({ role: 'assistant', content: reply });
           addBubble(reply, 'bot');
           if (data.mapUrl) {
@@ -299,10 +312,7 @@
           }
         })
         .catch(function () {
-          addBubble(
-            'Связь прервалась. Босс Олег: +7 917 675 0555, мадам Наталья: +7 918 304-40-00',
-            'sys'
-          );
+          addBubble(unavailableReply, 'bot');
         })
         .finally(function () {
           sending = false;
@@ -318,6 +328,7 @@
         if (cfg) {
           if (cfg.name) botName = cfg.name;
           if (cfg.greeting) greeting = cfg.greeting;
+          if (cfg.unavailableReply) unavailableReply = cfg.unavailableReply;
         }
       })
       .catch(function () {})

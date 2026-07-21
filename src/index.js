@@ -8,6 +8,7 @@ const { handleChat } = require('./chat');
 const { startTelegram } = require('./telegram');
 const { loadKnowledge, buildGreeting } = require('./knowledge');
 const { startNoContactWatcher } = require('./no-contact');
+const { UNAVAILABLE_REPLY } = require('./contacts');
 
 const app = express();
 
@@ -52,8 +53,7 @@ app.post('/api/chat', async (req, res) => {
     res.status(500).json({
       error: 'Не удалось получить ответ',
       detail: process.env.NODE_ENV === 'development' ? err.message : undefined,
-      reply:
-        'Извините, сервис временно недоступен. Босс Олег: +7 917 675 0555, мадам Наталья: +7 918 304-40-00',
+      reply: UNAVAILABLE_REPLY,
     });
   }
 });
@@ -63,6 +63,7 @@ app.get('/api/widget-config', (_req, res) => {
   res.json({
     name: config.botName,
     greeting: buildGreeting(),
+    unavailableReply: UNAVAILABLE_REPLY,
   });
 });
 

@@ -7,6 +7,7 @@ const { isMapIntent, hasSiriusMapFile, SIRIUS_MAP_FILE, siriusMapCaption } = req
 const { buildGreeting } = require('./knowledge');
 const { touchSession } = require('./no-contact');
 const { botRequestOptions, proxyUrl } = require('./telegram-net');
+const { UNAVAILABLE_REPLY } = require('./contacts');
 
 /** @type {Map<number, { role: string, content: string }[]>} */
 const sessions = new Map();
@@ -86,10 +87,7 @@ function attachHandlers(bot) {
     } catch (err) {
       console.error('[telegram] chat error:', err.message);
       try {
-        await bot.sendMessage(
-          chatId,
-          'Сейчас не могу ответить. Босс Олег: +7 917 675 0555, мадам Наталья: +7 918 304-40-00'
-        );
+        await bot.sendMessage(chatId, UNAVAILABLE_REPLY);
       } catch (sendErr) {
         console.error('[telegram] fallback send failed:', sendErr.message);
       }
