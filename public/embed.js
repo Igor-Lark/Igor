@@ -50,58 +50,67 @@
       .replace(/"/g, '&quot;');
   }
 
+  function zakazLink(label) {
+    return (
+      '<a class="bsb-link" href="https://boat-sochi.ru/#zakaz" target="_blank" rel="noopener noreferrer">' +
+      label +
+      '</a>'
+    );
+  }
+
+  /** Обработка только текстовых кусков вне HTML-тегов. */
+  function mapTextOutsideTags(html, fn) {
+    return html.replace(/(^|>)([^<]*)/g, function (_m, prefix, part) {
+      return prefix + fn(part);
+    });
+  }
+
   /** Телефоны, https-ссылки и заявка на обратный звонок → кликабельные. */
   function linkifyText(text) {
     var escaped = escapeHtml(text);
-    // заявка на обратный звонок → /#zakaz на сайте
+    // фраза (+ опционально URL рядом) → одна ссылка
     escaped = escaped.replace(
-      /(заявк[ауеиы]?\s+на\s+обратный\s+звонок|оставить\s+заявку\s+на\s+обратный\s+звонок)/gi,
-      function (m) {
-        return (
-          '<a class="bsb-link" href="https://boat-sochi.ru/#zakaz" target="_blank" rel="noopener noreferrer">' +
-          m +
-          '</a>'
-        );
+      /((?:оставить\s+)?заявк[ауеиы]?\s+на\s+обратный\s+звонок)(?:\s+на\s+сайте)?(?:\s*:\s*)?(?:https?:\/\/boat-sochi\.ru\/#zakaz|\/#zakaz)?/gi,
+      function (_m, phrase) {
+        return zakazLink(phrase);
       }
     );
-    escaped = escaped.replace(/(\/#zakaz\b|https?:\/\/boat-sochi\.ru\/#zakaz)/gi, function (url) {
-      var href = url.indexOf('http') === 0 ? url : 'https://boat-sochi.ru/#zakaz';
-      return (
-        '<a class="bsb-link" href="' +
-        href +
-        '" target="_blank" rel="noopener noreferrer">заявку на обратный звонок</a>'
-      );
+    // оставшиеся /#zakaz только вне тегов
+    escaped = mapTextOutsideTags(escaped, function (part) {
+      return part.replace(/(https?:\/\/boat-sochi\.ru\/#zakaz|\/#zakaz\b)/gi, function () {
+        return zakazLink('заявку на обратный звонок');
+      });
     });
-    escaped = escaped.replace(/(https?:\/\/[^\s<>"']+)/g, function (url) {
-      var clean = url.replace(/[),.;]+$/g, '');
-      var trail = url.slice(clean.length);
-      var label = clean;
-      if (/wa\.me\//i.test(clean)) label = 'WhatsApp';
-      else if (/t\.me\//i.test(clean)) label = 'Telegram';
-      else if (/max\.ru\//i.test(clean)) label = 'MAX';
-      else if (/#zakaz/i.test(clean)) label = 'заявку на обратный звонок';
-      return (
-        '<a class="bsb-link" href="' +
-        clean +
-        '" target="_blank" rel="noopener noreferrer">' +
-        label +
-        '</a>' +
-        trail
-      );
+    // прочие https только вне тегов
+    escaped = mapTextOutsideTags(escaped, function (part) {
+      return part.replace(/(https?:\/\/[^\s<>"']+)/g, function (url) {
+        var clean = url.replace(/[),.;]+$/g, '');
+        var trail = url.slice(clean.length);
+        var label = clean;
+        if (/wa\.me\//i.test(clean)) label = 'WhatsApp';
+        else if (/t\.me\//i.test(clean)) label = 'Telegram';
+        else if (/max\.ru\//i.test(clean)) label = 'MAX';
+        else if (/#zakaz/i.test(clean)) label = 'заявку на обратный звонок';
+        return (
+          '<a class="bsb-link" href="' +
+          clean +
+          '" target="_blank" rel="noopener noreferrer">' +
+          label +
+          '</a>' +
+          trail
+        );
+      });
     });
-    // телефоны только в тексте вне тегов (не внутри href)
-    escaped = escaped.replace(/(^|>)([^<]*)/g, function (_m, prefix, part) {
-      return (
-        prefix +
-        part.replace(/(\+?7|8)[ \t\-()]*(\d[ \t\-()]*){10}/g, function (phone) {
-          var digits = phone.replace(/\D/g, '');
-          if (digits.length === 11 && digits.charAt(0) === '8') {
-            digits = '7' + digits.slice(1);
-          }
-          if (digits.length !== 11 || digits.charAt(0) !== '7') return phone;
-          return '<a class="bsb-tel" href="tel:+' + digits + '">' + phone + '</a>';
-        })
-      );
+    // телефоны только вне тегов
+    escaped = mapTextOutsideTags(escaped, function (part) {
+      return part.replace(/(\+?7|8)[ \t\-()]*(\d[ \t\-()]*){10}/g, function (phone) {
+        var digits = phone.replace(/\D/g, '');
+        if (digits.length === 11 && digits.charAt(0) === '8') {
+          digits = '7' + digits.slice(1);
+        }
+        if (digits.length !== 11 || digits.charAt(0) !== '7') return phone;
+        return '<a class="bsb-tel" href="tel:+' + digits + '">' + phone + '</a>';
+      });
     });
     return escaped;
   }
@@ -117,7 +126,7 @@
     var sending = false;
     var botName = 'Boat Sochi';
     var greeting =
-      'Здравствуйте! Помогу с выбором яхты или катера.\nКапитан Олег часто в море — связь может быть слабой. Наталья: +7 918 304-40-00.\nСпрашивайте у меня — или оставьте заявку на обратный звонок на сайте.';
+      'Здравствуйте! Помогу с выбором яхты или катера.\nКапитан Олег часто в море — связь может быть неустойчивой. Наталья: +7 918 304-40-00.\nСпрашивайте у меня — или оставьте заявку на обратный звонок на сайте.';
     var unavailableReply = [
       'Сейчас помощник временно недоступен. Свяжитесь с нами:',
       '',
@@ -160,10 +169,10 @@
       '#bsb-btn .bsb-ai-sub{font-size:10px;font-weight:600;opacity:.95;letter-spacing:.01em;line-height:1;white-space:nowrap}',
       '#bsb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
       '#bsb-panel.open{transform:translateX(0)}',
-      '#bsb-head{position:relative;background:#204360;color:#fff;min-height:96px;padding:12px 44px 12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;flex-wrap:nowrap}',
+      '#bsb-head{--bsb-avatar:64px;position:relative;background:#204360;color:#fff;min-height:96px;padding:12px 44px 12px 14px;display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-shrink:0;flex-wrap:nowrap}',
       '#bsb-head-left,#bsb-head-right{display:flex;align-items:center;gap:10px;min-width:0;flex-shrink:1}',
-      '#bsb-head-right{margin-left:auto;padding-right:4px}',
-      '#bsb-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:center 20%;display:block;flex-shrink:0;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.25);background:#18344c}',
+      '#bsb-head-right{margin-left:var(--bsb-avatar);padding-right:4px}',
+      '#bsb-avatar{width:var(--bsb-avatar);height:var(--bsb-avatar);border-radius:50%;object-fit:cover;object-position:center 20%;display:block;flex-shrink:0;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.25);background:#18344c}',
       '.bsb-oleg-text,.bsb-helper-text{display:flex;flex-direction:column;justify-content:center;line-height:1.15;gap:2px;white-space:nowrap}',
       '.bsb-oleg-name{font-size:15px;font-weight:700}',
       '.bsb-oleg-role{font-size:13px;font-weight:500;opacity:.92}',
@@ -187,8 +196,8 @@
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
       /* та же компоновка шапки, что на десктопе — только компактнее */
-      '@media (max-width:1024px){#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}#bsb-avatar{width:52px;height:52px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-logo{width:28px;height:26px}}',
-      '@media (max-width:480px){#bsb-panel{height:60vh;max-height:60vh}#bsb-head{min-height:72px;padding:8px 36px 8px 10px;gap:6px}#bsb-head-left,#bsb-head-right{gap:6px}#bsb-avatar{width:44px;height:44px;border-width:1.5px}.bsb-oleg-name{font-size:13px}.bsb-oleg-role,.bsb-helper-line{font-size:11px}#bsb-head .bsb-logo{width:24px;height:22px}#bsb-close{right:6px;top:6px}#bsb-close .bsb-ico{width:18px;height:18px}}',
+      '@media (max-width:1024px){#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-logo{width:28px;height:26px}}',
+      '@media (max-width:480px){#bsb-panel{height:60vh;max-height:60vh}#bsb-head{--bsb-avatar:44px;min-height:72px;padding:8px 36px 8px 10px;gap:6px}#bsb-head-left,#bsb-head-right{gap:6px}#bsb-avatar{border-width:1.5px}.bsb-oleg-name{font-size:13px}.bsb-oleg-role,.bsb-helper-line{font-size:11px}#bsb-head .bsb-logo{width:24px;height:22px}#bsb-close{right:6px;top:6px}#bsb-close .bsb-ico{width:18px;height:18px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
