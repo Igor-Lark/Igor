@@ -50,17 +50,40 @@
       .replace(/"/g, '&quot;');
   }
 
-  /** Телефоны → tel:+7... ссылки (Олег, Наталья и любые в тексте). */
-  function linkifyPhones(text) {
+  /** Телефоны и https-ссылки (WhatsApp / Telegram / MAX) → кликабельные. */
+  function linkifyText(text) {
     var escaped = escapeHtml(text);
-    return escaped.replace(/(\+?7|8)[\s\-()]*(\d[\s\-()]*){10}/g, function (m) {
-      var digits = m.replace(/\D/g, '');
-      if (digits.length === 11 && digits.charAt(0) === '8') {
-        digits = '7' + digits.slice(1);
-      }
-      if (digits.length !== 11 || digits.charAt(0) !== '7') return m;
-      return '<a class="bsb-tel" href="tel:+' + digits + '">' + m + '</a>';
+    escaped = escaped.replace(/(https?:\/\/[^\s<>"']+)/g, function (url) {
+      var clean = url.replace(/[),.;]+$/g, '');
+      var trail = url.slice(clean.length);
+      var label = clean;
+      if (/wa\.me\//i.test(clean)) label = 'WhatsApp';
+      else if (/t\.me\//i.test(clean)) label = 'Telegram';
+      else if (/max\.ru\//i.test(clean)) label = 'MAX';
+      return (
+        '<a class="bsb-link" href="' +
+        clean +
+        '" target="_blank" rel="noopener noreferrer">' +
+        label +
+        '</a>' +
+        trail
+      );
     });
+    // телефоны только в тексте вне тегов (не внутри href)
+    escaped = escaped.replace(/(^|>)([^<]*)/g, function (_m, prefix, part) {
+      return (
+        prefix +
+        part.replace(/(\+?7|8)[ \t\-()]*(\d[ \t\-()]*){10}/g, function (phone) {
+          var digits = phone.replace(/\D/g, '');
+          if (digits.length === 11 && digits.charAt(0) === '8') {
+            digits = '7' + digits.slice(1);
+          }
+          if (digits.length !== 11 || digits.charAt(0) !== '7') return phone;
+          return '<a class="bsb-tel" href="tel:+' + digits + '">' + phone + '</a>';
+        })
+      );
+    });
+    return escaped;
   }
 
   function mount() {
@@ -93,9 +116,9 @@
       '.bsb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#0f172a}',
       '.bsb-msg.user{align-self:flex-end;background:#0ea5e9;color:#fff}',
       '.bsb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:12px}',
-      '.bsb-tel{color:#0369a1;font-weight:600;text-decoration:underline;text-underline-offset:2px}',
-      '.bsb-msg.user .bsb-tel{color:#fff}',
-      '.bsb-msg.sys .bsb-tel{color:#0369a1}',
+      '.bsb-tel,.bsb-link{color:#0369a1;font-weight:600;text-decoration:underline;text-underline-offset:2px}',
+      '.bsb-msg.user .bsb-tel,.bsb-msg.user .bsb-link{color:#fff}',
+      '.bsb-msg.sys .bsb-tel,.bsb-msg.sys .bsb-link{color:#0369a1}',
       '.bsb-map{max-width:100%;border-radius:12px;margin-top:8px;display:block}',
       '#bsb-form{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e8f0;background:#fff;flex-shrink:0}',
       '#bsb-input{flex:1;border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;font-size:14px;outline:none}',
@@ -135,7 +158,7 @@
     function addBubble(text, kind) {
       var el = document.createElement('div');
       el.className = 'bsb-msg ' + kind;
-      el.innerHTML = linkifyPhones(text);
+      el.innerHTML = linkifyText(text);
       msgs.appendChild(el);
       msgs.scrollTop = msgs.scrollHeight;
     }
