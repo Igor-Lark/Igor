@@ -6,6 +6,8 @@ const { handleChat } = require('./chat');
 const { isMapIntent, hasSiriusMapFile, SIRIUS_MAP_FILE, siriusMapCaption } = require('./maps');
 const { buildGreeting } = require('./knowledge');
 const { touchSession } = require('./no-contact');
+const { botRequestOptions, proxyUrl } = require('./telegram-net');
+const { UNAVAILABLE_REPLY } = require('./contacts');
 
 /** @type {Map<number, { role: string, content: string }[]>} */
 const sessions = new Map();
@@ -85,10 +87,7 @@ function attachHandlers(bot) {
     } catch (err) {
       console.error('[telegram] chat error:', err.message);
       try {
-        await bot.sendMessage(
-          chatId,
-          'Сейчас не могу ответить. Босс Олег: +7 917 675 0555, мадам Наталья: +7 918 304-40-00'
-        );
+        await bot.sendMessage(chatId, UNAVAILABLE_REPLY);
       } catch (sendErr) {
         console.error('[telegram] fallback send failed:', sendErr.message);
       }
@@ -97,28 +96,32 @@ function attachHandlers(bot) {
 }
 
 /**
- * Polling иногда рвётся (сеть / IPv6). Перезапускаем ТОЛЬКО по polling_error.
- * Не трогаем pending_update_count — из‑за этого бот «крутился» и не отвечал.
+ * Polling иногда рвётся (сеть / IPv6 / блокировка VPS→Telegram).
+ * Перезапускаем ТОЛЬКО по polling_error, с экспоненциальной паузой —
+ * иначе при ETIMEDOUT лог забивается и бот «молчит» в круге рестартов.
  * @param {TelegramBot} bot
  */
 function watchPolling(bot) {
   let restarting = false;
+  let backoffMs = 3000;
+  const BACKOFF_MAX = 5 * 60 * 1000;
 
   async function restartPolling(reason) {
     if (restarting) return;
     restarting = true;
-    console.error('[telegram] restarting polling:', reason);
+    const wait = backoffMs;
+    backoffMs = Math.min(backoffMs * 2, BACKOFF_MAX);
+    console.error(`[telegram] restarting polling in ${Math.round(wait / 1000)}s:`, reason);
     try {
       await bot.stopPolling({ cancel: true }).catch(() => {});
-      await new Promise((r) => setTimeout(r, 2500));
+      await new Promise((r) => setTimeout(r, wait));
       await bot.startPolling({ restart: true });
       console.log('[telegram] polling restarted OK');
+      backoffMs = 3000;
     } catch (e) {
       console.error('[telegram] polling restart failed:', e.message);
     } finally {
-      setTimeout(() => {
-        restarting = false;
-      }, 10000);
+      restarting = false;
     }
   }
 
@@ -126,8 +129,15 @@ function watchPolling(bot) {
     const msg = err && err.message ? err.message : String(err);
     // 409 = второй экземпляр бота; просто логируем
     if (/409/.test(msg)) {
-      console.error('[telegram] polling_error 409 (другой getUpdates). Проверьте, что бот запущен в одном месте.');
+      console.error(
+        '[telegram] polling_error 409 (другой getUpdates). Проверьте, что бот запущен в одном месте.'
+      );
       return;
+    }
+    if (/ETIMEDOUT|ECONNREFUSED|ENETUNREACH|AggregateError|fetch failed/i.test(msg) && !proxyUrl()) {
+      console.error(
+        '[telegram] нет связи с api.telegram.org. На VPS: curl -4 -m 10 https://api.telegram.org/ — если таймаут, нужен TELEGRAM_PROXY или другой хостинг.'
+      );
     }
     restartPolling(msg);
   });
@@ -153,15 +163,18 @@ function startTelegram(app) {
   /** @type {TelegramBot} */
   let bot;
 
-  // request family 4 — на VPS Telegram часто ломается на IPv6
   const botOpts = {
-    request: {
-      // node-telegram-bot-api / tunnel
-      agentOptions: { family: 4 },
-    },
+    request: botRequestOptions(),
   };
 
-  if (useWebhook) {
+  // Если задан прокси — только polling: webhook Telegram шлёт НА VPS напрямую, прокси не поможет.
+  if (useWebhook && proxyUrl()) {
+    console.warn(
+      '[telegram] TELEGRAM_PROXY задан → принудительно polling (webhook Telegram→VPS прокси не обходит)'
+    );
+  }
+
+  if (useWebhook && !proxyUrl()) {
     bot = new TelegramBot(config.telegram.token, { webHook: false, ...botOpts });
     const hookPath = `/telegram/webhook/${config.telegram.token}`;
     const hookUrl = `${config.publicUrl}${hookPath}`;
@@ -177,7 +190,7 @@ function startTelegram(app) {
       .catch((err) => console.error('[telegram] setWebHook failed:', err.message));
   } else {
     bot = new TelegramBot(config.telegram.token, { polling: true, ...botOpts });
-    console.log('[telegram] polling mode');
+    console.log('[telegram] polling mode' + (proxyUrl() ? ' (via proxy)' : ''));
     watchPolling(bot);
   }
 
