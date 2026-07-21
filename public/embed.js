@@ -177,7 +177,11 @@
       '#bsb-avatar{width:var(--bsb-avatar);height:var(--bsb-avatar);border-radius:50%;object-fit:cover;object-position:center 20%;display:block;flex-shrink:0;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.25);background:#18344c;cursor:zoom-in}',
       '#bsb-avatar-zoom{position:absolute;inset:0;z-index:40;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;pointer-events:none;cursor:zoom-out}',
       '#bsb-avatar-zoom.open{display:flex;pointer-events:auto}',
-      '#bsb-avatar-zoom img{border-radius:50%;object-fit:cover;object-position:center 20%;border:3px solid rgba(255,255,255,.95);box-shadow:0 8px 32px rgba(0,0,0,.45);background:#18344c;cursor:zoom-out}',
+      '#bsb-avatar-zoom-box{position:relative;flex-shrink:0;cursor:default}',
+      '#bsb-avatar-zoom-box img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center 20%;border:3px solid rgba(255,255,255,.95);box-shadow:0 8px 32px rgba(0,0,0,.45);background:#18344c;cursor:zoom-out}',
+      '#bsb-avatar-zoom-close{position:absolute;top:0;right:0;z-index:2;width:36px;height:36px;margin:0;padding:0;border:0;border-radius:5px;background:rgba(15,23,42,.75);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transform:translate(35%,-35%)}',
+      '#bsb-avatar-zoom-close:hover{background:#18344c}',
+      '#bsb-avatar-zoom-close .bsb-ico{width:18px;height:18px}',
       '.bsb-oleg-text,.bsb-helper-text{display:flex;flex-direction:column;justify-content:center;line-height:1.15;gap:2px;white-space:nowrap}',
       '.bsb-oleg-name{font-size:15px;font-weight:700}',
       '.bsb-oleg-role{font-size:13px;font-weight:500;opacity:.92}',
@@ -210,7 +214,7 @@
     root.id = 'bsb-root';
     root.innerHTML = [
       '<div id="bsb-backdrop" aria-hidden="true"></div>',
-      '<div id="bsb-avatar-zoom" aria-hidden="true"><img src="' + AVATAR_URL + '" alt="Капитан Олег" /></div>',
+      '<div id="bsb-avatar-zoom" aria-hidden="true"><div id="bsb-avatar-zoom-box"><img src="' + AVATAR_URL + '" alt="Капитан Олег" /><button id="bsb-avatar-zoom-close" type="button" aria-label="Закрыть фото">' + ICON_CLOSE + '</button></div></div>',
       '<div id="bsb-panel" role="dialog" aria-label="Чат" aria-hidden="true">',
       '  <div id="bsb-head">',
       '    <div id="bsb-head-left">',
@@ -253,15 +257,17 @@
     var title = root.querySelector('#bsb-title');
     var avatar = root.querySelector('#bsb-avatar');
     var avatarZoom = root.querySelector('#bsb-avatar-zoom');
-    var avatarZoomImg = avatarZoom ? avatarZoom.querySelector('img') : null;
+    var avatarZoomBox = root.querySelector('#bsb-avatar-zoom-box');
+    var avatarZoomImg = avatarZoomBox ? avatarZoomBox.querySelector('img') : null;
+    var avatarZoomClose = root.querySelector('#bsb-avatar-zoom-close');
     var SCROLL_SHOW_PX = 80;
 
     function setAvatarZoom(v) {
-      if (!avatarZoom || !avatarZoomImg || !avatar) return;
+      if (!avatarZoom || !avatarZoomBox || !avatar) return;
       if (v) {
-        var size = Math.round((avatar.getBoundingClientRect().width || 64) * 3);
-        avatarZoomImg.style.width = size + 'px';
-        avatarZoomImg.style.height = size + 'px';
+        var size = Math.round((avatar.getBoundingClientRect().width || 64) * 4);
+        avatarZoomBox.style.width = size + 'px';
+        avatarZoomBox.style.height = size + 'px';
       }
       avatarZoom.classList.toggle('open', v);
       avatarZoom.setAttribute('aria-hidden', v ? 'false' : 'true');
@@ -275,6 +281,19 @@
     }
     if (avatarZoom) {
       avatarZoom.addEventListener('click', function () {
+        setAvatarZoom(false);
+      });
+    }
+    if (avatarZoomBox) {
+      avatarZoomBox.addEventListener('click', function (e) {
+        // клик по фото тоже закрывает; крестик — отдельно
+        e.stopPropagation();
+        setAvatarZoom(false);
+      });
+    }
+    if (avatarZoomClose) {
+      avatarZoomClose.addEventListener('click', function (e) {
+        e.stopPropagation();
         setAvatarZoom(false);
       });
     }
