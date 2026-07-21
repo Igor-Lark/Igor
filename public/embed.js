@@ -117,6 +117,7 @@
       '#bsb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
       '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:20px !important;min-width:56px !important;height:56px !important;border:0 !important;border-radius:5px !important;cursor:pointer;background:#204360 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.4);display:flex !important;flex-direction:column !important;align-items:center;justify-content:center;gap:2px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 12px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#bsb-btn.bsb-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       '#bsb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
       '#bsb-btn:hover{background:#18344c !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
@@ -239,8 +240,8 @@
       panel.classList.toggle('open', open);
       backdrop.classList.toggle('open', open);
       panel.setAttribute('aria-hidden', open ? 'false' : 'true');
-      // Крестик только в шапке панели — FAB при открытом чате скрываем
-      btn.style.display = open ? 'none' : 'flex';
+      // display:flex !important в CSS бьёт inline style — прячем классом
+      btn.classList.toggle('bsb-hidden', open);
       btn.setAttribute('aria-hidden', open ? 'true' : 'false');
       document.documentElement.style.overflow = open ? 'hidden' : '';
       if (!open) schedulePinFab();
