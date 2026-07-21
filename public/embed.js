@@ -42,6 +42,27 @@
     }
   }
 
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /** Телефоны → tel:+7... ссылки (Олег, Наталья и любые в тексте). */
+  function linkifyPhones(text) {
+    var escaped = escapeHtml(text);
+    return escaped.replace(/(\+?7|8)[\s\-()]*(\d[\s\-()]*){10}/g, function (m) {
+      var digits = m.replace(/\D/g, '');
+      if (digits.length === 11 && digits.charAt(0) === '8') {
+        digits = '7' + digits.slice(1);
+      }
+      if (digits.length !== 11 || digits.charAt(0) !== '7') return m;
+      return '<a class="bsb-tel" href="tel:+' + digits + '">' + m + '</a>';
+    });
+  }
+
   function mount() {
     if (window.__boatSochiBotLoaded) return;
     if (!document.body) return;
@@ -57,32 +78,39 @@
 
     var style = document.createElement('style');
     style.textContent = [
-      '#bsb-root{all:initial;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;position:fixed !important;z-index:2147483000 !important;right:20px !important;bottom:20px !important;left:auto !important;top:auto !important;width:auto !important;height:auto !important;display:block !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;color:#0f172a}',
+      '#bsb-root{all:initial;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;position:fixed !important;inset:0 !important;z-index:2147483000 !important;display:block !important;visibility:visible !important;opacity:1 !important;pointer-events:none !important;color:#0f172a}',
       '#bsb-root *{box-sizing:border-box;font-family:inherit}',
-      '#bsb-btn{width:56px !important;height:56px !important;border:0 !important;border-radius:50% !important;cursor:pointer;background:#0ea5e9 !important;color:#fff !important;font-size:26px !important;line-height:1 !important;box-shadow:0 8px 24px rgba(14,165,233,.45);display:flex !important;align-items:center;justify-content:center;visibility:visible !important;opacity:1 !important}',
+      '#bsb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.4);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
+      '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
+      '#bsb-btn{position:absolute !important;right:20px !important;bottom:20px !important;width:56px !important;height:56px !important;border:0 !important;border-radius:50% !important;cursor:pointer;background:#0ea5e9 !important;color:#fff !important;font-size:26px !important;line-height:1 !important;box-shadow:0 8px 24px rgba(14,165,233,.45);display:flex !important;align-items:center;justify-content:center;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2}',
       '#bsb-btn:hover{background:#0284c7 !important}',
-      '#bsb-panel{display:none;position:absolute;right:0;bottom:68px;width:min(360px,calc(100vw - 24px));height:480px;max-height:calc(100vh - 100px);background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 16px 48px rgba(15,23,42,.22);flex-direction:column}',
-      '#bsb-panel.open{display:flex !important}',
-      '#bsb-head{background:linear-gradient(135deg,#0ea5e9,#0369a1);color:#fff;padding:14px 16px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center}',
+      '#bsb-panel{position:absolute;top:0;right:0;height:100%;width:min(400px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:16px 0 0 16px;overflow:hidden}',
+      '#bsb-panel.open{transform:translateX(0)}',
+      '#bsb-head{background:linear-gradient(135deg,#0ea5e9,#0369a1);color:#fff;padding:14px 16px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}',
       '#bsb-close{background:transparent;border:0;color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:0 4px}',
-      '#bsb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px}',
+      '#bsb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
       '.bsb-msg{max-width:88%;padding:10px 12px;border-radius:14px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}',
       '.bsb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#0f172a}',
-      '.bsb-msg.user{align-self:end;background:#0ea5e9;color:#fff}',
+      '.bsb-msg.user{align-self:flex-end;background:#0ea5e9;color:#fff}',
       '.bsb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:12px}',
+      '.bsb-tel{color:#0369a1;font-weight:600;text-decoration:underline;text-underline-offset:2px}',
+      '.bsb-msg.user .bsb-tel{color:#fff}',
+      '.bsb-msg.sys .bsb-tel{color:#0369a1}',
       '.bsb-map{max-width:100%;border-radius:12px;margin-top:8px;display:block}',
-      '#bsb-form{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e8f0;background:#fff}',
+      '#bsb-form{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e8f0;background:#fff;flex-shrink:0}',
       '#bsb-input{flex:1;border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;font-size:14px;outline:none}',
       '#bsb-input:focus{border-color:#0ea5e9}',
       '#bsb-send{border:0;border-radius:12px;background:#0ea5e9;color:#fff;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer}',
       '#bsb-send:disabled{opacity:.6;cursor:default}',
+      '@media (max-width:480px){#bsb-panel{width:100vw;border-radius:0}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
     var root = document.createElement('div');
     root.id = 'bsb-root';
     root.innerHTML = [
-      '<div id="bsb-panel" role="dialog" aria-label="Чат">',
+      '<div id="bsb-backdrop" aria-hidden="true"></div>',
+      '<div id="bsb-panel" role="dialog" aria-label="Чат" aria-hidden="true">',
       '  <div id="bsb-head"><span id="bsb-title">Boat Sochi</span><button id="bsb-close" type="button" aria-label="Закрыть">×</button></div>',
       '  <div id="bsb-msgs"></div>',
       '  <form id="bsb-form">',
@@ -95,6 +123,7 @@
     document.body.appendChild(root);
 
     var panel = root.querySelector('#bsb-panel');
+    var backdrop = root.querySelector('#bsb-backdrop');
     var btn = root.querySelector('#bsb-btn');
     var closeBtn = root.querySelector('#bsb-close');
     var msgs = root.querySelector('#bsb-msgs');
@@ -106,7 +135,7 @@
     function addBubble(text, kind) {
       var el = document.createElement('div');
       el.className = 'bsb-msg ' + kind;
-      el.textContent = text;
+      el.innerHTML = linkifyPhones(text);
       msgs.appendChild(el);
       msgs.scrollTop = msgs.scrollHeight;
     }
@@ -114,7 +143,11 @@
     function setOpen(v) {
       open = v;
       panel.classList.toggle('open', open);
+      backdrop.classList.toggle('open', open);
+      panel.setAttribute('aria-hidden', open ? 'false' : 'true');
       btn.textContent = open ? '×' : '💬';
+      btn.setAttribute('aria-label', open ? 'Закрыть чат' : 'Открыть чат');
+      document.documentElement.style.overflow = open ? 'hidden' : '';
       if (open) input.focus();
     }
 
@@ -122,6 +155,9 @@
       setOpen(!open);
     });
     closeBtn.addEventListener('click', function () {
+      setOpen(false);
+    });
+    backdrop.addEventListener('click', function () {
       setOpen(false);
     });
 
