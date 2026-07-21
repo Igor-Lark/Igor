@@ -3,9 +3,6 @@
 /**
  * Напоминания о выходе за N часов (по умолчанию 3).
  *
- * Ветка MAX: отправка клиенту в личку MAX по maxUserId.
- * (Telegram chatId — запасной путь, если есть.)
- *
  * По умолчанию ВЫКЛЮЧЕНО.
  * Включение: BOOKING_REMINDERS_ENABLED=1 в .env
  *
@@ -17,7 +14,7 @@
 require('dotenv').config();
 
 const config = require('../src/config');
-const { sendMaxMessage } = require('../src/max');
+const { telegramFetch } = require('../src/telegram-net');
 const {
   remindersEnabled,
   reminderHours,
@@ -45,18 +42,21 @@ function buildText(b) {
     '⏰ Напоминание о прогулке',
     `Начало около: ${when}`,
     'Приходите за 10 минут. Причал Сириус: Парусная 1, линия 1 (от отеля «Легенда» через парковку).',
-    'Связь: мадам Наталья +7 918 304-40-00, босс Олег +7 917 675 0555.',
+    'Связь: Наталья +7 918 304-40-00, капитан Олег +7 917 675 0555.',
   ].join('\n');
 }
 
-async function sendMax(userId, text) {
-  const token = config.max.token;
-  if (!token) throw new Error('MAX_BOT_TOKEN не задан');
-  await sendMaxMessage({
-    token,
-    userId,
-    text,
+async function sendTelegram(chatId, text) {
+  const token = config.telegram.token;
+  if (!token) throw new Error('TELEGRAM_BOT_TOKEN не задан');
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  const res = await telegramFetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text }),
   });
+  const body = await res.text();
+  if (!res.ok) throw new Error(`Telegram ${res.status}: ${body.slice(0, 300)}`);
 }
 
 async function main() {
@@ -78,30 +78,17 @@ async function main() {
 
   for (const b of due) {
     const text = buildText(b);
-    console.log(
-      '---',
-      b.id,
-      'startAt=',
-      b.startAt,
-      'maxUserId=',
-      b.maxUserId || '-',
-      'tg=',
-      b.telegramChatId || '-',
-      'phone=',
-      b.phone || '-'
-    );
+    console.log('---', b.id, 'startAt=', b.startAt, 'tg=', b.telegramChatId, 'phone=', b.phone);
     console.log(text);
 
     if (dry) continue;
 
-    if (b.maxUserId) {
-      await sendMax(b.maxUserId, text);
+    if (b.telegramChatId) {
+      await sendTelegram(b.telegramChatId, text);
       markReminderSent(b.id);
-      console.log('[reminders] sent MAX user_id=', b.maxUserId);
+      console.log('[reminders] sent telegram', b.telegramChatId);
     } else {
-      console.log(
-        '[reminders] skip: нет maxUserId (клиент должен написать боту в MAX — тогда user_id сохранится в брони)'
-      );
+      console.log('[reminders] skip: нет telegramChatId (SMS пока не подключены)');
     }
   }
 }
