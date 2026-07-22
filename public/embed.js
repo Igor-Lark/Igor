@@ -338,9 +338,11 @@
       var w = btn.offsetWidth || 56;
       var h = btn.offsetHeight || 56;
       var tablet = isPortraitTablet();
-      // планшет портрет: влево на ширину кнопки (½+½), вверх на её высоту
+      var desktop = !window.matchMedia('(max-width:1024px)').matches;
+      // планшет портрет: влево на ширину кнопки, вверх на её высоту
+      // десктоп: вверх на две ширины кнопки
       var right = 16 + (tablet ? w : 0);
-      var lift = tablet ? h : 0;
+      var lift = tablet ? h : desktop ? 2 * w : 0;
       btn.style.right = right + 'px';
       btn.style.left = 'auto';
       if (!vv) {
