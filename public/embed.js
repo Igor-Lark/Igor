@@ -68,6 +68,10 @@
   /** Телефоны, https-ссылки и заявка на обратный звонок → кликабельные. */
   function linkifyText(text) {
     var escaped = escapeHtml(text);
+    // явные маркеры {{tel:+79…|подпись}} из приветствий / сервера
+    escaped = escaped.replace(/\{\{tel:(\+?\d+)\|([^}]+)\}\}/g, function (_m, tel, label) {
+      return '<a class="bsb-tel" href="tel:' + tel + '">' + label + '</a>';
+    });
     // фраза (+ опционально URL/#bot рядом) → одна ссылка на #bot
     escaped = escaped.replace(
       /((?:оставить\s+)?заявк[ауеиы]?\s+на\s+обратный\s+звонок)(?:\s+на\s+сайте)?(?:\s*:\s*)?(?:https?:\/\/boat-sochi\.ru\/#(?:bot|zakaz)|#(?:bot|zakaz))?/gi,
@@ -128,7 +132,7 @@
     var sending = false;
     var botName = 'Boat Sochi';
     var greeting =
-      'Здравствуйте! Отвечу на Ваши вопросы, помогу с выбором яхты или катера.\nКапитан Олег часто в море — связь может быть неустойчивой. Наталья: +7 918 304-40-00.\nСпрашивайте у меня — или оставьте заявку на обратный звонок на сайте.';
+      'Здравствуйте! Отвечу на Ваши вопросы, помогу с выбором яхты или катера.\nКапитан Олег часто в море — связь может быть неустойчивой. Наталья: {{tel:+79183044000|+7 918 304-40-00}}.\nСпрашивайте у меня — или оставьте заявку на обратный звонок на сайте.';
     var unavailableReply = [
       'Сейчас помощник временно недоступен. Свяжитесь с нами:',
       '',
@@ -194,9 +198,9 @@
       '.bsb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#0f172a}',
       '.bsb-msg.user{align-self:flex-end;background:#5a7f9c;color:#fff;border-radius:20px}',
       '.bsb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:12px}',
-      '.bsb-tel,.bsb-link{color:#204360;font-weight:600;text-decoration:underline;text-underline-offset:2px}',
-      '.bsb-msg.user .bsb-tel,.bsb-msg.user .bsb-link{color:#fff}',
-      '.bsb-msg.sys .bsb-tel,.bsb-msg.sys .bsb-link{color:#204360}',
+      '#bsb-root a.bsb-tel,#bsb-root a.bsb-link{color:#204360 !important;font-weight:600 !important;text-decoration:underline !important;text-underline-offset:2px;cursor:pointer !important;pointer-events:auto !important}',
+      '#bsb-root .bsb-msg.user a.bsb-tel,#bsb-root .bsb-msg.user a.bsb-link{color:#fff !important}',
+      '#bsb-root .bsb-msg.sys a.bsb-tel,#bsb-root .bsb-msg.sys a.bsb-link{color:#204360 !important}',
       '.bsb-map{max-width:100%;border-radius:5px;margin-top:8px;display:block}',
       '#bsb-form{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e8f0;background:#fff;flex-shrink:0}',
       '#bsb-input{flex:1;border:1px solid #cbd5e1;border-radius:5px;padding:10px 12px;font-size:14px;outline:none}',

@@ -7,7 +7,7 @@ const { isMapIntent, hasSiriusMapFile, SIRIUS_MAP_FILE, siriusMapCaption } = req
 const { buildGreeting } = require('./knowledge');
 const { touchSession } = require('./no-contact');
 const { botRequestOptions, proxyUrl } = require('./telegram-net');
-const { UNAVAILABLE_REPLY } = require('./contacts');
+const { UNAVAILABLE_REPLY, stripPhoneTokens } = require('./contacts');
 
 /** @type {Map<number, { role: string, content: string }[]>} */
 const sessions = new Map();
@@ -23,10 +23,32 @@ function pushMessage(chatId, role, content) {
   if (hist.length > 20) hist.splice(0, hist.length - 20);
 }
 
+/** Телефоны вида +7 … → entity phone_number (кликабельно в Telegram). */
+function phoneEntities(text) {
+  const entities = [];
+  const re = /(\+?7|8)[ \t\-()]*(\d[ \t\-()]*){10}/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const phone = m[0];
+    let digits = phone.replace(/\D/g, '');
+    if (digits.length === 11 && digits.charAt(0) === '8') digits = '7' + digits.slice(1);
+    if (digits.length !== 11 || digits.charAt(0) !== '7') continue;
+    entities.push({ type: 'phone_number', offset: m.index, length: phone.length });
+  }
+  return entities;
+}
+
+async function sendPlain(bot, chatId, text, extra = {}) {
+  const plain = stripPhoneTokens(text);
+  const entities = phoneEntities(plain);
+  const opts = entities.length ? { ...extra, entities } : { ...extra };
+  return bot.sendMessage(chatId, plain, opts);
+}
+
 function attachHandlers(bot) {
   async function sendGreeting(chatId) {
     sessions.set(chatId, []);
-    await bot.sendMessage(chatId, '👋 ' + buildGreeting());
+    await sendPlain(bot, chatId, '👋 ' + buildGreeting());
   }
 
   // /start, /start@BotName, /start payload
@@ -83,11 +105,11 @@ function attachHandlers(bot) {
         username,
       });
       pushMessage(chatId, 'assistant', reply);
-      await bot.sendMessage(chatId, reply);
+      await sendPlain(bot, chatId, reply);
     } catch (err) {
       console.error('[telegram] chat error:', err.message);
       try {
-        await bot.sendMessage(chatId, UNAVAILABLE_REPLY);
+        await sendPlain(bot, chatId, UNAVAILABLE_REPLY);
       } catch (sendErr) {
         console.error('[telegram] fallback send failed:', sendErr.message);
       }
