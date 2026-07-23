@@ -1,13 +1,22 @@
-# Как проверить микроразметку marmara-pro.ru/main в Яндексе
+# Как проверить микроразметку marmara-pro.ru в Яндексе
+
+## Страницы
+
+| Страница | URL |
+|---|---|
+| Главная | `https://marmara-pro.ru/` |
+| Термопанели | `https://marmara-pro.ru/termo` |
+
+---
 
 ## 1. Быстрая проверка (валидатор)
 
 1. Откройте: **https://webmaster.yandex.ru/tools/microtest/**
-2. Вставьте URL: `https://marmara-pro.ru/` (или `https://marmara-pro.ru/main`)
+2. Вставьте URL: `https://marmara-pro.ru/` (или `https://marmara-pro.ru/termo`)
 3. Нажмите **«Проверить»**
 
 Валидатор покажет:
-- найденные типы разметки (`Organization`, `LocalBusiness`, `FAQPage`, `WebPage`)
+- найденные типы разметки (`Organization`, `LocalBusiness`, `FAQPage`, `WebPage`, `Product`, `Service`, `BreadcrumbList`)
 - ошибки и предупреждения
 - как Яндекс видит вопросы/ответы FAQ
 
@@ -33,7 +42,7 @@
 
 Чтобы ускорить переобход:
 1. Вебmaster → **«Индексирование» → «Переобход страниц»**
-2. Добавьте URL: `https://marmara-pro.ru/main`
+2. Добавьте URL: `https://marmara-pro.ru/` или `https://marmara-pro.ru/termo`
 3. Отправьте на переобход
 
 Появление FAQ-блока в выдаче — не мгновенно, обычно от нескольких дней до нескольких недель.
@@ -49,10 +58,12 @@
 ```
 
 Должен быть **один** такой блок с `@graph`, содержащий:
-- `WebPage`
-- `WebSite`
-- `Organization` / `LocalBusiness`
-- `FAQPage` (10 вопросов)
+
+**Главная (`main-microdata.html`):**
+- `WebPage`, `WebSite`, `Organization` / `LocalBusiness`, `FAQPage` (10 вопросов)
+
+**Термопанели (`termo-microdata.html`):**
+- `WebPage`, `WebSite`, `Organization` / `LocalBusiness`, `Product`, `Service`, `BreadcrumbList`, `FAQPage` (10 вопросов)
 
 ---
 
@@ -60,7 +71,7 @@
 
 | Проблема | Решение |
 |---|---|
-| Валидатор не видит разметку | Код вставлен в настройки **всего сайта**, а не страницы `main`; или сайт не опубликован |
+| Валидатор не видит разметку | Код вставлен в настройки **всего сайта**, а не страницы `main` / `termo`; или сайт не опубликован |
 | FAQ не совпадает с текстом на странице | Тексты в JSON-LD должны дословно совпадать с блоком FAQ на странице |
 | Дублирование разметки | Не добавляйте второй JSON-LD с теми же типами — только один блок |
 | 403 при проверке | Яндекс-бот должен иметь доступ; проверьте robots.txt |
@@ -69,7 +80,7 @@
 
 ## 6. Альтернатива — проверка через браузер
 
-1. Откройте `https://marmara-pro.ru/main`
+1. Откройте `https://marmara-pro.ru/` или `https://marmara-pro.ru/termo`
 2. **Просмотр кода страницы** (Ctrl+U)
 3. Поиск: `application/ld+json`
 
