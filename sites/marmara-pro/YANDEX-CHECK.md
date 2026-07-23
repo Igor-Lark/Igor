@@ -3,7 +3,7 @@
 ## 1. Быстрая проверка (валидатор)
 
 1. Откройте: **https://webmaster.yandex.ru/tools/microtest/**
-2. Вставьте URL: `https://marmara-pro.ru/main`
+2. Вставьте URL: `https://marmara-pro.ru/` (или `https://marmara-pro.ru/main`)
 3. Нажмите **«Проверить»**
 
 Валидатор покажет:
