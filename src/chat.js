@@ -5,7 +5,14 @@ const { completeChat } = require('./ai');
 const { shouldNotifyLead, notifyManager } = require('./leads');
 const { logChatTurn } = require('./chat-log');
 const { upsertBookingFromLead } = require('./bookings');
-const { isMapIntent, hasSiriusMapFile, siriusMapCaption, siriusMapPublicUrl } = require('./maps');
+const {
+  isMapIntent,
+  isAleksumDirectionsIntent,
+  hasSiriusMapFile,
+  siriusMapCaption,
+  siriusMapPublicUrl,
+  aleksumDirectionsReply,
+} = require('./maps');
 const { touchSession, markContact } = require('./no-contact');
 const { extractPhone } = require('./leads');
 const { alertAiFailure } = require('./ai-alert');
@@ -44,7 +51,23 @@ async function handleChat(input) {
     });
   }
 
-  // «Как пройти / как вас найти» — сразу схема (без ИИ)
+  // «Как пройти к Алексуму» — Морпорт Сочи, без схемы Сириуса
+  if (lastUser && isAleksumDirectionsIntent(lastUser.content)) {
+    const reply = aleksumDirectionsReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'map',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'map', lead: null };
+  }
+
+  // «Как пройти / как вас найти» — схема Имеретинского порта (Сириус)
   if (lastUser && isMapIntent(lastUser.content) && hasSiriusMapFile()) {
     const reply = siriusMapCaption();
     const mapUrl = siriusMapPublicUrl() || '/maps/sirius-line1.jpg';
