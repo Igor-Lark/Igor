@@ -3,7 +3,14 @@
 const TelegramBot = require('node-telegram-bot-api');
 const config = require('./config');
 const { handleChat } = require('./chat');
-const { isMapIntent, hasSiriusMapFile, SIRIUS_MAP_FILE, siriusMapCaption } = require('./maps');
+const {
+  isMapIntent,
+  isAleksumDirectionsIntent,
+  hasSiriusMapFile,
+  SIRIUS_MAP_FILE,
+  siriusMapCaption,
+  aleksumDirectionsReply,
+} = require('./maps');
 const { buildGreeting } = require('./knowledge');
 const { touchSession } = require('./no-contact');
 const { botRequestOptions, proxyUrl } = require('./telegram-net');
@@ -84,7 +91,22 @@ function attachHandlers(bot) {
     try {
       await bot.sendChatAction(chatId, 'typing');
 
-      // Схема прохода к причалу — картинкой
+      // Алексум — Морпорт Сочи, без схемы Сириуса
+      if (isAleksumDirectionsIntent(text)) {
+        touchSession({
+          sessionId: String(chatId),
+          source: 'telegram',
+          username,
+          userText: text,
+          history: getHistory(chatId),
+        });
+        const reply = aleksumDirectionsReply();
+        await sendPlain(bot, chatId, reply);
+        pushMessage(chatId, 'assistant', reply);
+        return;
+      }
+
+      // Схема прохода к причалу Сириус — картинкой
       if (isMapIntent(text) && hasSiriusMapFile()) {
         touchSession({
           sessionId: String(chatId),
