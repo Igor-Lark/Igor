@@ -9,6 +9,7 @@ const { startTelegram } = require('./telegram');
 const { loadKnowledge, buildGreeting } = require('./knowledge');
 const { startNoContactWatcher } = require('./no-contact');
 const { UNAVAILABLE_REPLY } = require('./contacts');
+const { prefetchWeather } = require('./weather');
 
 const app = express();
 
@@ -59,12 +60,40 @@ app.post('/api/chat', async (req, res) => {
 });
 
 // Конфиг для виджета (имя бота, публичный URL)
-app.get('/api/widget-config', (_req, res) => {
+app.get('/api/widget-config', async (_req, res) => {
+  // Предзагрузка погоды при открытии виджета (кэш 1 час)
+  let weatherWarning = null;
+  try {
+    const w = await prefetchWeather('sirius');
+    weatherWarning = w.worseningWarning || null;
+  } catch (err) {
+    console.error('[widget-config] weather prefetch:', err.message);
+  }
   res.json({
     name: config.botName,
     greeting: buildGreeting(),
     unavailableReply: UNAVAILABLE_REPLY,
+    weatherWarning,
   });
+});
+
+/** Предзагрузка погоды при открытии окна чата (не чаще 1 раза в час). */
+app.get('/api/weather/prefetch', async (_req, res) => {
+  try {
+    const w = await prefetchWeather('sirius');
+    res.json({
+      ok: true,
+      fromCache: Boolean(w.fromCache),
+      airC: w.airC,
+      waterC: w.waterC,
+      condition: w.condition,
+      placeLabel: w.placeLabel,
+      worseningWarning: w.worseningWarning || null,
+    });
+  } catch (err) {
+    console.error('[weather/prefetch]', err.message);
+    res.status(502).json({ ok: false, error: 'weather unavailable' });
+  }
 });
 
 startTelegram(app);
