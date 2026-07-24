@@ -61,11 +61,9 @@ app.post('/api/chat', async (req, res) => {
 
 // Конфиг для виджета (имя бота, публичный URL)
 app.get('/api/widget-config', async (_req, res) => {
-  // Предзагрузка погоды при открытии виджета (кэш 1 час)
-  let weatherWarning = null;
+  // Предзагрузка погоды при открытии виджета (кэш 1 час), без сообщений клиенту
   try {
-    const w = await prefetchWeather('sirius');
-    weatherWarning = w.worseningWarning || null;
+    await prefetchWeather('sirius');
   } catch (err) {
     console.error('[widget-config] weather prefetch:', err.message);
   }
@@ -73,7 +71,6 @@ app.get('/api/widget-config', async (_req, res) => {
     name: config.botName,
     greeting: buildGreeting(),
     unavailableReply: UNAVAILABLE_REPLY,
-    weatherWarning,
   });
 });
 
@@ -88,7 +85,6 @@ app.get('/api/weather/prefetch', async (_req, res) => {
       waterC: w.waterC,
       condition: w.condition,
       placeLabel: w.placeLabel,
-      worseningWarning: w.worseningWarning || null,
     });
   } catch (err) {
     console.error('[weather/prefetch]', err.message);
