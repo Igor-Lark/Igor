@@ -1,6 +1,6 @@
 # Кампания (Поиск): КлинкерПрофи — термопанели, Приозерский район (CPA)
 
-**Word:** [`termopaneli-priozersky-campaign-cpa.docx`](termopaneli-priozersky-campaign-cpa.docx) — полная спецификация для скачивания из репозитория.
+**Word:** [`termopaneli-priozersky-campaign-cpa.docx`](termopaneli-priozersky-campaign-cpa.docx) — собирается командой `python3 ads/scripts/md_spec_to_docx.py ads/marmara-pro/termopaneli-priozersky-campaign-cpa.md --ads ads/marmara-pro/termopaneli-priozersky-campaign-cpa-ads.csv`.
 
 Отдельная **поисковая** рекламная кампания в Яндекс Директе для фасадных термопанелей **КлинкерПрофи** с гео **только Приозерский район** Ленинградской области.
 

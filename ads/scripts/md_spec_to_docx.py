@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
-"""Convert Marmara/KlinkerPro Direct spec Markdown to readable Word (.docx)."""
+"""Convert advertising campaign spec Markdown to readable Word (.docx).
+
+Used for any Yandex Direct / ad campaign in this repo. See ads/README.md.
+"""
 
 from __future__ import annotations
 
+import argparse
 import csv
 import re
 import sys
 from pathlib import Path
 
 from docx import Document
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.shared import Inches, Pt, RGBColor
+from docx.shared import Inches, Pt
 
-ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_SKIP_PREFIXES = ("**Word:**", "**DOCX:**")
 
 
 def strip_md(text: str) -> str:
@@ -22,7 +25,6 @@ def strip_md(text: str) -> str:
 
 
 def add_rich_run(paragraph, text: str, *, bold_default=False, code=False):
-    """Add runs parsing **bold** segments."""
     parts = re.split(r"(\*\*[^*]+\*\*)", text)
     for part in parts:
         if not part:
@@ -74,7 +76,7 @@ def set_table_header(table):
 
 
 def add_table(doc, rows: list[list[str]]):
-    if len(rows) < 1:
+    if not rows:
         return
     cols = max(len(r) for r in rows)
     table = doc.add_table(rows=len(rows), cols=cols)
@@ -91,8 +93,6 @@ def add_table(doc, rows: list[list[str]]):
 
 
 def load_ads_from_csv(path: Path) -> list[dict[str, str]]:
-    if not path.exists():
-        return []
     with path.open(encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f, delimiter=";")
         return list(reader)
@@ -101,7 +101,8 @@ def load_ads_from_csv(path: Path) -> list[dict[str, str]]:
 def add_ads_block(doc, ads: list[dict[str, str]]):
     doc.add_heading("Тексты объявлений (импорт CSV)", level=2)
     doc.add_paragraph(
-        "Без указания цен. Лимиты: заголовок 1 — 56 символов, заголовок 2 — 30, текст — 81."
+        "Без указания цен. Лимиты Яндекс Директа: заголовок 1 — 56 символов, "
+        "заголовок 2 — 30, текст — 81."
     )
     fields = [
         ("Заголовок 1", "Заголовок 1"),
@@ -115,22 +116,34 @@ def add_ads_block(doc, ads: list[dict[str, str]]):
         for label, key in fields:
             val = ad.get(key, "")
             rows.append([label, val, str(len(val)) if val else ""])
-        dlink = ad.get("Отображаемая ссылка 1", "") + "/" + ad.get("Отображаемая ссылка 2", "")
-        dlink = dlink.strip("/")
+        d1 = ad.get("Отображаемая ссылка 1", "")
+        d2 = ad.get("Отображаемая ссылка 2", "")
+        dlink = f"{d1}/{d2}".strip("/") if (d1 or d2) else ""
         if dlink:
             rows.append(["Отображаемая ссылка", dlink, ""])
         add_table(doc, rows)
+
+
+def extract_client_line(lines: list[str]) -> str:
+    for line in reversed(lines):
+        m = re.match(r"^\*Клиент:\s*(.+)\*\s*$", line.strip())
+        if m:
+            return f"Клиент: {m.group(1)}"
+    return ""
 
 
 def md_to_docx(
     md_path: Path,
     docx_path: Path,
     *,
-    client_line: str,
-    skip_line_patterns: tuple[str, ...] = (),
+    client_line: str | None = None,
+    skip_line_patterns: tuple[str, ...] = DEFAULT_SKIP_PREFIXES,
     extra_ads_csv: Path | None = None,
+    ads_appendix_title: str = "Приложение: объявления из CSV",
 ):
     lines = md_path.read_text(encoding="utf-8").splitlines()
+    client = client_line if client_line is not None else extract_client_line(lines)
+
     doc = Document()
     normal = doc.styles["Normal"]
     normal.font.name = "Calibri"
@@ -173,16 +186,16 @@ def md_to_docx(
 
         if stripped.startswith("# ") and not title_done:
             doc.add_paragraph(stripped[2:].strip(), style="Title")
-            add_rich_paragraph(doc, client_line, style="Normal")
-            doc.add_paragraph()
+            if client:
+                add_rich_paragraph(doc, client, style="Normal")
+                doc.add_paragraph()
             title_done = True
             i += 1
             continue
 
         if stripped.startswith("## "):
             section_num += 1
-            heading = stripped[3:].strip()
-            doc.add_heading(f"{section_num}. {heading}", level=1)
+            doc.add_heading(f"{section_num}. {stripped[3:].strip()}", level=1)
             i += 1
             continue
 
@@ -222,7 +235,11 @@ def md_to_docx(
                 i += 1
             continue
 
-        if stripped.startswith("*") and stripped.endswith("*") and not stripped.startswith("**"):
+        if (
+            stripped.startswith("*")
+            and stripped.endswith("*")
+            and not stripped.startswith("**")
+        ):
             p = doc.add_paragraph()
             run = p.add_run(strip_md(stripped.strip("*")))
             run.italic = True
@@ -233,47 +250,65 @@ def md_to_docx(
             add_rich_paragraph(doc, stripped)
         i += 1
 
-    if extra_ads_csv:
+    if extra_ads_csv and extra_ads_csv.is_file():
         ads = load_ads_from_csv(extra_ads_csv)
         if ads:
             doc.add_page_break()
-            doc.add_heading(f"{section_num + 1}. Приложение: объявления из CSV", level=1)
+            doc.add_heading(f"{section_num + 1}. {ads_appendix_title}", level=1)
             add_ads_block(doc, ads)
 
+    docx_path.parent.mkdir(parents=True, exist_ok=True)
     doc.save(docx_path)
 
 
-def main():
-    name = sys.argv[1] if len(sys.argv) > 1 else "campaign-cpa"
-    specs = {
-        "campaign-cpa": (
-            ROOT / "termopaneli-priozersky-campaign-cpa.md",
-            ROOT / "termopaneli-priozersky-campaign-cpa.docx",
-            "Клиент: КлинкерПрофи · ИП Баушев Дмитрий Викторович · г. Выборг",
-            ("**Word:**",),
-            ROOT / "termopaneli-priozersky-campaign-cpa-ads.csv",
-        ),
-        "adgroup": (
-            ROOT / "termopaneli-priozersky-adgroup.md",
-            ROOT / "termopaneli-priozersky-adgroup.docx",
-            "Клиент: КлинкерПрофи · ИП Баушев Дмитрий Викторович · г. Выборг",
-            (),
-            None,
-        ),
-    }
-    if name == "all":
-        targets = ["campaign-cpa", "adgroup"]
-    elif name in specs:
-        targets = [name]
-    else:
-        print("Usage: md_spec_to_docx.py [campaign-cpa|adgroup|all]")
-        sys.exit(1)
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Build readable .docx from ad campaign Markdown.")
+    parser.add_argument("markdown", type=Path, help="Path to spec .md")
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        default=None,
+        help="Output .docx (default: same name as .md)",
+    )
+    parser.add_argument(
+        "--ads",
+        type=Path,
+        default=None,
+        help="Optional ads CSV (semicolon-separated) for appendix tables",
+    )
+    parser.add_argument(
+        "--client",
+        type=str,
+        default=None,
+        help='Override client line under title (default: parse *Клиент: …* from md)',
+    )
+    parser.add_argument(
+        "--skip",
+        action="append",
+        default=[],
+        help="Skip md lines starting with this prefix (repeatable)",
+    )
+    args = parser.parse_args(argv)
 
-    for key in targets:
-        md, docx, client, skip, ads_csv = specs[key]
-        md_to_docx(md, docx, client_line=client, skip_line_patterns=skip, extra_ads_csv=ads_csv)
-        print("Wrote", docx)
+    md_path = args.markdown.resolve()
+    if not md_path.is_file():
+        print(f"Not found: {md_path}", file=sys.stderr)
+        return 1
+
+    docx_path = args.output or md_path.with_suffix(".docx")
+    skip = tuple(DEFAULT_SKIP_PREFIXES + tuple(args.skip))
+
+    md_to_docx(
+        md_path,
+        docx_path,
+        client_line=args.client,
+        skip_line_patterns=skip,
+        extra_ads_csv=args.ads,
+    )
+    print(docx_path)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
