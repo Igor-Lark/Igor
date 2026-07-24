@@ -385,26 +385,9 @@
       msgs.scrollTop = msgs.scrollHeight;
     }
 
-    var weatherWarnedHour = '';
-
     function prefetchWeatherOnOpen() {
-      fetch(API_BASE + '/api/weather/prefetch')
-        .then(function (r) {
-          return r.ok ? r.json() : null;
-        })
-        .then(function (data) {
-          if (!data || !data.ok || !data.worseningWarning) return;
-          var hourKey = String(Math.floor(Date.now() / 3600000));
-          try {
-            if (sessionStorage.getItem('bsb_wx_warn_hour') === hourKey) return;
-            sessionStorage.setItem('bsb_wx_warn_hour', hourKey);
-          } catch (e) {
-            if (weatherWarnedHour === hourKey) return;
-            weatherWarnedHour = hourKey;
-          }
-          addBubble(data.worseningWarning, 'bot');
-        })
-        .catch(function () {});
+      // Тихий запрос (кэш 1 час). Ветер и «плохую погоду» клиенту сами не пишем.
+      fetch(API_BASE + '/api/weather/prefetch').catch(function () {});
     }
 
     function setOpen(v) {

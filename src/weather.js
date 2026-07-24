@@ -27,9 +27,16 @@ const PLACES = {
   },
 };
 
-/** Явный вопрос про погоду / температуру / ветер (не про купание). */
+/** Явный вопрос про текущую погоду / температуру (не про купание). */
 const WEATHER_INTENT_RE =
-  /погод|температур|сколько\s+градус|градус\w*\s+(на\s+улице|воздух|воды|в\s+воде)|вода\s+(тёпл|тепл|холод)|тёплая\s+вода|теплая\s+вода|ветер\b|шторм|волн\w*|прогноз/i;
+  /погод|температур|сколько\s+градус|градус\w*\s+(на\s+улице|воздух|воды|в\s+воде)|вода\s+(тёпл|тепл|холод)|тёплая\s+вода|теплая\s+вода|прогноз/i;
+
+/** Прямой вопрос про ветер. */
+const WIND_INTENT_RE = /ветер|ветрен|шторм|волн\w*/i;
+
+/** Прямой вопрос про погоду на ближайшие дни. */
+const FORECAST_DAYS_RE =
+  /ближайш\w*\s+дн|на\s+(2|3|два|три)\s+дн|через\s+(день|два|три)|на\s+выходн|прогноз\s+на|погода\s+на\s+(завтра|недел)/i;
 
 /** Разговор о купании — один раз добавить t° воды «в открытом море». */
 const SWIM_INTENT_RE = /купан|купать|искупа|поплавать|в\s+море\s+плав|можно\s+ли\s+в\s+вод/i;
@@ -68,7 +75,16 @@ const WMO_RU = {
 };
 
 function isWeatherIntent(text) {
-  return WEATHER_INTENT_RE.test(String(text || ''));
+  const t = String(text || '');
+  return WEATHER_INTENT_RE.test(t) || WIND_INTENT_RE.test(t) || FORECAST_DAYS_RE.test(t);
+}
+
+function isWindIntent(text) {
+  return WIND_INTENT_RE.test(String(text || ''));
+}
+
+function isForecastDaysIntent(text) {
+  return FORECAST_DAYS_RE.test(String(text || ''));
 }
 
 function isSwimIntent(text) {
@@ -141,6 +157,26 @@ function detectWorsening(daily) {
 }
 
 /**
+ * Краткий прогноз на 2–3 дня (только если клиент спросил).
+ * @returns {string|null}
+ */
+function formatForecastDays(daily) {
+  if (!daily || !Array.isArray(daily.time) || !Array.isArray(daily.weather_code)) return null;
+  const lines = [];
+  const n = Math.min(4, daily.time.length);
+  for (let i = 1; i < n; i++) {
+    const day = String(daily.time[i] || '').slice(5); // MM-DD
+    const cond = weatherCodeRu(daily.weather_code[i]);
+    const tMax = daily.temperature_2m_max ? round1(daily.temperature_2m_max[i]) : null;
+    lines.push(
+      tMax != null ? `• ${day}: ${cond}, до ${tMax} °C` : `• ${day}: ${cond}`
+    );
+  }
+  if (!lines.length) return null;
+  return ['На ближайшие дни:', ...lines].join('\n');
+}
+
+/**
  * @param {{ lat: number, lon: number, id: string, label: string }} place
  */
 async function fetchPlaceWeather(place) {
@@ -153,7 +189,7 @@ async function fetchPlaceWeather(place) {
   const airUrl =
     `https://api.open-meteo.com/v1/forecast?${common}` +
     `&current=temperature_2m,weather_code,wind_speed_10m` +
-    `&daily=weather_code,precipitation_sum,wind_speed_10m_max&forecast_days=4`;
+    `&daily=weather_code,precipitation_sum,wind_speed_10m_max,temperature_2m_max&forecast_days=4`;
   const waterUrl =
     `https://marine-api.open-meteo.com/v1/marine?${common}` +
     `&current=sea_surface_temperature`;
@@ -168,6 +204,7 @@ async function fetchPlaceWeather(place) {
     waterC: round1(water?.current?.sea_surface_temperature),
     windKmh: round1(air?.current?.wind_speed_10m),
     condition: weatherCodeRu(air?.current?.weather_code),
+    daily: air?.daily || null,
     worseningWarning: detectWorsening(air?.daily),
     fromCache: false,
   };
@@ -176,7 +213,7 @@ async function fetchPlaceWeather(place) {
   return data;
 }
 
-/** Предзагрузка при открытии чата (не чаще 1 раза в час). */
+/** Предзагрузка при открытии чата (не чаще 1 раза в час). Без сообщений клиенту. */
 async function prefetchWeather(textOrPlace) {
   const place =
     typeof textOrPlace === 'object' && textOrPlace?.id
@@ -192,19 +229,27 @@ function openSeaWaterLine(waterC) {
 
 /**
  * Краткий блок для системного промпта (не выдумывать погоду).
+ * Ветер и «ухудшение» — только если клиент сам спросил.
  * @returns {Promise<string>}
  */
 async function weatherPromptBlock(text) {
   try {
-    const place = pickPlace(text);
+    const t = String(text || '');
+    const place = pickPlace(t);
     const w = await fetchPlaceWeather(place);
     const parts = [`Актуальная погода (${w.placeLabel}, Open-Meteo, МСК):`];
     if (w.airC != null) parts.push(`воздух ${w.airC} °C (${w.condition})`);
     if (w.waterC != null) parts.push(`вода в открытом море ${w.waterC} °C`);
-    if (w.windKmh != null) parts.push(`ветер ${w.windKmh} км/ч`);
-    if (w.worseningWarning) parts.push(w.worseningWarning);
-    parts.push('Решение о выходе — у капитана (погода/порт). Не выдумывай другие цифры.');
-    if (isSwimIntent(text)) {
+    if (isWindIntent(t) && w.windKmh != null) parts.push(`ветер ${w.windKmh} км/ч`);
+    if (isForecastDaysIntent(t)) {
+      const fc = formatForecastDays(w.daily);
+      if (fc) parts.push(fc);
+      if (w.worseningWarning) parts.push(w.worseningWarning);
+    }
+    parts.push(
+      'По умолчанию НЕ говори про ветер и НЕ предупреждай о плохой/ухудшающейся погоде — только если клиент сам спросил про ветер или погоду на ближайшие дни. Не выдумывай цифры.'
+    );
+    if (isSwimIntent(t)) {
       parts.push(
         'Клиент про купание: если ещё не говорил в этом диалоге — один раз укажи температуру воды формулировкой «в открытом море».'
       );
@@ -217,19 +262,37 @@ async function weatherPromptBlock(text) {
 }
 
 /**
- * Готовый ответ на вопрос о погоде (воздух + вода + предупреждение).
+ * Ответ на вопрос о погоде: по умолчанию воздух + вода.
+ * Ветер / ближайшие дни — только по прямому вопросу.
  * @returns {Promise<string|null>}
  */
 async function buildWeatherReply(text) {
   try {
-    const place = pickPlace(text);
+    const t = String(text || '');
+    const place = pickPlace(t);
     const w = await fetchPlaceWeather(place);
-    const lines = [`Сейчас в районе «${w.placeLabel}»:`];
+    const wantWind = isWindIntent(t);
+    const wantForecast = isForecastDaysIntent(t);
+    const lines = [];
+
+    if (wantWind && !WEATHER_INTENT_RE.test(t) && !wantForecast) {
+      lines.push(
+        w.windKmh != null
+          ? `Сейчас в районе «${w.placeLabel}» ветер — около ${w.windKmh} км/ч.`
+          : `Сейчас данные по ветру в районе «${w.placeLabel}» недоступны.`
+      );
+      return lines.join('\n');
+    }
+
+    lines.push(`Сейчас в районе «${w.placeLabel}»:`);
     if (w.airC != null) lines.push(`• воздух — около ${w.airC} °C, ${w.condition}`);
     if (w.waterC != null) lines.push(`• вода в открытом море — около ${w.waterC} °C`);
-    if (w.windKmh != null) lines.push(`• ветер — около ${w.windKmh} км/ч`);
-    if (w.worseningWarning) lines.push(w.worseningWarning);
-    lines.push('Выход в море при плохой погоде или закрытом порте могут перенести — уточняйте у капитана.');
+    if (wantWind && w.windKmh != null) lines.push(`• ветер — около ${w.windKmh} км/ч`);
+    if (wantForecast) {
+      const fc = formatForecastDays(w.daily);
+      if (fc) lines.push(fc);
+      if (w.worseningWarning) lines.push(w.worseningWarning);
+    }
     return lines.join('\n');
   } catch (err) {
     console.error('[weather] reply failed:', err.message);
@@ -257,6 +320,8 @@ module.exports = {
   PLACES,
   CACHE_TTL_MS,
   isWeatherIntent,
+  isWindIntent,
+  isForecastDaysIntent,
   isSwimIntent,
   alreadyMentionedOpenSeaWater,
   pickPlace,
