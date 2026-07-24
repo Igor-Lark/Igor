@@ -16,6 +16,7 @@ const {
 const { touchSession, markContact } = require('./no-contact');
 const { extractPhone } = require('./leads');
 const { alertAiFailure } = require('./ai-alert');
+const { isWeatherIntent, buildWeatherReply, weatherPromptBlock } = require('./weather');
 
 /**
  * @param {{
@@ -84,7 +85,31 @@ async function handleChat(input) {
     return { reply, provider: 'map', lead: null, mapUrl };
   }
 
-  const system = buildSystemPrompt();
+  // Погода — Open-Meteo (воздух + вода)
+  if (lastUser && isWeatherIntent(lastUser.content)) {
+    const reply = await buildWeatherReply(lastUser.content);
+    if (reply) {
+      logChatTurn({
+        sessionId: input.sessionId,
+        source: input.source || 'web',
+        username: input.username,
+        userText: lastUser.content,
+        reply,
+        provider: 'weather',
+        leadSent: false,
+        history: cleaned,
+      });
+      return { reply, provider: 'weather', lead: null };
+    }
+  }
+
+  let system = buildSystemPrompt();
+  try {
+    const wx = await weatherPromptBlock(lastUser ? lastUser.content : '');
+    if (wx) system = `${system}\n\n=== ПОГОДА СЕЙЧАС ===\n${wx}`;
+  } catch {
+    // ignore
+  }
 
   let reply;
   let provider;

@@ -24,6 +24,7 @@
 | Node.js API | `POST /api/chat` — ответы через YandexGPT или OpenAI |
 | Виджет | Кнопка 💬 на сайте Tilda (`/embed.js`) |
 | Telegram-бот | Тот же ИИ в Telegram + заявки менеджеру |
+| Погода | Open-Meteo: воздух + температура воды (Сириус / Сочи) |
 | База знаний | `knowledge/llms-full.txt` + `knowledge/faq-extra.md` |
 | Заявки | При «хочу забронировать» / телефоне → уведомление в **MAX** |
 
