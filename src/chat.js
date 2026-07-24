@@ -22,6 +22,7 @@ const {
   weatherPromptBlock,
   buildSwimWaterNote,
 } = require('./weather');
+const { isCapacityIntent, buildCapacityReply, capacityPromptBlock } = require('./fleet');
 
 /**
  * @param {{
@@ -108,10 +109,34 @@ async function handleChat(input) {
     }
   }
 
+  // Вместимость «на N человек» — только суда с max ≥ N (без LLM-ошибок)
+  if (lastUser && isCapacityIntent(lastUser.content)) {
+    const reply = buildCapacityReply(lastUser.content);
+    if (reply) {
+      logChatTurn({
+        sessionId: input.sessionId,
+        source: input.source || 'web',
+        username: input.username,
+        userText: lastUser.content,
+        reply,
+        provider: 'fleet',
+        leadSent: false,
+        history: cleaned,
+      });
+      return { reply, provider: 'fleet', lead: null };
+    }
+  }
+
   let system = buildSystemPrompt();
   try {
     const wx = await weatherPromptBlock(lastUser ? lastUser.content : '');
     if (wx) system = `${system}\n\n=== ПОГОДА СЕЙЧАС ===\n${wx}`;
+  } catch {
+    // ignore
+  }
+  try {
+    const cap = capacityPromptBlock(lastUser ? lastUser.content : '');
+    if (cap) system = `${system}\n\n=== ФИЛЬТР ПО ВМЕСТИМОСТИ ===\n${cap}`;
   } catch {
     // ignore
   }
