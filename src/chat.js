@@ -16,7 +16,12 @@ const {
 const { touchSession, markContact } = require('./no-contact');
 const { extractPhone } = require('./leads');
 const { alertAiFailure } = require('./ai-alert');
-const { isWeatherIntent, buildWeatherReply, weatherPromptBlock } = require('./weather');
+const {
+  isWeatherIntent,
+  buildWeatherReply,
+  weatherPromptBlock,
+  buildSwimWaterNote,
+} = require('./weather');
 
 /**
  * @param {{
@@ -121,6 +126,14 @@ async function handleChat(input) {
     console.error('[chat] AI failed:', err.message);
     alertAiFailure(err, { source: input.source || 'web' }).catch(() => {});
     throw err;
+  }
+
+  // Купание: один раз за диалог — t° воды «в открытом море»
+  if (lastUser) {
+    const swimNote = await buildSwimWaterNote(lastUser.content, cleaned);
+    if (swimNote) {
+      reply = `${reply}\n\n${swimNote}`;
+    }
   }
 
   let lead = null;
