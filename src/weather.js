@@ -34,9 +34,13 @@ const WEATHER_INTENT_RE =
 /** Прямой вопрос про ветер. */
 const WIND_INTENT_RE = /ветер|ветрен|шторм|волн\w*/i;
 
-/** Прямой вопрос про погоду на ближайшие дни. */
+/** Прямой вопрос про погоду на ближайшие 1–3 дня. */
 const FORECAST_DAYS_RE =
-  /ближайш\w*\s+дн|на\s+(2|3|два|три)\s+дн|через\s+(день|два|три)|на\s+выходн|прогноз\s+на|погода\s+на\s+(завтра|недел)/i;
+  /ближайш\w*\s+дн|на\s+(1|2|3|один|два|три)\s+дн|через\s+(день|два|три)|прогноз\s+на\s+(завтра|послезавтра)|погода\s+на\s+(завтра|послезавтра)|на\s+завтра|на\s+послезавтра/i;
+
+/** Запрос прогноза дольше 3 дней — таких данных не даём. */
+const LONG_FORECAST_RE =
+  /на\s+(4|5|6|7|четыре|пять|шесть|семь|\d{1,2})\s+дн|на\s+недел|на\s+месяц|через\s+(недел|месяц)|прогноз\s+на\s+недел|погода\s+на\s+недел|долгосрочн/i;
 
 /** Разговор о купании — один раз добавить t° воды «в открытом море». */
 const SWIM_INTENT_RE = /купан|купать|искупа|поплавать|в\s+море\s+плав|можно\s+ли\s+в\s+вод/i;
@@ -76,7 +80,12 @@ const WMO_RU = {
 
 function isWeatherIntent(text) {
   const t = String(text || '');
-  return WEATHER_INTENT_RE.test(t) || WIND_INTENT_RE.test(t) || FORECAST_DAYS_RE.test(t);
+  return (
+    WEATHER_INTENT_RE.test(t) ||
+    WIND_INTENT_RE.test(t) ||
+    FORECAST_DAYS_RE.test(t) ||
+    LONG_FORECAST_RE.test(t)
+  );
 }
 
 function isWindIntent(text) {
@@ -84,7 +93,14 @@ function isWindIntent(text) {
 }
 
 function isForecastDaysIntent(text) {
-  return FORECAST_DAYS_RE.test(String(text || ''));
+  const t = String(text || '');
+  // «на неделю» и т.п. — не короткий прогноз
+  if (isLongForecastIntent(t)) return false;
+  return FORECAST_DAYS_RE.test(t);
+}
+
+function isLongForecastIntent(text) {
+  return LONG_FORECAST_RE.test(String(text || ''));
 }
 
 function isSwimIntent(text) {
@@ -157,12 +173,14 @@ function detectWorsening(daily) {
 }
 
 /**
- * Краткий прогноз на 2–3 дня (только если клиент спросил).
+ * Прогноз на 3 дня вперёд (сегодня в daily[0] не включаем в список «ближайших»).
+ * Данные всегда тянем на 3 дня при запросе Open-Meteo.
  * @returns {string|null}
  */
 function formatForecastDays(daily) {
   if (!daily || !Array.isArray(daily.time) || !Array.isArray(daily.weather_code)) return null;
   const lines = [];
+  // i=1..3 — следующие 3 дня
   const n = Math.min(4, daily.time.length);
   for (let i = 1; i < n; i++) {
     const day = String(daily.time[i] || '').slice(5); // MM-DD
@@ -173,8 +191,12 @@ function formatForecastDays(daily) {
     );
   }
   if (!lines.length) return null;
-  return ['На ближайшие дни:', ...lines].join('\n');
+  return ['Прогноз на 3 дня:', ...lines].join('\n');
 }
+
+const LONG_FORECAST_REPLY =
+  'Прогноз больше чем на 3 дня у меня нет — на такой срок он часто бывает неточным. Могу сказать погоду сейчас и на ближайшие 3 дня.';
+
 
 /**
  * @param {{ lat: number, lon: number, id: string, label: string }} place
@@ -241,13 +263,17 @@ async function weatherPromptBlock(text) {
     if (w.airC != null) parts.push(`воздух ${w.airC} °C (${w.condition})`);
     if (w.waterC != null) parts.push(`вода в открытом море ${w.waterC} °C`);
     if (isWindIntent(t) && w.windKmh != null) parts.push(`ветер ${w.windKmh} км/ч`);
-    if (isForecastDaysIntent(t)) {
+    if (isLongForecastIntent(t)) {
+      parts.push(LONG_FORECAST_REPLY);
+      const fc = formatForecastDays(w.daily);
+      if (fc) parts.push(fc);
+    } else if (isForecastDaysIntent(t)) {
       const fc = formatForecastDays(w.daily);
       if (fc) parts.push(fc);
       if (w.worseningWarning) parts.push(w.worseningWarning);
     }
     parts.push(
-      'По умолчанию НЕ говори про ветер и НЕ предупреждай о плохой/ухудшающейся погоде — только если клиент сам спросил про ветер или погоду на ближайшие дни. Не выдумывай цифры.'
+      'По умолчанию НЕ говори про ветер и НЕ предупреждай о плохой погоде. Прогноз дальше 3 дней не давай — скажи, что таких данных нет и долгосрочный прогноз неточен. Не выдумывай цифры.'
     );
     if (isSwimIntent(t)) {
       parts.push(
@@ -273,7 +299,15 @@ async function buildWeatherReply(text) {
     const w = await fetchPlaceWeather(place);
     const wantWind = isWindIntent(t);
     const wantForecast = isForecastDaysIntent(t);
+    const wantLong = isLongForecastIntent(t);
     const lines = [];
+
+    if (wantLong) {
+      lines.push(LONG_FORECAST_REPLY);
+      const fc = formatForecastDays(w.daily);
+      if (fc) lines.push(fc);
+      return lines.join('\n');
+    }
 
     if (wantWind && !WEATHER_INTENT_RE.test(t) && !wantForecast) {
       lines.push(
@@ -322,6 +356,7 @@ module.exports = {
   isWeatherIntent,
   isWindIntent,
   isForecastDaysIntent,
+  isLongForecastIntent,
   isSwimIntent,
   alreadyMentionedOpenSeaWater,
   pickPlace,
