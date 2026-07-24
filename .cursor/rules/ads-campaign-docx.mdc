@@ -1,0 +1,17 @@
+---
+description: Word export for advertising campaign specs under ads/
+globs: ads/**/*
+alwaysApply: false
+---
+
+When creating or updating any advertising campaign specification under `ads/`:
+
+1. Write the source spec as Markdown (`.md`) with tables, numbered sections, and footer `*Клиент: …*`.
+2. Always generate a **readable Word document** using:
+   `python3 ads/scripts/md_spec_to_docx.py <path-to-spec.md> [--ads <path-to-ads.csv>]`
+   Never ship Word built by naive Markdown paste (raw `|`, `**`, or broken tables).
+3. Commit `.md`, `.docx`, and import CSVs together. Regenerate `.docx` after every material edit to `.md`.
+4. Optionally mirror files to `cursor/<client>/` and `локальная/<client>/` when that is the repo convention for the client.
+5. Give the user a **raw GitHub link** to the `.docx` when they need download.
+
+See `ads/README.md` for format details and appendix behavior for ads CSV.
