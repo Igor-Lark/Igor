@@ -2,7 +2,7 @@
 
 Рекламная группа для продвижения фасадных термопанелей с клинкерной плиткой **КлинкерПрофи** в **Приозерском районе** Ленинградской области.
 
-> **Отдельная кампания с оплатой за конверсии:** см. [`termopaneli-priozersky-campaign-cpa.md`](termopaneli-priozersky-campaign-cpa.md) (стратегия «Максимум конверсий», CPA, UTM `termopaneli_priozersk_cpa`).
+> **Отдельная поисковая кампания (CPA):** см. [`termopaneli-priozersky-campaign-cpa.md`](termopaneli-priozersky-campaign-cpa.md) и Word [`termopaneli-priozersky-campaign-cpa.docx`](termopaneli-priozersky-campaign-cpa.docx) — «Максимум конверсий», только Поиск, UTM `termopaneli_priozersk_cpa_search`.
 
 > **Бренд:** в объявлениях и названиях кампаний — только **КлинкерПрофи** (не Marmara PRO / «Мармара Про»).
 
