@@ -34,13 +34,19 @@ const WEATHER_INTENT_RE =
 /** Прямой вопрос про ветер. */
 const WIND_INTENT_RE = /ветер|ветрен|шторм|волн\w*/i;
 
-/** Прямой вопрос про погоду на ближайшие 1–3 дня. */
+/** Прямой вопрос про погоду на ближайшие 1–3 дня / завтра / послезавтра. */
 const FORECAST_DAYS_RE =
-  /ближайш[а-яё]*\s+(\d+\s+)?дн|на\s+(1|2|3|один|два|три)\s+дн|через\s+(день|два|три)|прогноз\s+на\s+(завтра|послезавтра)|погода\s+на\s+(завтра|послезавтра)|на\s+завтра|на\s+послезавтра/i;
+  /ближайш[а-яё]*\s+(\d+\s+)?дн|на\s+(1|2|3|один|два|три)\s+дн|через\s+(день|два|три)|прогноз\s+на\s+(завтра|послезавтра)|погода\s+на\s+(завтра|послезавтра)|на\s+завтра|на\s+послезавтра|(^|[^\p{L}])завтра([^\p{L}]|$)|(^|[^\p{L}])послезавтра([^\p{L}]|$)/iu;
 
 /** Запрос прогноза дольше 3 дней — таких данных не даём. */
 const LONG_FORECAST_RE =
   /на\s+(4|5|6|7|четыре|пять|шесть|семь|[4-9]\d?|1\d)\s+дн|на\s+недел|на\s+месяц|через\s+(недел|месяц)|прогноз\s+на\s+недел|погода\s+на\s+недел|долгосрочн/i;
+
+/** Только завтра (не «ближайшие дни»). */
+const TOMORROW_ONLY_RE = /(?<!после)завтра/i;
+
+/** Только послезавтра. */
+const DAY_AFTER_ONLY_RE = /послезавтра/i;
 
 /** Разговор о купании — один раз добавить t° воды «в открытом море». */
 const SWIM_INTENT_RE = /купан|купать|искупа|поплавать|в\s+море\s+плав|можно\s+ли\s+в\s+вод/i;
@@ -125,16 +131,6 @@ function weatherCodeRu(code) {
   return WMO_RU[n] || 'по данным метеослужбы';
 }
 
-function severity(code) {
-  const n = Number(code);
-  if (Number.isNaN(n)) return 0;
-  if (n >= 95) return 4;
-  if (n >= 80 || (n >= 61 && n <= 67)) return 3;
-  if (n >= 51) return 2;
-  if (n >= 3) return 1;
-  return 0;
-}
-
 function round1(n) {
   if (n == null || Number.isNaN(Number(n))) return null;
   return Math.round(Number(n) * 10) / 10;
@@ -147,51 +143,63 @@ async function fetchJson(url) {
 }
 
 /**
- * Ухудшение в ближайшие 2–3 дня относительно сегодня.
- * @returns {string|null}
+ * Какой прогноз нужен по тексту клиента.
+ * @returns {{ mode: 'single', offset: 1|2, label: string } | { mode: 'range', days: number } | null}
  */
-function detectWorsening(daily) {
-  if (!daily || !Array.isArray(daily.weather_code) || daily.weather_code.length < 2) return null;
-  const codes = daily.weather_code;
-  const precip = daily.precipitation_sum || [];
-  const wind = daily.wind_speed_10m_max || [];
-  const todaySev = severity(codes[0]);
-  const todayPrecip = Number(precip[0]) || 0;
-  const todayWind = Number(wind[0]) || 0;
-
-  let worse = false;
-  for (let i = 1; i <= 3 && i < codes.length; i++) {
-    const sev = severity(codes[i]);
-    const p = Number(precip[i]) || 0;
-    const w = Number(wind[i]) || 0;
-    if (sev >= 3 && sev > todaySev) worse = true;
-    if (p >= 5 && p > todayPrecip + 2) worse = true;
-    if (w >= 40 && w > todayWind + 10) worse = true;
+function parseForecastTarget(text) {
+  const t = String(text || '');
+  if (!isForecastDaysIntent(t)) return null;
+  if (DAY_AFTER_ONLY_RE.test(t)) {
+    return { mode: 'single', offset: 2, label: 'послезавтра' };
   }
-  if (!worse) return null;
-  return 'В ближайшие 2–3 дня погода может ухудшиться — дату выхода лучше уточнить у капитана.';
+  if (TOMORROW_ONLY_RE.test(t)) {
+    return { mode: 'single', offset: 1, label: 'завтра' };
+  }
+  if (/на\s+(1|один)\s+дн|через\s+день/i.test(t)) {
+    return { mode: 'single', offset: 1, label: 'завтра' };
+  }
+  if (/на\s+(2|два)\s+дн|через\s+два/i.test(t)) {
+    return { mode: 'range', days: 2 };
+  }
+  // «ближайшие дни», «на 3 дня», «через три» и т.п.
+  return { mode: 'range', days: 3 };
+}
+
+function formatDayLine(daily, index, label) {
+  if (!daily || !Array.isArray(daily.time) || index >= daily.time.length) return null;
+  const date = String(daily.time[index] || '').slice(5); // MM-DD
+  const cond = weatherCodeRu(daily.weather_code[index]);
+  const tMax = daily.temperature_2m_max ? round1(daily.temperature_2m_max[index]) : null;
+  const title = label ? `${label} (${date})` : date;
+  return tMax != null ? `• ${title}: ${cond}, до ${tMax} °C` : `• ${title}: ${cond}`;
 }
 
 /**
- * Прогноз на 3 дня вперёд (сегодня в daily[0] не включаем в список «ближайших»).
- * Данные всегда тянем на 3 дня при запросе Open-Meteo.
+ * Прогноз по цели: один день (завтра/послезавтра) или диапазон ближайших дней.
+ * Сегодня в daily[0] не включаем.
  * @returns {string|null}
  */
-function formatForecastDays(daily) {
+function formatForecastDays(daily, target) {
   if (!daily || !Array.isArray(daily.time) || !Array.isArray(daily.weather_code)) return null;
+  const tgt = target || { mode: 'range', days: 3 };
+
+  if (tgt.mode === 'single') {
+    const line = formatDayLine(daily, tgt.offset, tgt.label);
+    if (!line) return null;
+    return [`Погода ${tgt.label}:`, line].join('\n');
+  }
+
   const lines = [];
-  // i=1..3 — следующие 3 дня
-  const n = Math.min(4, daily.time.length);
+  const n = Math.min(1 + tgt.days, daily.time.length);
+  const labels = { 1: 'завтра', 2: 'послезавтра' };
   for (let i = 1; i < n; i++) {
-    const day = String(daily.time[i] || '').slice(5); // MM-DD
-    const cond = weatherCodeRu(daily.weather_code[i]);
-    const tMax = daily.temperature_2m_max ? round1(daily.temperature_2m_max[i]) : null;
-    lines.push(
-      tMax != null ? `• ${day}: ${cond}, до ${tMax} °C` : `• ${day}: ${cond}`
-    );
+    const line = formatDayLine(daily, i, labels[i] || null);
+    if (line) lines.push(line);
   }
   if (!lines.length) return null;
-  return ['Прогноз на 3 дня:', ...lines].join('\n');
+  const title =
+    tgt.days === 2 ? 'Прогноз на 2 дня:' : 'Прогноз на 3 дня:';
+  return [title, ...lines].join('\n');
 }
 
 const LONG_FORECAST_REPLY =
@@ -227,7 +235,6 @@ async function fetchPlaceWeather(place) {
     windKmh: round1(air?.current?.wind_speed_10m),
     condition: weatherCodeRu(air?.current?.weather_code),
     daily: air?.daily || null,
-    worseningWarning: detectWorsening(air?.daily),
     fromCache: false,
   };
 
@@ -251,7 +258,7 @@ function openSeaWaterLine(waterC) {
 
 /**
  * Краткий блок для системного промпта (не выдумывать погоду).
- * Ветер и «ухудшение» — только если клиент сам спросил.
+ * Ветер — только если клиент сам спросил. Про ухудшение не говорить никогда.
  * @returns {Promise<string>}
  */
 async function weatherPromptBlock(text) {
@@ -259,22 +266,32 @@ async function weatherPromptBlock(text) {
     const t = String(text || '');
     const place = pickPlace(t);
     const w = await fetchPlaceWeather(place);
-    const parts = [`Актуальная погода (${w.placeLabel}, Open-Meteo, МСК):`];
-    if (w.airC != null) parts.push(`воздух ${w.airC} °C (${w.condition})`);
-    if (w.waterC != null) parts.push(`вода в открытом море ${w.waterC} °C`);
-    if (isWindIntent(t) && w.windKmh != null) parts.push(`ветер ${w.windKmh} км/ч`);
-    if (isLongForecastIntent(t)) {
-      parts.push(LONG_FORECAST_REPLY);
-      const fc = formatForecastDays(w.daily);
+    const target = parseForecastTarget(t);
+    const parts = [];
+
+    if (target && target.mode === 'single') {
+      const fc = formatForecastDays(w.daily, target);
       if (fc) parts.push(fc);
-    } else if (isForecastDaysIntent(t)) {
-      const fc = formatForecastDays(w.daily);
-      if (fc) parts.push(fc);
-      if (w.worseningWarning) parts.push(w.worseningWarning);
+      parts.push(
+        `Ответь ТОЛЬКО про ${target.label} (воздух/условия на этот день). Не добавляй «сейчас», другие дни и не говори про ухудшение погоды.`
+      );
+    } else {
+      parts.push(`Актуальная погода (${w.placeLabel}, Open-Meteo, МСК):`);
+      if (w.airC != null) parts.push(`воздух ${w.airC} °C (${w.condition})`);
+      if (w.waterC != null) parts.push(`вода в открытом море ${w.waterC} °C`);
+      if (isWindIntent(t) && w.windKmh != null) parts.push(`ветер ${w.windKmh} км/ч`);
+      if (isLongForecastIntent(t)) {
+        parts.push(LONG_FORECAST_REPLY);
+        const fc = formatForecastDays(w.daily, { mode: 'range', days: 3 });
+        if (fc) parts.push(fc);
+      } else if (target) {
+        const fc = formatForecastDays(w.daily, target);
+        if (fc) parts.push(fc);
+      }
+      parts.push(
+        'По умолчанию НЕ говори про ветер. НИКОГДА не говори про ухудшение погоды / «может ухудшиться». Прогноз дальше 3 дней не давай — скажи, что таких данных нет и долгосрочный прогноз неточен. Не выдумывай цифры.'
+      );
     }
-    parts.push(
-      'По умолчанию НЕ говори про ветер и НЕ предупреждай о плохой погоде. Прогноз дальше 3 дней не давай — скажи, что таких данных нет и долгосрочный прогноз неточен. Не выдумывай цифры.'
-    );
     if (isSwimIntent(t)) {
       parts.push(
         'Клиент про купание: если ещё не говорил в этом диалоге — один раз укажи температуру воды формулировкой «в открытом море».'
@@ -289,7 +306,8 @@ async function weatherPromptBlock(text) {
 
 /**
  * Ответ на вопрос о погоде: по умолчанию воздух + вода.
- * Ветер / ближайшие дни — только по прямому вопросу.
+ * «Завтра» / «послезавтра» — только этот день. Ветер / диапазон — по прямому вопросу.
+ * Про ухудшение не говорим никогда.
  * @returns {Promise<string|null>}
  */
 async function buildWeatherReply(text) {
@@ -298,18 +316,25 @@ async function buildWeatherReply(text) {
     const place = pickPlace(t);
     const w = await fetchPlaceWeather(place);
     const wantWind = isWindIntent(t);
-    const wantForecast = isForecastDaysIntent(t);
+    const target = parseForecastTarget(t);
     const wantLong = isLongForecastIntent(t);
     const lines = [];
 
     if (wantLong) {
       lines.push(LONG_FORECAST_REPLY);
-      const fc = formatForecastDays(w.daily);
+      const fc = formatForecastDays(w.daily, { mode: 'range', days: 3 });
       if (fc) lines.push(fc);
       return lines.join('\n');
     }
 
-    if (wantWind && !WEATHER_INTENT_RE.test(t) && !wantForecast) {
+    // «Погода на завтра/послезавтра» — только этот день, без «сейчас»
+    if (target && target.mode === 'single') {
+      const fc = formatForecastDays(w.daily, target);
+      if (fc) return fc;
+      return `Пока нет данных по погоде ${target.label} в районе «${w.placeLabel}».`;
+    }
+
+    if (wantWind && !WEATHER_INTENT_RE.test(t) && !target) {
       lines.push(
         w.windKmh != null
           ? `Сейчас в районе «${w.placeLabel}» ветер — около ${w.windKmh} км/ч.`
@@ -322,10 +347,9 @@ async function buildWeatherReply(text) {
     if (w.airC != null) lines.push(`• воздух — около ${w.airC} °C, ${w.condition}`);
     if (w.waterC != null) lines.push(`• вода в открытом море — около ${w.waterC} °C`);
     if (wantWind && w.windKmh != null) lines.push(`• ветер — около ${w.windKmh} км/ч`);
-    if (wantForecast) {
-      const fc = formatForecastDays(w.daily);
+    if (target) {
+      const fc = formatForecastDays(w.daily, target);
       if (fc) lines.push(fc);
-      if (w.worseningWarning) lines.push(w.worseningWarning);
     }
     return lines.join('\n');
   } catch (err) {
@@ -360,6 +384,8 @@ module.exports = {
   isSwimIntent,
   alreadyMentionedOpenSeaWater,
   pickPlace,
+  parseForecastTarget,
+  formatForecastDays,
   fetchPlaceWeather,
   prefetchWeather,
   openSeaWaterLine,
