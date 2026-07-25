@@ -10,6 +10,8 @@
 
 **Прод:** `https://klinker.webtaxi2.ru` · порт на VPS **`3001`** (boat обычно `3000`).
 
+**Подробный запуск на VPS:** [DEPLOY.md](DEPLOY.md)
+
 ## База знаний
 
 - `knowledge/faq.md` — FAQ по термопанелям (копия из `agents/termopaneli/faq.md` в репозитории).
