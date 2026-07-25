@@ -170,7 +170,12 @@
       '<svg class="kpb-ico" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.9 11.1c.5.5.5 1.3 0 1.8l-6.3 6.3-1.5-1.5 4.7-4.7H3.2v-2.1h14.6l-4.7-4.7 1.5-1.5 6.3 6.4z" fill="currentColor"/></svg>';
     var ICON_CLOSE =
       '<svg class="kpb-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.4 6.4l11.2 11.2M17.6 6.4L6.4 17.6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
-    var BTN_LABEL = '<span class="kpb-btn-label">помощник</span>';
+    var ICON_HOME =
+      '<svg class="kpb-btn-home" width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10h16v9H4z" stroke="currentColor" stroke-width="1.5"/><path d="M7 14h3v3H7zM14 14h3v3h-3z" fill="currentColor" opacity="0.92"/><path d="M6 10V7l6-4 6 4v3" stroke="currentColor" stroke-width="1.5"/></svg>';
+    var BTN_LABEL =
+      '<span class="kpb-btn-icon">' +
+      ICON_HOME +
+      '</span><span class="kpb-btn-copy"><span class="kpb-btn-line1">AI помощник</span><span class="kpb-btn-line2">знаю ответы, сделаю расчёт</span></span>';
     var LOGO_URL =
       'https://static.tildacdn.com/tild6661-3037-4234-b636-643434333430/Group_6302_1.svg';
     var autoIntroActive = !hasSeenIntro();
@@ -182,9 +187,9 @@
     var COLLAPSE_MS = 450;
     var compactClearTimer = 0;
     var deskModalClearTimer = 0;
-    /** Кнопка «помощник» (border-box): высота 48px, min-width 56px, padding 8×14px, border 2px */
-    var FAB_HEIGHT_PX = 48;
-    var FAB_MIN_WIDTH_PX = 56;
+    /** Кнопка виджета: ~2× ширина, 2 строки текста, border 2px, radius 10px */
+    var FAB_HEIGHT_PX = 56;
+    var FAB_MIN_WIDTH_PX = 200;
     var DESKTOP_MQ = '(min-width:1025px)';
 
     function isDesktopUi() {
@@ -203,7 +208,7 @@
       '#kpb-root *{box-sizing:border-box;font-family:inherit}',
       '#kpb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#kpb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#kpb-btn{all:initial;position:fixed !important;right:16px !important;bottom:70px !important;min-width:56px !important;height:48px !important;border:2px solid #ffffff !important;border-radius:5px !important;cursor:pointer;background:#d54d00 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(213,77,0,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:center;gap:6px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:8px 14px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#kpb-btn{all:initial;position:fixed !important;right:16px !important;bottom:70px !important;min-width:200px !important;max-width:min(280px,calc(100vw - 32px)) !important;height:56px !important;border:2px solid #ffffff !important;border-radius:10px !important;cursor:pointer;background:#d54d00 !important;color:#fff !important;line-height:1.1 !important;box-shadow:0 8px 24px rgba(213,77,0,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:flex-start;gap:10px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:8px 14px 8px 12px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#kpb-btn.kpb-hidden,#kpb-btn.kpb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       '#kpb-btn.kpb-pre-show{display:flex !important;visibility:visible !important;opacity:0 !important;pointer-events:none !important}',
       '#kpb-btn.kpb-attention{animation:kpbFabPulse .55s ease-in-out 3 !important}',
@@ -212,7 +217,11 @@
       '#kpb-panel.kpb-collapsing #kpb-msgs,#kpb-panel.kpb-collapsing #kpb-form{opacity:0;transition:opacity .15s ease}',
       '#kpb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
       '#kpb-btn:hover{background:#c04500 !important}',
-      '#kpb-btn .kpb-btn-label{font-size:15px;font-weight:600;letter-spacing:.02em;line-height:1;white-space:nowrap}',
+      '#kpb-btn .kpb-btn-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:32px;height:32px}',
+      '#kpb-btn .kpb-btn-home{display:block;width:32px;height:32px}',
+      '#kpb-btn .kpb-btn-copy{display:flex;flex-direction:column;align-items:stretch;justify-content:center;flex:1;min-width:0;width:11.25rem;text-align:center}',
+      '#kpb-btn .kpb-btn-line1{display:block;font-size:14px;font-weight:700;letter-spacing:.01em;line-height:1.15;white-space:nowrap}',
+      '#kpb-btn .kpb-btn-line2{display:block;font-size:10.5px;font-weight:500;letter-spacing:-.02em;line-height:1.2;white-space:nowrap;opacity:.96;margin-top:2px}',
       '#kpb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform ' +
         PANEL_SLIDE_MS / 1000 +
         's ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
@@ -239,7 +248,8 @@
       '#kpb-form{display:flex;gap:8px;padding:10px;padding-bottom:16px;margin-bottom:30px;border-top:1px solid #e2e8f0;background:#fff;flex-shrink:0}',
       '#kpb-input{flex:1;border:1px solid #cbd5e1;border-radius:5px;padding:10px 12px;font-size:16px;outline:none}',
       '#kpb-input:focus{border-color:#6B5344}',
-      '#kpb-send{border:0;border-radius:5px;background:#6B5344;color:#fff;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}',
+      '#kpb-send{border:0;border-radius:5px;background:#d54d00;color:#fff;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}',
+      '#kpb-send:hover{background:#c04500}',
       '#kpb-send:disabled{opacity:.6;cursor:default}',
       '#kpb-send .kpb-ico{width:20px;height:20px}',
       '@media (min-width:1025px){#kpb-btn{bottom:' +
