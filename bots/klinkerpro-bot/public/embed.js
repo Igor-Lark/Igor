@@ -132,23 +132,12 @@
     var sending = false;
     var botName = 'КлинкерПрофи';
     var greeting =
-      'Здравствуйте! Отвечу на Ваши вопросы, помогу с выбором яхты или катера.\nКапитан Олег часто в море — связь может быть неустойчивой. Наталья: {{tel:+79183044000|+7 918 304-40-00}}.\nСпрашивайте у меня — или оставьте заявку на обратный звонок на сайте.';
+      'Здравствуйте! Я консультант КлинкерПрофи.\nРасскажу про фасадные термопанели, клинкер и клинкерный кирpich на фасаде.\nЗадайте вопрос — отвечу по делу.';
     var unavailableReply = [
-      'Сейчас помощник временно недоступен. Свяжитесь с нами:',
+      'Сейчас помощник временно недоступен. Свяжитесь с КлинкерПрофи:',
       '',
-      'Капитан Олег',
-      '+7 917 675 0555',
-      'https://wa.me/79176750555',
-      'https://t.me/Oleg_700',
-      'https://max.ru/u/f9LHodD0cOLfwfVnOTd4z8W-cQP1Wvx427sjPPALmFsnT4at-1pMe4Y5NF4',
-      '',
-      'Наталья',
-      '+7 918 304-40-00',
-      'https://wa.me/79183044000',
-      'https://t.me/nata_rybiy',
-      'https://max.ru/u/f9LHodD0cOI8OH4kIB7PsiV6jWNHRWg_O33iJTe5q_TJs73hHe1YBcSMwKk',
-      '',
-      'Или оставьте заявку на обратный звонок на сайте: https://marmara-pro.ru/termo',
+      '+7 (921) 745-77-55',
+      'https://marmara-pro.ru/termo',
     ].join('\n');
 
     var ICON_ARROW =
@@ -202,7 +191,7 @@
       '#kpb-root .kpb-msg.user a.kpb-tel,#kpb-root .kpb-msg.user a.kpb-link{color:#fff !important}',
       '#kpb-root .kpb-msg.sys a.kpb-tel,#kpb-root .kpb-msg.sys a.kpb-link{color:#204360 !important}',
       '.kpb-map{max-width:100%;border-radius:5px;margin-top:8px;display:block}',
-      '#kpb-form{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e8f0;background:#fff;flex-shrink:0}',
+      '#kpb-form{display:flex;gap:8px;padding:10px;padding-bottom:16px;margin-bottom:30px;border-top:1px solid #e2e8f0;background:#fff;flex-shrink:0}',
       '#kpb-input{flex:1;border:1px solid #cbd5e1;border-radius:5px;padding:10px 12px;font-size:14px;outline:none}',
       '#kpb-input:focus{border-color:#204360}',
       '#kpb-send{border:0;border-radius:5px;background:#204360;color:#fff;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}',
