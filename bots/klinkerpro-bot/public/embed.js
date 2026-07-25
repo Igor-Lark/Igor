@@ -65,7 +65,7 @@
   var ZAKAZ_URL_RE =
     /(?:https?:\/\/marmara-pro\.ru\/)?#(?:bot|zakaz)\b/gi;
 
-  /** Latin p/e в «кирpich» → кириллица (на экране не должно быть «двойной р»). */
+  /** Исправляет лatinицу p/e в слове «кирpich» в тексте чата. */
   function normalizeCyrillicBrick(text) {
     return String(text)
       .replace(/\u043a\u0438\u0440p(?=\u0438\u0447)/gi, '\u043a\u0438\u0440\u043f')
@@ -156,33 +156,15 @@
     var LOGO_URL =
       'https://static.tildacdn.com/tild6661-3037-4234-b636-643434333430/Group_6302_1.svg';
     var autoIntroActive = true;
-    var introCollapseTimer = 0;
+    var introStartScrollY = 0;
+    var INTRO_SCROLL_PX = 50;
+    var INTRO_OPEN_DELAY_MS = 1000;
+    var PANEL_SLIDE_MS = 2000;
     var collapsing = false;
     var COLLAPSE_MS = 450;
-    var INTRO_AUTO_COLLAPSE_MS = 7000;
-
-    function clearIntroCollapseTimer() {
-      if (introCollapseTimer) {
-        clearTimeout(introCollapseTimer);
-        introCollapseTimer = 0;
-      }
-    }
-
-    function scheduleIntroCollapse() {
-      clearIntroCollapseTimer();
-      if (!autoIntroActive) return;
-      introCollapseTimer = setTimeout(function () {
-        introCollapseTimer = 0;
-        if (autoIntroActive && open && panel.classList.contains('kpb-compact')) {
-          setOpen(false, { collapseToFab: true });
-          endAutoIntro();
-        }
-      }, INTRO_AUTO_COLLAPSE_MS);
-    }
 
     function endAutoIntro() {
       autoIntroActive = false;
-      clearIntroCollapseTimer();
       btn.classList.remove('kpb-scroll-hidden');
     }
 
@@ -202,7 +184,9 @@
       '#kpb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
       '#kpb-btn:hover{background:#d54d00 !important}',
       '#kpb-btn .kpb-btn-label{font-size:15px;font-weight:600;letter-spacing:.02em;line-height:1;white-space:nowrap}',
-      '#kpb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
+      '#kpb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform ' +
+        PANEL_SLIDE_MS / 1000 +
+        's ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
       '#kpb-panel.open{transform:translateX(0)}',
       '#kpb-panel.kpb-compact{height:37.5vh;max-height:37.5vh}',
       '#kpb-head{position:relative;background:#6B5344;color:#fff;min-height:56px;padding:10px 44px 10px 14px;display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-shrink:0;flex-wrap:nowrap}',
@@ -273,7 +257,6 @@
     var input = root.querySelector('#kpb-input');
     var sendBtn = root.querySelector('#kpb-send');
     var title = root.querySelector('#kpb-title');
-    var INTRO_SCROLL_PX = 80;
 
     function pageScrollY() {
       return (
@@ -289,8 +272,12 @@
     }
 
     function onPageScrollIntro() {
-      if (autoIntroActive && open && pageScrollY() >= INTRO_SCROLL_PX) {
-        setOpen(false, { collapseToFab: true });
+      if (
+        autoIntroActive &&
+        open &&
+        pageScrollY() - introStartScrollY >= INTRO_SCROLL_PX
+      ) {
+        setOpen(false, { collapseToFab: false });
         endAutoIntro();
       }
       schedulePinFab();
@@ -392,7 +379,6 @@
     function collapsePanelToFab() {
       if (collapsing) return;
       collapsing = true;
-      clearIntroCollapseTimer();
       open = false;
       backdrop.classList.remove('open');
       document.documentElement.style.overflow = '';
@@ -455,21 +441,16 @@
     }
 
     function shouldCollapseToFab(opts) {
-      if (opts.collapseToFab === true) return true;
-      if (opts.collapseToFab === false) return false;
-      return autoIntroActive && panel.classList.contains('kpb-compact');
+      return opts.collapseToFab === true;
     }
 
     function setOpen(v, opts) {
       opts = opts || {};
-      if (!v && open) {
-        if (shouldCollapseToFab(opts)) {
-          collapsePanelToFab();
-          return;
-        }
+      if (!v && open && shouldCollapseToFab(opts)) {
+        collapsePanelToFab();
+        return;
       }
       if (v) {
-        clearIntroCollapseTimer();
         collapsing = false;
         resetPanelInlineStyles();
         panel.classList.remove('kpb-collapsing');
@@ -485,9 +466,6 @@
       btn.setAttribute('aria-hidden', open ? 'true' : 'false');
       var lockScroll = open && opts.lockScroll !== false;
       document.documentElement.style.overflow = lockScroll ? 'hidden' : '';
-      if (open && opts.compact === true) {
-        scheduleIntroCollapse();
-      }
       if (!open) {
         schedulePinFab();
       }
@@ -498,8 +476,7 @@
       setOpen(true, { backdrop: true, lockScroll: true, compact: false });
     });
     closeBtn.addEventListener('click', function () {
-      var compact = panel.classList.contains('kpb-compact');
-      setOpen(false, compact ? { collapseToFab: true } : {});
+      setOpen(false, { collapseToFab: false });
       endAutoIntro();
     });
     backdrop.addEventListener('click', function () {
@@ -580,7 +557,11 @@
         title.textContent = botName;
         addBubble(greeting, 'bot');
         if (autoIntroActive) {
-          setOpen(true, { backdrop: false, lockScroll: false, compact: true });
+          introStartScrollY = pageScrollY();
+          setTimeout(function () {
+            if (!autoIntroActive) return;
+            setOpen(true, { backdrop: false, lockScroll: false, compact: true });
+          }, INTRO_OPEN_DELAY_MS);
         }
       });
   }
