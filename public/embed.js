@@ -202,7 +202,7 @@
       '#bsb-root .bsb-msg.user a.bsb-tel,#bsb-root .bsb-msg.user a.bsb-link{color:#fff !important}',
       '#bsb-root .bsb-msg.sys a.bsb-tel,#bsb-root .bsb-msg.sys a.bsb-link{color:#204360 !important}',
       '.bsb-map{max-width:100%;border-radius:5px;margin-top:8px;display:block}',
-      '#bsb-form{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e8f0;background:#fff;flex-shrink:0}',
+      '#bsb-form{display:flex;gap:8px;padding:10px 10px 40px;border-top:1px solid #e2e8f0;background:#fff;flex-shrink:0}',
       '#bsb-input{flex:1;border:1px solid #cbd5e1;border-radius:5px;padding:10px 12px;font-size:14px;outline:none}',
       '#bsb-input:focus{border-color:#204360}',
       '#bsb-send{border:0;border-radius:5px;background:#204360;color:#fff;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}',
