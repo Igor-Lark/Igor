@@ -163,6 +163,15 @@
     var collapsing = false;
     var COLLAPSE_MS = 450;
     var compactClearTimer = 0;
+    var deskModalClearTimer = 0;
+    /** Кнопка «помощник» (border-box): высота 48px, min-width 56px, padding 8×14px, border 2px */
+    var FAB_HEIGHT_PX = 48;
+    var FAB_MIN_WIDTH_PX = 56;
+    var DESKTOP_MQ = '(min-width:1025px)';
+
+    function isDesktopUi() {
+      return window.matchMedia(DESKTOP_MQ).matches;
+    }
 
     function endAutoIntro() {
       autoIntroActive = false;
@@ -214,7 +223,10 @@
       '#kpb-send{border:0;border-radius:5px;background:#6B5344;color:#fff;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center}',
       '#kpb-send:disabled{opacity:.6;cursor:default}',
       '#kpb-send .kpb-ico{width:20px;height:20px}',
-      /* та же компоновка шапки, что на десктопе — только компактнее */
+      '@media (min-width:1025px){#kpb-btn{bottom:' +
+        (70 + 3 * FAB_HEIGHT_PX) +
+        'px !important}#kpb-panel.kpb-desk-modal{position:fixed;left:20vw;top:20vh;right:auto;bottom:auto;width:60vw;height:60vh;max-width:60vw;max-height:60vh;border-radius:5px;box-shadow:0 24px 60px rgba(15,23,42,.25);transform:translateX(100vw)}#kpb-panel.kpb-desk-modal.open{transform:translateX(0)}}',
+      /* планшет/мобила — без изменений в этом релизе */
       '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-panel.kpb-compact{height:37.5vh;max-height:37.5vh}#kpb-head{min-height:52px;padding:8px 40px 8px 12px}#kpb-head .kpb-logo{height:30px;max-width:110px}#kpb-head-label{font-size:16px}}',
       '@media (max-width:480px){#kpb-panel{height:70vh;max-height:70vh}#kpb-panel.kpb-compact{height:35vh;max-height:35vh}#kpb-head{min-height:48px;padding:8px 36px 8px 10px}#kpb-head .kpb-logo{height:26px;max-width:96px}#kpb-head-label{font-size:15px}#kpb-close{right:6px;top:6px}#kpb-close .kpb-ico{width:18px;height:18px}}',
     ].join('');
@@ -291,7 +303,7 @@
     function fabBaseBottom() {
       if (window.matchMedia('(max-width:480px)').matches) return 160;
       if (window.matchMedia('(max-width:1024px)').matches) return 150;
-      return 70;
+      return 70 + 3 * FAB_HEIGHT_PX;
     }
 
     /** Вертикальный планшет: 600–1024px в портрете. */
@@ -308,11 +320,9 @@
       var w = btn.offsetWidth || 56;
       var h = btn.offsetHeight || 56;
       var tablet = isPortraitTablet();
-      var desktop = !window.matchMedia('(max-width:1024px)').matches;
       // планшет портрет: влево на ширину кнопки, вверх на её высоту
-      // десктоп: вверх на две ширины кнопки
       var right = 16 + (tablet ? w : 0);
-      var lift = tablet ? h : desktop ? 2 * w : 0;
+      var lift = tablet ? h : 0;
       btn.style.right = right + 'px';
       btn.style.left = 'auto';
       if (!vv) {
@@ -461,6 +471,10 @@
           clearTimeout(compactClearTimer);
           compactClearTimer = 0;
         }
+        if (deskModalClearTimer) {
+          clearTimeout(deskModalClearTimer);
+          deskModalClearTimer = 0;
+        }
         resetPanelInlineStyles();
         panel.classList.remove('kpb-collapsing');
         btn.classList.remove('kpb-pre-show', 'kpb-attention');
@@ -470,6 +484,10 @@
       panel.classList.toggle('open', open);
       if (open) {
         panel.classList.toggle('kpb-compact', opts.compact === true);
+        panel.classList.toggle(
+          'kpb-desk-modal',
+          isDesktopUi() && opts.compact !== true
+        );
       } else if (wasOpen && (opts.keepCompactUntilClosed || panel.classList.contains('kpb-compact'))) {
         if (compactClearTimer) clearTimeout(compactClearTimer);
         compactClearTimer = setTimeout(function () {
@@ -478,6 +496,15 @@
         }, PANEL_SLIDE_MS + 40);
       } else if (!open) {
         panel.classList.remove('kpb-compact');
+      }
+      if (!open && wasOpen && panel.classList.contains('kpb-desk-modal')) {
+        if (deskModalClearTimer) clearTimeout(deskModalClearTimer);
+        deskModalClearTimer = setTimeout(function () {
+          deskModalClearTimer = 0;
+          if (!open) panel.classList.remove('kpb-desk-modal');
+        }, PANEL_SLIDE_MS + 40);
+      } else if (!open && !wasOpen) {
+        panel.classList.remove('kpb-desk-modal');
       }
       var showBackdrop = open && opts.backdrop !== false;
       backdrop.classList.toggle('open', showBackdrop);
