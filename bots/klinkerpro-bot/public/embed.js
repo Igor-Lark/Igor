@@ -147,12 +147,11 @@
     var BTN_LABEL = '<span class="kpb-btn-label">помощник</span>';
     var LOGO_URL =
       'https://static.tildacdn.com/tild3834-3566-4635-a531-343234633735/LOGO_.svg';
-    var INTRO_KEY = 'klinkerpro_bot_intro_v2';
-    var introPending = false;
-    try {
-      introPending = !localStorage.getItem(INTRO_KEY);
-    } catch (eIntro) {
-      introPending = false;
+    var autoIntroActive = true;
+
+    function endAutoIntro() {
+      autoIntroActive = false;
+      btn.classList.remove('kpb-scroll-hidden');
     }
 
     var style = document.createElement('style');
@@ -221,7 +220,7 @@
     btn.setAttribute('aria-label', 'Открыть ИИ-помощника');
     btn.title = 'ИИ-помощник';
     btn.innerHTML = BTN_LABEL;
-    if (introPending) {
+    if (autoIntroActive) {
       btn.classList.add('kpb-hidden');
     } else {
       btn.classList.remove('kpb-scroll-hidden');
@@ -238,17 +237,6 @@
     var title = root.querySelector('#kpb-title');
     var INTRO_SCROLL_PX = 80;
 
-    function markIntroDone() {
-      if (!introPending) return;
-      introPending = false;
-      try {
-        localStorage.setItem(INTRO_KEY, '1');
-      } catch (eMark) {
-        /* ignore */
-      }
-      btn.classList.remove('kpb-scroll-hidden');
-    }
-
     function pageScrollY() {
       return (
         window.pageYOffset ||
@@ -259,14 +247,13 @@
     }
 
     function updateFabScrollVisibility() {
-      if (introPending) return;
-      btn.classList.remove('kpb-scroll-hidden');
+      if (!open) btn.classList.remove('kpb-scroll-hidden');
     }
 
     function onPageScrollIntro() {
-      if (introPending && open && pageScrollY() >= INTRO_SCROLL_PX) {
+      if (autoIntroActive && open && pageScrollY() >= INTRO_SCROLL_PX) {
         setOpen(false);
-        markIntroDone();
+        endAutoIntro();
       }
       schedulePinFab();
     }
@@ -360,11 +347,11 @@
     });
     closeBtn.addEventListener('click', function () {
       setOpen(false);
-      markIntroDone();
+      endAutoIntro();
     });
     backdrop.addEventListener('click', function () {
       setOpen(false);
-      markIntroDone();
+      endAutoIntro();
     });
 
     // Клик по «заявку на обратный звонок» (#bot) — закрыть чат, чтобы заполнить форму на странице
@@ -439,7 +426,7 @@
       .finally(function () {
         title.textContent = botName;
         addBubble(greeting, 'bot');
-        if (introPending) {
+        if (autoIntroActive) {
           setOpen(true, { backdrop: false, lockScroll: false });
         }
       });
