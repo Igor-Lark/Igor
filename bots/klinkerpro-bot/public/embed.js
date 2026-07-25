@@ -65,9 +65,17 @@
   var ZAKAZ_URL_RE =
     /(?:https?:\/\/marmara-pro\.ru\/)?#(?:bot|zakaz)\b/gi;
 
+  /** Latin p/e в «кирpich» → кириллица (на экране не должно быть «двойной р»). */
+  function normalizeCyrillicBrick(text) {
+    return String(text)
+      .replace(/\u043a\u0438\u0440p(?=\u0438\u0447)/gi, '\u043a\u0438\u0440\u043f')
+      .replace(/\u043a\u0438\u0440\u043f\u0438\u0447e(?=[\s.,!?;:)\]»"—-]|$)/gi, '\u043a\u0438\u0440\u043f\u0438\u0447\u0435')
+      .replace(/\u043a\u0438\u0440\u043f\u0438\u0447\u0065/gi, '\u043a\u0438\u0440\u043f\u0438\u0447\u0435');
+  }
+
   /** Телефоны, https-ссылки и заявка на обратный звонок → кликабельные. */
   function linkifyText(text) {
-    var escaped = escapeHtml(text);
+    var escaped = escapeHtml(normalizeCyrillicBrick(text));
     // явные маркеры {{tel:+79…|подпись}} из приветствий / сервера
     escaped = escaped.replace(/\{\{tel:(\+?\d+)\|([^}]+)\}\}/g, function (_m, tel, label) {
       return '<a class="kpb-tel" href="tel:' + tel + '">' + label + '</a>';
