@@ -6,18 +6,32 @@ const path = require('path');
 const { managerPhoneLink, SITE_TERMO, SITE_MAIN } = require('./contacts');
 
 const FAQ_PATH = path.join(__dirname, '..', 'knowledge', 'faq.md');
+const SITE_HOME_PATH = path.join(__dirname, '..', 'knowledge', 'site-home.md');
+const SITE_TERMO_PATH = path.join(__dirname, '..', 'knowledge', 'site-termo.md');
+
+function readUtf8(filePath) {
+  try {
+    return fs.readFileSync(filePath, 'utf8').trim();
+  } catch {
+    return '';
+  }
+}
 
 let cached = null;
 
 function loadKnowledge() {
   if (cached) return cached;
-  let faq = '';
-  try {
-    faq = fs.readFileSync(FAQ_PATH, 'utf8').trim();
-  } catch {
-    faq = '';
-  }
-  cached = { faq, combined: faq };
+  const faq = readUtf8(FAQ_PATH);
+  const siteHome = readUtf8(SITE_HOME_PATH);
+  const siteTermo = readUtf8(SITE_TERMO_PATH);
+  const combined = [
+    siteHome && '=== САЙТ: ГЛАВНАЯ (marmara-pro.ru) ===\n' + siteHome,
+    siteTermo && '=== САЙТ: ТЕРМОПАНЕЛИ (/termo) ===\n' + siteTermo,
+    faq && '=== FAQ ===\n' + faq,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+  cached = { faq, siteHome, siteTermo, combined };
   return cached;
 }
 
@@ -69,6 +83,7 @@ function buildSystemPrompt() {
     '',
     'Бренд:',
     '- Только **КлинкерПрофи**. Не пиши Marmara PRO / «Мармара Про». Домен marmara-pro.ru — только если клиент спрашивает про сайт.',
+    '- **Не предлагай и не описывай:** гибкий кирпич, гибкий камень, фасадную доску, «декоративный камень» — на сайте есть другие разделы, но **КлинкерПрофи их не производит и не продаёт**. Только термопанели с клинкерной плиткой и сопутствующие смеси для монтажа.',
     '- Бесплатную доставку обещай только в рамках FAQ (Выборгский район); для других районов — доставка по договорённости.',
     '',
     'Цены:',
