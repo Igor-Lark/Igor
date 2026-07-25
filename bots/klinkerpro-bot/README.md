@@ -29,11 +29,13 @@ npm start
 
 Проверка: `curl -s http://127.0.0.1:3001/health | jq`
 
-### MAX (заявки)
+### MAX (заявки — позже)
 
-1. [dev.max.ru](https://dev.max.ru) → бот → `MAX_BOT_TOKEN`
-2. Добавьте бота в чат заявок (как для boat / Tilda)
-3. `npm run max:chat-id` → напишите в чат → `MAX_CHAT_ID` в `.env`
+Пока **`MAX_NOTIFY_ENABLED=false`**. Когда включите:
+
+1. [dev.max.ru](https://dev.max.ru) → `MAX_BOT_TOKEN`
+2. Чат заявок → `npm run max:chat-id` → `MAX_CHAT_ID`
+3. `MAX_NOTIFY_ENABLED=true` и перезапуск сервиса
 
 ### YandexGPT
 

@@ -311,7 +311,7 @@ cd ~/igor/bots/klinkerpro-bot && npm run health:ping -- --notify
 | boat-sochi | boat.webtaxi2.ru | 3000 | свой unit |
 | klinkerpro | klinker.webtaxi2.ru | 3001 | `klinkerpro-bot` |
 
-Порты **не должны совпадать**. Yandex и MAX можно **общие** (один ключ, один чат заявок) или разделить позже.
+Порты **не должны совпадать**. Yandex можно **общий** с boat. MAX — подключите позже отдельным флагом `MAX_NOTIFY_ENABLED`.
 
 ---
 

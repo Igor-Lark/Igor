@@ -132,7 +132,7 @@
     var sending = false;
     var botName = 'КлинкерПрофи';
     var greeting =
-      'Здравствуйте! Я консультант КлинкерПрофи.\nРасскажу про фасадные термопанели, клинкер и клинкерный кирпich на фасаде.\nЗадайте вопрос — отвечу по делу.';
+      'Здравствуйте! Я консультант КлинкерПрофи.\nРасскажу про фасадные термопанели, клинкер и клинкерный кирпич на фасаде.\nЗадайте вопрос — отвечу по делу.';
     var unavailableReply = [
       'Сейчас помощник временно недоступен. Свяжитесь с КлинкерПрофи:',
       '',
@@ -146,7 +146,7 @@
       '<svg class="kpb-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.4 6.4l11.2 11.2M17.6 6.4L6.4 17.6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
     var BTN_LABEL = '<span class="kpb-btn-label">помощник</span>';
     var LOGO_URL =
-      'https://static.tildacdn.com/tild3834-3566-4635-a531-343234633735/LOGO_.svg';
+      'https://static.tildacdn.com/tild6661-3037-4234-b636-643434333430/Group_6302_1.svg';
     var autoIntroActive = true;
 
     function endAutoIntro() {
@@ -160,13 +160,14 @@
       '#kpb-root *{box-sizing:border-box;font-family:inherit}',
       '#kpb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#kpb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#kpb-btn{all:initial;position:fixed !important;right:16px !important;bottom:20px !important;min-width:56px !important;height:48px !important;border:2px solid #5A4538 !important;border-radius:5px !important;cursor:pointer;background:#6B5344 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(90,69,56,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:center;gap:6px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:8px 14px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#kpb-btn{all:initial;position:fixed !important;right:16px !important;bottom:70px !important;min-width:56px !important;height:48px !important;border:2px solid #ffffff !important;border-radius:5px !important;cursor:pointer;background:#ED4407 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(237,68,7,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:center;gap:6px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:8px 14px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#kpb-btn.kpb-hidden,#kpb-btn.kpb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       '#kpb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
-      '#kpb-btn:hover{background:#5A4538 !important}',
+      '#kpb-btn:hover{background:#d54d00 !important}',
       '#kpb-btn .kpb-btn-label{font-size:15px;font-weight:600;letter-spacing:.02em;line-height:1;white-space:nowrap}',
       '#kpb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
       '#kpb-panel.open{transform:translateX(0)}',
+      '#kpb-panel.kpb-compact{height:37.5vh;max-height:37.5vh}',
       '#kpb-head{position:relative;background:#6B5344;color:#fff;min-height:56px;padding:10px 44px 10px 14px;display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-shrink:0;flex-wrap:nowrap}',
       '#kpb-head .kpb-logo{display:block;flex-shrink:0;height:34px;width:auto;max-width:130px;object-fit:contain;object-position:left center}',
       '#kpb-head-label{font-size:17px;font-weight:600;letter-spacing:.02em;color:#fff;white-space:nowrap}',
@@ -188,8 +189,8 @@
       '#kpb-send:disabled{opacity:.6;cursor:default}',
       '#kpb-send .kpb-ico{width:20px;height:20px}',
       /* та же компоновка шапки, что на десктопе — только компактнее */
-      '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-head{min-height:52px;padding:8px 40px 8px 12px}#kpb-head .kpb-logo{height:30px;max-width:110px}#kpb-head-label{font-size:16px}}',
-      '@media (max-width:480px){#kpb-panel{height:70vh;max-height:70vh}#kpb-head{min-height:48px;padding:8px 36px 8px 10px}#kpb-head .kpb-logo{height:26px;max-width:96px}#kpb-head-label{font-size:15px}#kpb-close{right:6px;top:6px}#kpb-close .kpb-ico{width:18px;height:18px}}',
+      '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-panel.kpb-compact{height:37.5vh;max-height:37.5vh}#kpb-head{min-height:52px;padding:8px 40px 8px 12px}#kpb-head .kpb-logo{height:30px;max-width:110px}#kpb-head-label{font-size:16px}}',
+      '@media (max-width:480px){#kpb-panel{height:70vh;max-height:70vh}#kpb-panel.kpb-compact{height:35vh;max-height:35vh}#kpb-head{min-height:48px;padding:8px 36px 8px 10px}#kpb-head .kpb-logo{height:26px;max-width:96px}#kpb-head-label{font-size:15px}#kpb-close{right:6px;top:6px}#kpb-close .kpb-ico{width:18px;height:18px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
@@ -259,9 +260,9 @@
     }
 
     function fabBaseBottom() {
-      if (window.matchMedia('(max-width:480px)').matches) return 110;
-      if (window.matchMedia('(max-width:1024px)').matches) return 100;
-      return 20;
+      if (window.matchMedia('(max-width:480px)').matches) return 160;
+      if (window.matchMedia('(max-width:1024px)').matches) return 150;
+      return 70;
     }
 
     /** Вертикальный планшет: 600–1024px в портрете. */
@@ -329,6 +330,7 @@
       opts = opts || {};
       open = v;
       panel.classList.toggle('open', open);
+      panel.classList.toggle('kpb-compact', open && opts.compact === true);
       var showBackdrop = open && opts.backdrop !== false;
       backdrop.classList.toggle('open', showBackdrop);
       panel.setAttribute('aria-hidden', open ? 'false' : 'true');
@@ -343,7 +345,7 @@
 
     btn.addEventListener('click', function () {
       if (open) return;
-      setOpen(true, { backdrop: true, lockScroll: true });
+      setOpen(true, { backdrop: true, lockScroll: true, compact: false });
     });
     closeBtn.addEventListener('click', function () {
       setOpen(false);
@@ -427,7 +429,7 @@
         title.textContent = botName;
         addBubble(greeting, 'bot');
         if (autoIntroActive) {
-          setOpen(true, { backdrop: false, lockScroll: false });
+          setOpen(true, { backdrop: false, lockScroll: false, compact: true });
         }
       });
   }
