@@ -5,7 +5,7 @@ const { completeChat } = require('./ai');
 const { shouldNotifyLead, notifyManager, extractPhone } = require('./leads');
 const { logChatTurn } = require('./chat-log');
 const { touchSession, markContact } = require('./no-contact');
-const { alertAiFailure } = require('./ai-alert');
+const { formatBotReply } = require('./format-reply');
 
 /**
  * @param {{
@@ -50,7 +50,7 @@ async function handleChat(input) {
   let provider;
   try {
     const out = await completeChat([{ role: 'system', content: system }, ...cleaned]);
-    reply = out.reply;
+    reply = formatBotReply(out.reply);
     provider = out.provider;
   } catch (err) {
     console.error('[chat] AI failed:', err.message);
