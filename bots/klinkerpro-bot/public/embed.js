@@ -148,9 +148,33 @@
     var LOGO_URL =
       'https://static.tildacdn.com/tild6661-3037-4234-b636-643434333430/Group_6302_1.svg';
     var autoIntroActive = true;
+    var introCollapseTimer = 0;
+    var collapsing = false;
+    var COLLAPSE_MS = 450;
+    var INTRO_AUTO_COLLAPSE_MS = 7000;
+
+    function clearIntroCollapseTimer() {
+      if (introCollapseTimer) {
+        clearTimeout(introCollapseTimer);
+        introCollapseTimer = 0;
+      }
+    }
+
+    function scheduleIntroCollapse() {
+      clearIntroCollapseTimer();
+      if (!autoIntroActive) return;
+      introCollapseTimer = setTimeout(function () {
+        introCollapseTimer = 0;
+        if (autoIntroActive && open && panel.classList.contains('kpb-compact')) {
+          setOpen(false, { collapseToFab: true });
+          endAutoIntro();
+        }
+      }, INTRO_AUTO_COLLAPSE_MS);
+    }
 
     function endAutoIntro() {
       autoIntroActive = false;
+      clearIntroCollapseTimer();
       btn.classList.remove('kpb-scroll-hidden');
     }
 
@@ -162,6 +186,11 @@
       '#kpb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
       '#kpb-btn{all:initial;position:fixed !important;right:16px !important;bottom:70px !important;min-width:56px !important;height:48px !important;border:2px solid #ffffff !important;border-radius:5px !important;cursor:pointer;background:#ED4407 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(237,68,7,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:center;gap:6px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:8px 14px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#kpb-btn.kpb-hidden,#kpb-btn.kpb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
+      '#kpb-btn.kpb-pre-show{display:flex !important;visibility:visible !important;opacity:0 !important;pointer-events:none !important}',
+      '#kpb-btn.kpb-attention{animation:kpbFabPulse .55s ease-in-out 3 !important}',
+      '@keyframes kpbFabPulse{0%,100%{box-shadow:0 8px 24px rgba(237,68,7,.35)}50%{box-shadow:0 0 0 4px rgba(255,255,255,.95),0 12px 36px rgba(237,68,7,.55)}}',
+      '#kpb-panel.kpb-collapsing{pointer-events:none;overflow:hidden}',
+      '#kpb-panel.kpb-collapsing #kpb-msgs,#kpb-panel.kpb-collapsing #kpb-form{opacity:0;transition:opacity .15s ease}',
       '#kpb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
       '#kpb-btn:hover{background:#d54d00 !important}',
       '#kpb-btn .kpb-btn-label{font-size:15px;font-weight:600;letter-spacing:.02em;line-height:1;white-space:nowrap}',
@@ -253,7 +282,7 @@
 
     function onPageScrollIntro() {
       if (autoIntroActive && open && pageScrollY() >= INTRO_SCROLL_PX) {
-        setOpen(false);
+        setOpen(false, { collapseToFab: true });
         endAutoIntro();
       }
       schedulePinFab();
@@ -326,8 +355,118 @@
       msgs.scrollTop = msgs.scrollHeight;
     }
 
+    function resetPanelInlineStyles() {
+      panel.style.position = '';
+      panel.style.top = '';
+      panel.style.left = '';
+      panel.style.right = '';
+      panel.style.bottom = '';
+      panel.style.width = '';
+      panel.style.height = '';
+      panel.style.maxHeight = '';
+      panel.style.transition = '';
+      panel.style.opacity = '';
+      panel.style.borderRadius = '';
+      panel.style.zIndex = '';
+      panel.style.overflow = '';
+    }
+
+    function pulseFabAttention() {
+      btn.classList.remove('kpb-pre-show', 'kpb-hidden');
+      btn.classList.add('kpb-attention');
+      btn.setAttribute('aria-hidden', 'false');
+      setTimeout(function () {
+        btn.classList.remove('kpb-attention');
+      }, 1800);
+    }
+
+    /** Панель визуально «съезжает» в кнопку — клиент видит, куда нажать. */
+    function collapsePanelToFab() {
+      if (collapsing) return;
+      collapsing = true;
+      clearIntroCollapseTimer();
+      open = false;
+      backdrop.classList.remove('open');
+      document.documentElement.style.overflow = '';
+      panel.classList.remove('open');
+      panel.classList.add('kpb-collapsing');
+      panel.setAttribute('aria-hidden', 'true');
+
+      pinFab();
+      var fab = btn.getBoundingClientRect();
+      var pr = panel.getBoundingClientRect();
+      var trans =
+        'top ' +
+        COLLAPSE_MS +
+        'ms cubic-bezier(0.4,0,0.2,1),left ' +
+        COLLAPSE_MS +
+        'ms cubic-bezier(0.4,0,0.2,1),width ' +
+        COLLAPSE_MS +
+        'ms cubic-bezier(0.4,0,0.2,1),height ' +
+        COLLAPSE_MS +
+        'ms cubic-bezier(0.4,0,0.2,1),opacity ' +
+        Math.round(COLLAPSE_MS * 0.55) +
+        'ms ease,border-radius ' +
+        COLLAPSE_MS +
+        'ms ease';
+
+      panel.style.position = 'fixed';
+      panel.style.top = pr.top + 'px';
+      panel.style.left = pr.left + 'px';
+      panel.style.right = 'auto';
+      panel.style.bottom = 'auto';
+      panel.style.width = pr.width + 'px';
+      panel.style.height = pr.height + 'px';
+      panel.style.maxHeight = 'none';
+      panel.style.transition = trans;
+      panel.style.zIndex = '2147483002';
+      panel.style.overflow = 'hidden';
+      panel.style.opacity = '1';
+
+      btn.classList.remove('kpb-hidden', 'kpb-scroll-hidden');
+      btn.classList.add('kpb-pre-show');
+
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          panel.style.top = fab.top + 'px';
+          panel.style.left = fab.left + 'px';
+          panel.style.width = fab.width + 'px';
+          panel.style.height = fab.height + 'px';
+          panel.style.borderRadius = '5px';
+          panel.style.opacity = '0';
+        });
+      });
+
+      setTimeout(function () {
+        panel.classList.remove('kpb-collapsing', 'kpb-compact');
+        resetPanelInlineStyles();
+        collapsing = false;
+        pulseFabAttention();
+        schedulePinFab();
+      }, COLLAPSE_MS + 50);
+    }
+
+    function shouldCollapseToFab(opts) {
+      if (opts.collapseToFab === true) return true;
+      if (opts.collapseToFab === false) return false;
+      return autoIntroActive && panel.classList.contains('kpb-compact');
+    }
+
     function setOpen(v, opts) {
       opts = opts || {};
+      if (!v && open) {
+        if (shouldCollapseToFab(opts)) {
+          collapsePanelToFab();
+          return;
+        }
+      }
+      if (v) {
+        clearIntroCollapseTimer();
+        collapsing = false;
+        resetPanelInlineStyles();
+        panel.classList.remove('kpb-collapsing');
+        btn.classList.remove('kpb-pre-show', 'kpb-attention');
+      }
       open = v;
       panel.classList.toggle('open', open);
       panel.classList.toggle('kpb-compact', open && opts.compact === true);
@@ -338,6 +477,9 @@
       btn.setAttribute('aria-hidden', open ? 'true' : 'false');
       var lockScroll = open && opts.lockScroll !== false;
       document.documentElement.style.overflow = lockScroll ? 'hidden' : '';
+      if (open && opts.compact === true) {
+        scheduleIntroCollapse();
+      }
       if (!open) {
         schedulePinFab();
       }
@@ -348,7 +490,8 @@
       setOpen(true, { backdrop: true, lockScroll: true, compact: false });
     });
     closeBtn.addEventListener('click', function () {
-      setOpen(false);
+      var compact = panel.classList.contains('kpb-compact');
+      setOpen(false, compact ? { collapseToFab: true } : {});
       endAutoIntro();
     });
     backdrop.addEventListener('click', function () {
