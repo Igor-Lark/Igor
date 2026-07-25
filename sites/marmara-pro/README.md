@@ -9,6 +9,8 @@
 | `llms.txt` | Корень домена: `https://marmara-pro.ru/llms.txt` |
 | `llms-termo.txt` | Каталог: `https://marmara-pro.ru/llms-termo.txt` (или ссылка из llms.txt) |
 
-Проверка микроразметки: [Яндекс Валидатор](https://webmaster.yandex.ru/tools/microtest/).
+Проверка микроразметки: [YANDEX-CHECK.md](./YANDEX-CHECK.md) · скрипт `./validate-markup.sh --live`
+
+**VPS:** `./deploy-to-vps.sh` или `git pull` в `/var/www/igor-klinker` (см. `deploy-to-vps.sh`).
 
 Бот КлинкерПрофи использует `bots/klinkerpro-bot/knowledge/site-home.md` и `site-termo.md` (+ FAQ).
