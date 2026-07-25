@@ -174,7 +174,10 @@
     var sending = false;
     var botName = 'КлинкерПрофи';
     var greeting =
-      'Здравствуйте! Я помощник КлинкерПрофи.\nРасскажу про фасадные термопанели и клинкер на фасаде; могу провести расчёт площади, термопанелей, клея, дюбелей и затирки.\nЗадайте вопрос или напишите размеры дома — посчитаю с пояснением.';
+      'Здравствуйте! Я помощник КлинкерПрофи.\n' +
+      'Расскажу про фасадные термопанели, клинкер и клинкерный кирпич на фасаде — как у нас в Выборге изготавливается термопанель и на что обратить внимание в Ленобласти.\n' +
+      'Могу провести расчёт: площадь фасада, количество термопанелей, клей, дюбели и затирку.\n' +
+      'Задайте вопрос или напишите размеры дома.';
     var unavailableReply = [
       'Сейчас помощник временно недоступен. Свяжитесь с КлинкерПрофи:',
       '',
@@ -207,7 +210,6 @@
       '</div>';
     var LOGO_URL =
       'https://static.tildacdn.com/tild6661-3037-4234-b636-643434333430/Group_6302_1.svg';
-    var autoIntroActive = shouldAutoIntro();
     var introStartScrollY = 0;
     var INTRO_SCROLL_PX = 50;
     var INTRO_OPEN_DELAY_MS = 1000;
@@ -222,10 +224,17 @@
     var FAB_RIGHT_PX = 60;
     var FAB_BOTTOM_PX = 100;
     var DESKTOP_MQ = '(min-width:1025px)';
+    var MOBILE_MQ = '(max-width:1024px)';
 
     function isDesktopUi() {
       return window.matchMedia(DESKTOP_MQ).matches;
     }
+
+    function isMobileUi() {
+      return window.matchMedia(MOBILE_MQ).matches;
+    }
+
+    var autoIntroActive = shouldAutoIntro() && !isMobileUi();
 
     function endAutoIntro() {
       autoIntroActive = false;
@@ -237,7 +246,7 @@
     style.textContent = [
       '#kpb-root{all:initial;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;position:fixed !important;inset:0 !important;z-index:2147483000 !important;display:block !important;visibility:visible !important;opacity:1 !important;pointer-events:none !important;color:#0f172a}',
       '#kpb-root *{box-sizing:border-box;font-family:inherit}',
-      '#kpb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.66);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
+      '#kpb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.594);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#kpb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
       '#kpb-btn{all:initial;position:fixed !important;left:auto !important;right:60px !important;bottom:100px !important;width:220px !important;min-width:220px !important;max-width:220px !important;height:60px !important;border:1px solid #ffffff !important;border-radius:10px !important;cursor:pointer;background:#d54d00 !important;color:#fff !important;line-height:1.1 !important;box-shadow:0 8px 24px rgba(213,77,0,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:flex-start;gap:8px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:0 12px 0 14px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#kpb-btn.kpb-hidden,#kpb-btn.kpb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
@@ -263,10 +272,10 @@
         's ease,height 0s linear ' +
         PANEL_SLIDE_MS / 1000 +
         's}',
-      '#kpb-panel.kpb-compact.kpb-intro{width:min(360px,60vw) !important;max-width:60vw !important;height:52.5vh;max-height:52.5vh;bottom:15vh;top:auto}',
-      '#kpb-head{position:relative;background:#404040;color:#fff;height:60px;min-height:60px;max-height:60px;padding:0 44px 0 14px;display:flex;align-items:center;justify-content:flex-start;gap:0;flex-shrink:0;flex-wrap:nowrap}',
+      '#kpb-panel.kpb-compact.kpb-intro{width:min(360px,60vw) !important;max-width:60vw !important;height:52.5vh;max-height:52.5vh;bottom:80px;top:auto}',
+      '#kpb-head{position:relative;background:#404040;color:#fff;height:60px;min-height:60px;max-height:60px;padding:0 44px 0 14px;display:flex;align-items:center;justify-content:flex-start;gap:18px;flex-shrink:0;flex-wrap:nowrap}',
       '#kpb-head .kpb-logo{display:block;flex-shrink:0;height:36px;width:auto;max-width:130px;object-fit:contain;object-position:left center}',
-      '#kpb-head .kpb-head-assist{display:flex;align-items:center;gap:18px;margin-left:50px;min-width:0;flex:1}',
+      '#kpb-head .kpb-head-assist{display:flex;align-items:center;gap:18px;margin-left:0;min-width:0;flex:1}',
       '#kpb-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}',
       '#kpb-close{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px;display:flex;align-items:center;justify-content:center;z-index:2}',
       '#kpb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
@@ -287,8 +296,8 @@
       '#kpb-send .kpb-ico{width:20px;height:20px}',
       '@media (min-width:1025px){#kpb-panel.kpb-desk-modal{position:fixed;left:20vw;top:20vh;right:auto;bottom:auto;width:60vw;height:60vh;max-width:60vw;max-height:60vh;border-radius:5px;box-shadow:0 24px 60px rgba(15,23,42,.25);transform:translateX(100vw)}#kpb-panel.kpb-desk-modal.open{transform:translateX(0)}}',
       /* планшет/мобила — без изменений в этом релизе */
-      '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-panel.kpb-compact{height:37.5vh;max-height:37.5vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:52.5vh;max-height:52.5vh;bottom:15vh}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 40px 0 12px}#kpb-head .kpb-logo{height:32px;max-width:110px}#kpb-head .kpb-head-assist{margin-left:40px;gap:16px}#kpb-head .kpb-btn-line1{font-size:15px}#kpb-head .kpb-btn-line2{font-size:10.5px}}',
-      '@media (max-width:480px){#kpb-panel{height:70vh;max-height:70vh}#kpb-panel.kpb-compact{height:35vh;max-height:35vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:49vh;max-height:49vh;bottom:12vh}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 36px 0 10px}#kpb-head .kpb-logo{height:28px;max-width:88px}#kpb-head .kpb-head-assist{margin-left:24px;gap:14px}#kpb-head .kpb-btn-icon,#kpb-head .kpb-btn-home{width:30px;height:30px}#kpb-head .kpb-btn-line1{font-size:14px}#kpb-head .kpb-btn-line2{font-size:10px}#kpb-close{right:6px}#kpb-close .kpb-ico{width:18px;height:18px}#kpb-btn .kpb-btn-line2{font-size:10.5px}}',
+      '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-panel.kpb-compact{height:37.5vh;max-height:37.5vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:52.5vh;max-height:52.5vh;bottom:80px}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 40px 0 12px;gap:18px}#kpb-head .kpb-logo{height:32px;max-width:110px}#kpb-head .kpb-head-assist{margin-left:0;gap:18px}#kpb-head .kpb-btn-line1{font-size:15px}#kpb-head .kpb-btn-line2{font-size:10.5px}#kpb-btn{left:20px !important;right:20px !important;width:auto !important;min-width:0 !important;max-width:none !important;justify-content:center !important}}',
+      '@media (max-width:480px){#kpb-panel{height:70vh;max-height:70vh}#kpb-panel.kpb-compact{height:35vh;max-height:35vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:49vh;max-height:49vh;bottom:80px}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 36px 0 10px;gap:18px}#kpb-head .kpb-logo{height:28px;max-width:88px}#kpb-head .kpb-head-assist{margin-left:0;gap:18px}#kpb-head .kpb-btn-icon,#kpb-head .kpb-btn-home{width:30px;height:30px}#kpb-head .kpb-btn-line1{font-size:14px}#kpb-head .kpb-btn-line2{font-size:10px}#kpb-close{right:6px}#kpb-close .kpb-ico{width:18px;height:18px}#kpb-btn .kpb-btn-line2{font-size:10.5px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
@@ -321,6 +330,8 @@
     btn.innerHTML = BTN_LABEL;
     if (autoIntroActive) {
       btn.classList.add('kpb-hidden');
+    } else if (isMobileUi() && pageScrollY() < INTRO_SCROLL_PX) {
+      btn.classList.add('kpb-scroll-hidden');
     } else {
       btn.classList.remove('kpb-scroll-hidden');
     }
@@ -345,7 +356,16 @@
     }
 
     function updateFabScrollVisibility() {
-      if (!open) btn.classList.remove('kpb-scroll-hidden');
+      if (open) {
+        btn.classList.remove('kpb-scroll-hidden');
+        return;
+      }
+      if (autoIntroActive) return;
+      if (isMobileUi() && pageScrollY() < INTRO_SCROLL_PX) {
+        btn.classList.add('kpb-scroll-hidden');
+      } else {
+        btn.classList.remove('kpb-scroll-hidden');
+      }
     }
 
     function onPageScrollIntro() {
@@ -360,12 +380,37 @@
       schedulePinFab();
     }
 
-    /** right 60 / bottom 100; на мобиле — привязка к visual viewport (клавиатура, UI браузера). */
+    /** right 60 / bottom 100; мобила — на всю ширину −20px, после прокрутки 50px. */
     function pinFab() {
       var vv = window.visualViewport;
-      var w = btn.offsetWidth || FAB_WIDTH_PX;
       var h = btn.offsetHeight || FAB_HEIGHT_PX;
+      var mobile = isMobileUi();
+      if (mobile) {
+        var side = 20;
+        var bottom = FAB_BOTTOM_PX;
+        btn.style.minWidth = '0';
+        btn.style.maxWidth = 'none';
+        if (!vv) {
+          btn.style.left = side + 'px';
+          btn.style.right = side + 'px';
+          btn.style.width = 'auto';
+          btn.style.top = 'auto';
+          btn.style.bottom = bottom + 'px';
+          return;
+        }
+        var w = Math.max(0, vv.width - side * 2);
+        btn.style.left = vv.offsetLeft + side + 'px';
+        btn.style.width = w + 'px';
+        btn.style.right = 'auto';
+        btn.style.bottom = 'auto';
+        var top = vv.offsetTop + vv.height - bottom - h;
+        btn.style.top = Math.max(vv.offsetTop, top) + 'px';
+        return;
+      }
+      var w = btn.offsetWidth || FAB_WIDTH_PX;
       btn.style.width = w + 'px';
+      btn.style.minWidth = '';
+      btn.style.maxWidth = '';
       if (!vv) {
         btn.style.left = 'auto';
         btn.style.right = FAB_RIGHT_PX + 'px';
@@ -396,7 +441,10 @@
       updateFabScrollVisibility();
       onPageScrollIntro();
     }, { passive: true });
-    window.addEventListener('resize', schedulePinFab);
+    window.addEventListener('resize', function () {
+      schedulePinFab();
+      updateFabScrollVisibility();
+    });
     window.addEventListener('orientationchange', schedulePinFab);
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', schedulePinFab);
