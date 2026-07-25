@@ -5,7 +5,6 @@ const express = require('express');
 const cors = require('cors');
 const config = require('./config');
 const { handleChat } = require('./chat');
-const { startTelegram } = require('./telegram');
 const { loadKnowledge, buildGreeting } = require('./knowledge');
 const { startNoContactWatcher } = require('./no-contact');
 const { UNAVAILABLE_REPLY } = require('./contacts');
@@ -67,6 +66,7 @@ app.get('/api/widget-config', (_req, res) => {
 });
 
 if (config.hasTelegram) {
+  const { startTelegram } = require('./telegram');
   startTelegram(app);
 } else {
   console.log('[server] Telegram-бот отключён (нет TELEGRAM_BOT_TOKEN)');
