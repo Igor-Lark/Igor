@@ -159,9 +159,10 @@
     var introStartScrollY = 0;
     var INTRO_SCROLL_PX = 50;
     var INTRO_OPEN_DELAY_MS = 1000;
-    var PANEL_SLIDE_MS = 2000;
+    var PANEL_SLIDE_MS = 1000;
     var collapsing = false;
     var COLLAPSE_MS = 450;
+    var compactClearTimer = 0;
 
     function endAutoIntro() {
       autoIntroActive = false;
@@ -174,21 +175,25 @@
       '#kpb-root *{box-sizing:border-box;font-family:inherit}',
       '#kpb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#kpb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#kpb-btn{all:initial;position:fixed !important;right:16px !important;bottom:70px !important;min-width:56px !important;height:48px !important;border:2px solid #ffffff !important;border-radius:5px !important;cursor:pointer;background:#ED4407 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(237,68,7,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:center;gap:6px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:8px 14px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#kpb-btn{all:initial;position:fixed !important;right:16px !important;bottom:70px !important;min-width:56px !important;height:48px !important;border:2px solid #ffffff !important;border-radius:5px !important;cursor:pointer;background:#d54d00 !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(213,77,0,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:center;gap:6px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:8px 14px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#kpb-btn.kpb-hidden,#kpb-btn.kpb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       '#kpb-btn.kpb-pre-show{display:flex !important;visibility:visible !important;opacity:0 !important;pointer-events:none !important}',
       '#kpb-btn.kpb-attention{animation:kpbFabPulse .55s ease-in-out 3 !important}',
-      '@keyframes kpbFabPulse{0%,100%{box-shadow:0 8px 24px rgba(237,68,7,.35)}50%{box-shadow:0 0 0 4px rgba(255,255,255,.95),0 12px 36px rgba(237,68,7,.55)}}',
+      '@keyframes kpbFabPulse{0%,100%{box-shadow:0 8px 24px rgba(213,77,0,.35)}50%{box-shadow:0 0 0 4px rgba(255,255,255,.95),0 12px 36px rgba(213,77,0,.55)}}',
       '#kpb-panel.kpb-collapsing{pointer-events:none;overflow:hidden}',
       '#kpb-panel.kpb-collapsing #kpb-msgs,#kpb-panel.kpb-collapsing #kpb-form{opacity:0;transition:opacity .15s ease}',
       '#kpb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
-      '#kpb-btn:hover{background:#d54d00 !important}',
+      '#kpb-btn:hover{background:#c04500 !important}',
       '#kpb-btn .kpb-btn-label{font-size:15px;font-weight:600;letter-spacing:.02em;line-height:1;white-space:nowrap}',
       '#kpb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform ' +
         PANEL_SLIDE_MS / 1000 +
         's ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
       '#kpb-panel.open{transform:translateX(0)}',
-      '#kpb-panel.kpb-compact{height:37.5vh;max-height:37.5vh}',
+      '#kpb-panel.kpb-compact{height:37.5vh;max-height:37.5vh;transition:transform ' +
+        PANEL_SLIDE_MS / 1000 +
+        's ease,height 0s linear ' +
+        PANEL_SLIDE_MS / 1000 +
+        's}',
       '#kpb-head{position:relative;background:#6B5344;color:#fff;min-height:56px;padding:10px 44px 10px 14px;display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-shrink:0;flex-wrap:nowrap}',
       '#kpb-head .kpb-logo{display:block;flex-shrink:0;height:34px;width:auto;max-width:130px;object-fit:contain;object-position:left center}',
       '#kpb-head-label{font-size:17px;font-weight:600;letter-spacing:.02em;color:#fff;white-space:nowrap}',
@@ -277,8 +282,8 @@
         open &&
         pageScrollY() - introStartScrollY >= INTRO_SCROLL_PX
       ) {
-        setOpen(false, { collapseToFab: false });
         endAutoIntro();
+        setOpen(false, { collapseToFab: false, keepCompactUntilClosed: true });
       }
       schedulePinFab();
     }
@@ -452,13 +457,28 @@
       }
       if (v) {
         collapsing = false;
+        if (compactClearTimer) {
+          clearTimeout(compactClearTimer);
+          compactClearTimer = 0;
+        }
         resetPanelInlineStyles();
         panel.classList.remove('kpb-collapsing');
         btn.classList.remove('kpb-pre-show', 'kpb-attention');
       }
+      var wasOpen = open;
       open = v;
       panel.classList.toggle('open', open);
-      panel.classList.toggle('kpb-compact', open && opts.compact === true);
+      if (open) {
+        panel.classList.toggle('kpb-compact', opts.compact === true);
+      } else if (wasOpen && (opts.keepCompactUntilClosed || panel.classList.contains('kpb-compact'))) {
+        if (compactClearTimer) clearTimeout(compactClearTimer);
+        compactClearTimer = setTimeout(function () {
+          compactClearTimer = 0;
+          if (!open) panel.classList.remove('kpb-compact');
+        }, PANEL_SLIDE_MS + 40);
+      } else if (!open) {
+        panel.classList.remove('kpb-compact');
+      }
       var showBackdrop = open && opts.backdrop !== false;
       backdrop.classList.toggle('open', showBackdrop);
       panel.setAttribute('aria-hidden', open ? 'false' : 'true');
@@ -476,7 +496,7 @@
       setOpen(true, { backdrop: true, lockScroll: true, compact: false });
     });
     closeBtn.addEventListener('click', function () {
-      setOpen(false, { collapseToFab: false });
+      setOpen(false, { collapseToFab: false, keepCompactUntilClosed: true });
       endAutoIntro();
     });
     backdrop.addEventListener('click', function () {
@@ -557,9 +577,9 @@
         title.textContent = botName;
         addBubble(greeting, 'bot');
         if (autoIntroActive) {
-          introStartScrollY = pageScrollY();
           setTimeout(function () {
             if (!autoIntroActive) return;
+            introStartScrollY = pageScrollY();
             setOpen(true, { backdrop: false, lockScroll: false, compact: true });
           }, INTRO_OPEN_DELAY_MS);
         }
