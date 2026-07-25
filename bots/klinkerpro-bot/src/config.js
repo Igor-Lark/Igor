@@ -2,6 +2,12 @@
 
 require('dotenv').config();
 
+function envEnabled(name, defaultOn) {
+  const raw = process.env[name];
+  if (raw === undefined || raw === '') return defaultOn;
+  return !/^(0|false|no|off)$/i.test(String(raw).trim());
+}
+
 const config = {
   port: Number(process.env.PORT) || 3001,
   publicUrl: (process.env.PUBLIC_URL || '').replace(/\/$/, ''),
@@ -34,8 +40,11 @@ config.hasYandex = Boolean(config.yandex.apiKey && config.yandex.folderId);
 config.hasOpenAI = Boolean(config.openai.apiKey);
 config.hasTelegram = Boolean(config.telegram.token);
 config.hasTelegramNotify = Boolean(config.telegram.token && config.telegram.managerChatId);
-config.hasMaxNotify = Boolean(
+/** Заявки и служебные уведомления в MAX (по умолчанию выключено). */
+config.maxNotifyEnabled = envEnabled('MAX_NOTIFY_ENABLED', false);
+config.hasMaxCredentials = Boolean(
   config.max.token && (config.max.chatId || config.max.userId)
 );
+config.hasMaxNotify = config.maxNotifyEnabled && config.hasMaxCredentials;
 
 module.exports = config;

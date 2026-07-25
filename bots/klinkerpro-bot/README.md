@@ -5,7 +5,7 @@
 | Канал | Назначение |
 |--------|------------|
 | Сайт | `embed.js` → `POST /api/chat` |
-| MAX | Заявки (телефон, «хочу заказать», расчёт…) и «ушёл без контакта» |
+| MAX | Заявки (по умолчанию **выключены**, `MAX_NOTIFY_ENABLED=true` — когда включите) |
 | Telegram | **Не обязателен** (включите `TELEGRAM_BOT_TOKEN`, если нужен чат в TG) |
 
 **Прод:** `https://klinker.webtaxi2.ru` · порт на VPS **`3001`** (boat обычно `3000`).
@@ -22,7 +22,7 @@
 ```bash
 cd bots/klinkerpro-bot
 cp .env.example .env
-# YANDEX_API_KEY, YANDEX_FOLDER_ID, MAX_BOT_TOKEN, MAX_CHAT_ID
+# YANDEX_API_KEY, YANDEX_FOLDER_ID; MAX_NOTIFY_ENABLED=false (заявки в MAX позже)
 npm install
 npm start
 ```

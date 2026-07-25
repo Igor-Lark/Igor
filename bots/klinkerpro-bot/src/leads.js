@@ -25,10 +25,17 @@ function shouldNotifyLead(opts) {
 
 async function notifyManager(lead) {
   if (!config.hasMaxNotify) {
-    console.warn(
-      '[leads] MAX_BOT_TOKEN и MAX_CHAT_ID (или MAX_USER_ID) не заданы — заявка не отправлена'
-    );
-    return { sent: false, reason: 'max_not_configured' };
+    const reason = !config.maxNotifyEnabled
+      ? 'max_disabled'
+      : 'max_not_configured';
+    if (reason === 'max_disabled') {
+      console.log('[leads] MAX отключён (MAX_NOTIFY_ENABLED=false) — заявка только в логе');
+    } else {
+      console.warn(
+        '[leads] MAX_BOT_TOKEN и MAX_CHAT_ID (или MAX_USER_ID) не заданы — заявка не отправлена'
+      );
+    }
+    return { sent: false, reason };
   }
 
   const phone = extractPhone(lead.text) || 'не указан';

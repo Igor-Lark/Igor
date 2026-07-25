@@ -12,8 +12,8 @@ URL: **https://klinker.webtaxi2.ru** · порт процесса: **3001** (boa
 - [ ] Доступ по SSH на VPS
 - [ ] Репозиторий `Igor` уже клонирован (или клонируете заново)
 - [ ] В Yandex Cloud есть **API-ключ** и **Folder ID** (можно скопировать из `.env` boat)
-- [ ] В [dev.max.ru](https://dev.max.ru) есть бот MAX (можно **тот же**, что для boat, или **новый**)
-- [ ] Бот MAX добавлен в **групповой чат заявок** (куда должны падать лиды)
+- [ ] **MAX:** на первом запуске заявки **не шлём** (`MAX_NOTIFY_ENABLED=false` в `.env`) — достаточно виджета и YandexGPT
+- [ ] Позже: бот MAX, чат заявок, `MAX_NOTIFY_ENABLED=true`
 - [ ] DNS: **`klinker.webtaxi2.ru`** → A-запись на IP VPS (как у `boat.webtaxi2.ru`)
 
 ---
@@ -84,7 +84,8 @@ nano .env   # или vim
 ls ~/boat-sochi-bot/.env 2>/dev/null || ls ~/igor/bots/*/\.env 2>/dev/null
 ```
 
-Скопируйте из `.env` boat строки **YANDEX_API_KEY**, **YANDEX_FOLDER_ID**, **MAX_BOT_TOKEN**, **MAX_CHAT_ID** (если заявки должны идти в **тот же чат**, что и boat).
+Скопируйте из `.env` boat только **YANDEX_API_KEY** и **YANDEX_FOLDER_ID**.  
+Токены **MAX** пока **не нужны** (заявки в MAX отключены).
 
 ### 4.2. Обязательные поля для KlinkerPro
 
@@ -93,8 +94,7 @@ YANDEX_API_KEY=AQVN...
 YANDEX_FOLDER_ID=b1g...
 YANDEX_MODEL=yandexgpt-lite
 
-MAX_BOT_TOKEN=...
-MAX_CHAT_ID=...
+MAX_NOTIFY_ENABLED=false
 
 PORT=3001
 PUBLIC_URL=https://klinker.webtaxi2.ru
@@ -105,15 +105,11 @@ TZ=Europe/Moscow
 
 **Telegram** для этого бота **не заполняйте**, если не нужен отдельный TG-бот.
 
-### 4.3. Узнать `MAX_CHAT_ID` (если ещё нет)
+### 4.3. Когда включите MAX (не сейчас)
 
-На VPS в каталоге бота:
-
-```bash
-npm run max:chat-id
-```
-
-В течение 3 минут **напишите любое сообщение** в групповой чат MAX, куда добавлен бот. Скрипт выведет `chat_id` — вставьте в `.env` как `MAX_CHAT_ID=...`, перезапустите бота (шаг 6).
+1. `MAX_BOT_TOKEN`, `MAX_CHAT_ID` (при необходимости `npm run max:chat-id`)
+2. `MAX_NOTIFY_ENABLED=true`
+3. `sudo systemctl restart klinkerpro-bot` — в `/health` будет `"maxNotify": true`
 
 ---
 
@@ -138,7 +134,8 @@ curl -s http://127.0.0.1:3001/health
   "bot": "КлинкерПрофи",
   "ai": "yandex",
   "telegram": false,
-  "maxNotify": true,
+  "maxNotify": false,
+  "maxNotifyEnabled": false,
   "knowledgeChars": 8000,
   "publicUrl": "https://klinker.webtaxi2.ru"
 }
@@ -258,26 +255,15 @@ curl -sI https://klinker.webtaxi2.ru/embed.js | head -5
 
 4. Опубликуйте сайт.
 5. Откройте https://marmara-pro.ru/termo — в углу должна появиться кнопка чата.
-6. Задайте вопрос; при фразе «хочу заказать, телефон +7…» проверьте **MAX** (чат заявок).
+6. Задайте вопрос — ответ ИИ должен приходить в виджет. **MAX** пока не проверяем (`MAX_NOTIFY_ENABLED=false`).
 
 Якорь `#bot` на странице — для ссылок «оставить заявку» внутри виджета.
 
 ---
 
-## 9. Проверка заявок в MAX
+## 9. Заявки в MAX (отложено)
 
-Напишите в виджете, например:
-
-> Хочу заказать термопанели, перезвоните +7 921 745-77-55
-
-В MAX должно прийти сообщение с заголовком **«Новая заявка — КлинкерПрофи»**.
-
-Если не приходит:
-
-- `maxNotify: true` в `/health`
-- верный `MAX_CHAT_ID`
-- бот **админ** или имеет право писать в чат
-- логи: `journalctl -u klinkerpro-bot -n 50`
+Сейчас заявки **не отправляются** — только чат на сайте. Когда будете готовы: раздел **4.3** и тест фразой «хочу заказать, +7…» → сообщение **«Новая заявка — КлинкерПрофи»** в чат MAX.
 
 ---
 
