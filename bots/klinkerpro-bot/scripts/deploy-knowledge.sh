@@ -18,7 +18,7 @@ git pull origin "$BRANCH"
 
 echo ""
 echo "Knowledge files:"
-ls -la "$BOT_DIR/knowledge/"site-home.md "$BOT_DIR/knowledge/"site-termo.md "$BOT_DIR/knowledge/faq.md 2>/dev/null || ls -la "$BOT_DIR/knowledge/"
+ls -la "$BOT_DIR/knowledge/site-home.md" "$BOT_DIR/knowledge/site-termo.md" "$BOT_DIR/knowledge/faq.md" 2>/dev/null || ls -la "$BOT_DIR/knowledge/"
 
 if command -v pm2 >/dev/null 2>&1; then
   pm2 restart klinkerpro

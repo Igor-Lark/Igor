@@ -267,21 +267,40 @@ curl -sI https://klinker.webtaxi2.ru/embed.js | head -5
 
 ---
 
-## 10. Обновление бота после правок в GitHub
+## 10. Обновление инструкций бота (база знаний)
+
+После правок в GitHub (FAQ, `site-home.md`, `site-termo.md`, `src/knowledge.js`) на VPS:
 
 ```bash
-cd ~/igor/bots/klinkerpro-bot
+cd /var/www/igor-klinker          # или ~/igor — ваш путь к репозиторию
+bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
+```
+
+Скрипт делает `git pull` ветки `cursor/termopaneli-bot-bfbc` и **`pm2 restart klinkerpro`**.
+
+Вручную:
+
+```bash
+cd /var/www/igor-klinker
+git fetch origin
+git checkout cursor/termopaneli-bot-bfbc
 git pull origin cursor/termopaneli-bot-bfbc
-npm install
-sudo systemctl restart klinkerpro-bot
+pm2 restart klinkerpro
+curl -s http://127.0.0.1:3001/health
 ```
 
-Если меняли только FAQ:
+**Что подхватывается без Tilda:**
 
-```bash
-cp ../../agents/termopaneli/faq.md knowledge/faq.md
-sudo systemctl restart klinkerpro-bot
-```
+| Файл | Назначение |
+|------|------------|
+| `knowledge/site-home.md` | Тексты с главной marmara-pro.ru |
+| `knowledge/site-termo.md` | Каталог /termo (размеры панелей и т.д.) |
+| `knowledge/faq.md` | FAQ |
+| `src/knowledge.js` | Сборка промпта, приветствия, запрет гибкого кирpicha/камня/доски |
+
+**Виджет** (`public/embed.js`) на Tilda обновляется отдельно — с `https://klinker.webtaxi2.ru/embed.js` после деплоя статики на klinker (если меняли embed).
+
+Микроразметка и `llms.txt` для сайта — только Tilda/хостинг сайта, **на VPS бота не копируются**.
 
 ---
 
