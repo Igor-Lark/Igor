@@ -1,0 +1,24 @@
+{
+  "name": "klinkerpro-bot",
+  "version": "1.0.0",
+  "description": "ИИ-бот КлинкерПрофи — виджет на marmara-pro.ru + заявки в MAX",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "max:chat-id": "node scripts/max-find-chat-id.js",
+    "max:user-id": "node scripts/max-find-user-id.js",
+    "health:ping": "node scripts/ping-bot-health.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "https-proxy-agent": "^7.0.6",
+    "node-telegram-bot-api": "^0.66.0",
+    "socks-proxy-agent": "^8.0.5"
+  }
+}
