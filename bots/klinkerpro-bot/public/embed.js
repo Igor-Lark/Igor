@@ -38,6 +38,22 @@
     }
   }
 
+  /** При полной перезагрузке (Ctrl+F5 / F5) снова показываем приветствие. */
+  function shouldAutoIntro() {
+    try {
+      var nav =
+        performance.getEntriesByType &&
+        performance.getEntriesByType('navigation')[0];
+      if (nav && nav.type === 'reload') {
+        localStorage.removeItem(INTRO_SEEN_KEY);
+        return true;
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    return !hasSeenIntro();
+  }
+
   function markIntroSeen() {
     try {
       localStorage.setItem(INTRO_SEEN_KEY, '1');
@@ -171,7 +187,7 @@
     var ICON_CLOSE =
       '<svg class="kpb-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.4 6.4l11.2 11.2M17.6 6.4L6.4 17.6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
     var ICON_HOME =
-      '<svg class="kpb-btn-home" width="31" height="31" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+      '<svg class="kpb-btn-home" width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
       '<path d="M3 10.5L12 3.5 21 10.5M5 10.5V20h14V10.5" stroke="#fff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>' +
       '<rect x="9.2" y="13.1" width="2.35" height="2.35" fill="#fff"/>' +
       '<rect x="12.45" y="13.1" width="2.35" height="2.35" fill="#fff"/>' +
@@ -191,7 +207,7 @@
       '</div>';
     var LOGO_URL =
       'https://static.tildacdn.com/tild6661-3037-4234-b636-643434333430/Group_6302_1.svg';
-    var autoIntroActive = !hasSeenIntro();
+    var autoIntroActive = shouldAutoIntro();
     var introStartScrollY = 0;
     var INTRO_SCROLL_PX = 50;
     var INTRO_OPEN_DELAY_MS = 1000;
@@ -221,7 +237,7 @@
     style.textContent = [
       '#kpb-root{all:initial;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;position:fixed !important;inset:0 !important;z-index:2147483000 !important;display:block !important;visibility:visible !important;opacity:1 !important;pointer-events:none !important;color:#0f172a}',
       '#kpb-root *{box-sizing:border-box;font-family:inherit}',
-      '#kpb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
+      '#kpb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.66);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#kpb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
       '#kpb-btn{all:initial;position:fixed !important;left:auto !important;right:60px !important;bottom:100px !important;width:220px !important;min-width:220px !important;max-width:220px !important;height:60px !important;border:1px solid #ffffff !important;border-radius:10px !important;cursor:pointer;background:#d54d00 !important;color:#fff !important;line-height:1.1 !important;box-shadow:0 8px 24px rgba(213,77,0,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:flex-start;gap:8px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:0 12px 0 14px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#kpb-btn.kpb-hidden,#kpb-btn.kpb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
@@ -232,8 +248,8 @@
       '#kpb-panel.kpb-collapsing #kpb-msgs,#kpb-panel.kpb-collapsing #kpb-form{opacity:0;transition:opacity .15s ease}',
       '#kpb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
       '#kpb-btn:hover{background:#c04500 !important}',
-      '#kpb-btn .kpb-btn-icon,#kpb-head .kpb-btn-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:31px;height:31px}',
-      '#kpb-btn .kpb-btn-home,#kpb-head .kpb-btn-home{display:block;width:31px;height:31px}',
+      '#kpb-btn .kpb-btn-icon,#kpb-head .kpb-btn-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:34px;height:34px}',
+      '#kpb-btn .kpb-btn-home,#kpb-head .kpb-btn-home{display:block;width:34px;height:34px}',
       '#kpb-btn .kpb-btn-copy,#kpb-head .kpb-btn-copy{display:flex;flex-direction:column;align-items:stretch;justify-content:center;flex:1;min-width:0;text-align:left}',
       '#kpb-btn .kpb-btn-copy{text-align:center}',
       '#kpb-btn .kpb-btn-line1,#kpb-head .kpb-btn-line1{display:block;font-size:16px;font-weight:700;letter-spacing:.01em;line-height:1.12;white-space:nowrap;color:#fff}',
@@ -247,9 +263,10 @@
         's ease,height 0s linear ' +
         PANEL_SLIDE_MS / 1000 +
         's}',
+      '#kpb-panel.kpb-compact.kpb-intro{width:min(360px,60vw) !important;max-width:60vw !important;height:52.5vh;max-height:52.5vh;bottom:15vh;top:auto}',
       '#kpb-head{position:relative;background:#404040;color:#fff;height:60px;min-height:60px;max-height:60px;padding:0 44px 0 14px;display:flex;align-items:center;justify-content:flex-start;gap:0;flex-shrink:0;flex-wrap:nowrap}',
       '#kpb-head .kpb-logo{display:block;flex-shrink:0;height:36px;width:auto;max-width:130px;object-fit:contain;object-position:left center}',
-      '#kpb-head .kpb-head-assist{display:flex;align-items:center;gap:8px;margin-left:50px;min-width:0;flex:1}',
+      '#kpb-head .kpb-head-assist{display:flex;align-items:center;gap:18px;margin-left:50px;min-width:0;flex:1}',
       '#kpb-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}',
       '#kpb-close{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px;display:flex;align-items:center;justify-content:center;z-index:2}',
       '#kpb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
@@ -270,8 +287,8 @@
       '#kpb-send .kpb-ico{width:20px;height:20px}',
       '@media (min-width:1025px){#kpb-panel.kpb-desk-modal{position:fixed;left:20vw;top:20vh;right:auto;bottom:auto;width:60vw;height:60vh;max-width:60vw;max-height:60vh;border-radius:5px;box-shadow:0 24px 60px rgba(15,23,42,.25);transform:translateX(100vw)}#kpb-panel.kpb-desk-modal.open{transform:translateX(0)}}',
       /* планшет/мобила — без изменений в этом релизе */
-      '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-panel.kpb-compact{height:37.5vh;max-height:37.5vh}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 40px 0 12px}#kpb-head .kpb-logo{height:32px;max-width:110px}#kpb-head .kpb-head-assist{margin-left:40px;gap:6px}#kpb-head .kpb-btn-line1{font-size:15px}#kpb-head .kpb-btn-line2{font-size:10.5px}}',
-      '@media (max-width:480px){#kpb-panel{height:70vh;max-height:70vh}#kpb-panel.kpb-compact{height:35vh;max-height:35vh}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 36px 0 10px}#kpb-head .kpb-logo{height:28px;max-width:88px}#kpb-head .kpb-head-assist{margin-left:24px;gap:6px}#kpb-head .kpb-btn-icon,#kpb-head .kpb-btn-home{width:27px;height:27px}#kpb-head .kpb-btn-line1{font-size:14px}#kpb-head .kpb-btn-line2{font-size:10px}#kpb-close{right:6px}#kpb-close .kpb-ico{width:18px;height:18px}#kpb-btn .kpb-btn-line2{font-size:10.5px}}',
+      '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-panel.kpb-compact{height:37.5vh;max-height:37.5vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:52.5vh;max-height:52.5vh;bottom:15vh}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 40px 0 12px}#kpb-head .kpb-logo{height:32px;max-width:110px}#kpb-head .kpb-head-assist{margin-left:40px;gap:16px}#kpb-head .kpb-btn-line1{font-size:15px}#kpb-head .kpb-btn-line2{font-size:10.5px}}',
+      '@media (max-width:480px){#kpb-panel{height:70vh;max-height:70vh}#kpb-panel.kpb-compact{height:35vh;max-height:35vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:49vh;max-height:49vh;bottom:12vh}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 36px 0 10px}#kpb-head .kpb-logo{height:28px;max-width:88px}#kpb-head .kpb-head-assist{margin-left:24px;gap:14px}#kpb-head .kpb-btn-icon,#kpb-head .kpb-btn-home{width:30px;height:30px}#kpb-head .kpb-btn-line1{font-size:14px}#kpb-head .kpb-btn-line2{font-size:10px}#kpb-close{right:6px}#kpb-close .kpb-ico{width:18px;height:18px}#kpb-btn .kpb-btn-line2{font-size:10.5px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
@@ -476,7 +493,7 @@
       });
 
       setTimeout(function () {
-        panel.classList.remove('kpb-collapsing', 'kpb-compact');
+        panel.classList.remove('kpb-collapsing', 'kpb-compact', 'kpb-intro');
         resetPanelInlineStyles();
         collapsing = false;
         pulseFabAttention();
@@ -513,6 +530,7 @@
       panel.classList.toggle('open', open);
       if (open) {
         panel.classList.toggle('kpb-compact', opts.compact === true);
+        panel.classList.toggle('kpb-intro', opts.intro === true);
         panel.classList.toggle(
           'kpb-desk-modal',
           isDesktopUi() && opts.compact !== true
@@ -521,10 +539,12 @@
         if (compactClearTimer) clearTimeout(compactClearTimer);
         compactClearTimer = setTimeout(function () {
           compactClearTimer = 0;
-          if (!open) panel.classList.remove('kpb-compact');
+          if (!open) {
+            panel.classList.remove('kpb-compact', 'kpb-intro');
+          }
         }, PANEL_SLIDE_MS + 40);
       } else if (!open) {
-        panel.classList.remove('kpb-compact');
+        panel.classList.remove('kpb-compact', 'kpb-intro');
       }
       if (!open && wasOpen && panel.classList.contains('kpb-desk-modal')) {
         if (deskModalClearTimer) clearTimeout(deskModalClearTimer);
@@ -635,9 +655,13 @@
         if (autoIntroActive) {
           setTimeout(function () {
             if (!autoIntroActive) return;
-            markIntroSeen();
             introStartScrollY = pageScrollY();
-            setOpen(true, { backdrop: false, lockScroll: false, compact: true });
+            setOpen(true, {
+              backdrop: false,
+              lockScroll: false,
+              compact: true,
+              intro: true,
+            });
           }, INTRO_OPEN_DELAY_MS);
         }
       });
