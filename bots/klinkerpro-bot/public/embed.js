@@ -28,6 +28,24 @@
     }
   }
 
+  var INTRO_SEEN_KEY = 'klinkerpro_intro_seen';
+
+  function hasSeenIntro() {
+    try {
+      return localStorage.getItem(INTRO_SEEN_KEY) === '1';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function markIntroSeen() {
+    try {
+      localStorage.setItem(INTRO_SEEN_KEY, '1');
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
   function getSessionId() {
     var SESSION_KEY = 'klinkerpro_bot_session';
     try {
@@ -140,7 +158,7 @@
     var sending = false;
     var botName = 'КлинкерПрофи';
     var greeting =
-      'Здравствуйте! Я консультант КлинкерПрофи.\nРасскажу про фасадные термопанели, клинкер и клинкерный кирпич на фасаде.\nЗадайте вопрос — отвечу по делу.';
+      'Здравствуйте! Я помощник КлинкерПрофи.\nРасскажу про фасадные термопанели и клинкер на фасаде; могу провести расчёт площади, панелей, пены, дюбелей и затирки.\nЗадайте вопрос или напишите размеры дома — посчитаю с пояснением.';
     var unavailableReply = [
       'Сейчас помощник временно недоступен. Свяжитесь с КлинкерПрофи:',
       '',
@@ -155,7 +173,7 @@
     var BTN_LABEL = '<span class="kpb-btn-label">помощник</span>';
     var LOGO_URL =
       'https://static.tildacdn.com/tild6661-3037-4234-b636-643434333430/Group_6302_1.svg';
-    var autoIntroActive = true;
+    var autoIntroActive = !hasSeenIntro();
     var introStartScrollY = 0;
     var INTRO_SCROLL_PX = 50;
     var INTRO_OPEN_DELAY_MS = 1000;
@@ -175,6 +193,7 @@
 
     function endAutoIntro() {
       autoIntroActive = false;
+      markIntroSeen();
       btn.classList.remove('kpb-scroll-hidden');
     }
 
@@ -606,6 +625,7 @@
         if (autoIntroActive) {
           setTimeout(function () {
             if (!autoIntroActive) return;
+            markIntroSeen();
             introStartScrollY = pageScrollY();
             setOpen(true, { backdrop: false, lockScroll: false, compact: true });
           }, INTRO_OPEN_DELAY_MS);

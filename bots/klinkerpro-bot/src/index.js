@@ -5,7 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const config = require('./config');
 const { handleChat } = require('./chat');
-const { loadKnowledge, buildGreeting } = require('./knowledge');
+const { loadKnowledge, buildGreeting, buildWidgetGreeting } = require('./knowledge');
 const { startNoContactWatcher } = require('./no-contact');
 const { UNAVAILABLE_REPLY } = require('./contacts');
 
@@ -60,7 +60,7 @@ app.post('/api/chat', async (req, res) => {
 app.get('/api/widget-config', (_req, res) => {
   res.json({
     name: config.botName,
-    greeting: buildGreeting(),
+    greeting: buildWidgetGreeting(),
     unavailableReply: UNAVAILABLE_REPLY,
   });
 });
