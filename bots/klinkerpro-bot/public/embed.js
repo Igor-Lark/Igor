@@ -171,7 +171,13 @@
     var ICON_CLOSE =
       '<svg class="kpb-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.4 6.4l11.2 11.2M17.6 6.4L6.4 17.6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
     var ICON_HOME =
-      '<svg class="kpb-btn-home" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10h16v9H4z" stroke="#fff" stroke-width="1.5"/><path d="M7 14h3v3H7zM14 14h3v3h-3z" fill="#fff" opacity="0.9"/><path d="M6 10V7l6-4 6 4v3" stroke="#fff" stroke-width="1.5"/></svg>';
+      '<svg class="kpb-btn-home" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+      '<path d="M3 10.5L12 3.5 21 10.5M5 10.5V20h14V10.5" stroke="#fff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<rect x="9.2" y="13.1" width="2.35" height="2.35" fill="#fff"/>' +
+      '<rect x="12.45" y="13.1" width="2.35" height="2.35" fill="#fff"/>' +
+      '<rect x="9.2" y="16.35" width="2.35" height="2.35" fill="#fff"/>' +
+      '<rect x="12.45" y="16.35" width="2.35" height="2.35" fill="#fff"/>' +
+      '</svg>';
     var BTN_LABEL =
       '<span class="kpb-btn-icon">' +
       ICON_HOME +
@@ -187,10 +193,10 @@
     var COLLAPSE_MS = 450;
     var compactClearTimer = 0;
     var deskModalClearTimer = 0;
-    /** Кнопка виджета: 180×60 px, left 60 / bottom 100 (см. pinFab) */
-    var FAB_WIDTH_PX = 180;
+    /** Кнопка виджета: 200×60 px, right 60 / bottom 100 (см. pinFab) */
+    var FAB_WIDTH_PX = 200;
     var FAB_HEIGHT_PX = 60;
-    var FAB_LEFT_PX = 60;
+    var FAB_RIGHT_PX = 60;
     var FAB_BOTTOM_PX = 100;
     var DESKTOP_MQ = '(min-width:1025px)';
 
@@ -210,7 +216,7 @@
       '#kpb-root *{box-sizing:border-box;font-family:inherit}',
       '#kpb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#kpb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#kpb-btn{all:initial;position:fixed !important;left:60px !important;right:auto !important;bottom:100px !important;width:180px !important;min-width:180px !important;max-width:180px !important;height:60px !important;border:2px solid #ffffff !important;border-radius:10px !important;cursor:pointer;background:#d54d00 !important;color:#fff !important;line-height:1.1 !important;box-shadow:0 8px 24px rgba(213,77,0,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:flex-start;gap:8px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:0 10px 0 12px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#kpb-btn{all:initial;position:fixed !important;left:auto !important;right:60px !important;bottom:100px !important;width:200px !important;min-width:200px !important;max-width:200px !important;height:60px !important;border:1px solid #ffffff !important;border-radius:10px !important;cursor:pointer;background:#d54d00 !important;color:#fff !important;line-height:1.1 !important;box-shadow:0 8px 24px rgba(213,77,0,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:flex-start;gap:8px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:0 12px 0 14px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#kpb-btn.kpb-hidden,#kpb-btn.kpb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       '#kpb-btn.kpb-pre-show{display:flex !important;visibility:visible !important;opacity:0 !important;pointer-events:none !important}',
       '#kpb-btn.kpb-attention{animation:kpbFabPulse .55s ease-in-out 3 !important}',
@@ -329,19 +335,22 @@
       schedulePinFab();
     }
 
-    /** left 60 / bottom 100; на мобиле — привязка к visual viewport (клавиатура, UI браузера). */
+    /** right 60 / bottom 100; на мобиле — привязка к visual viewport (клавиатура, UI браузера). */
     function pinFab() {
       var vv = window.visualViewport;
+      var w = btn.offsetWidth || FAB_WIDTH_PX;
       var h = btn.offsetHeight || FAB_HEIGHT_PX;
-      btn.style.right = 'auto';
-      btn.style.width = FAB_WIDTH_PX + 'px';
+      btn.style.width = w + 'px';
       if (!vv) {
-        btn.style.left = FAB_LEFT_PX + 'px';
+        btn.style.left = 'auto';
+        btn.style.right = FAB_RIGHT_PX + 'px';
         btn.style.top = 'auto';
         btn.style.bottom = FAB_BOTTOM_PX + 'px';
         return;
       }
-      btn.style.left = vv.offsetLeft + FAB_LEFT_PX + 'px';
+      btn.style.right = 'auto';
+      btn.style.left =
+        vv.offsetLeft + vv.width - FAB_RIGHT_PX - w + 'px';
       btn.style.bottom = 'auto';
       var top = vv.offsetTop + vv.height - FAB_BOTTOM_PX - h;
       btn.style.top = Math.max(vv.offsetTop, top) + 'px';
