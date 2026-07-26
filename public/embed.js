@@ -209,7 +209,7 @@
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
       /* та же компоновка шапки, что на десктопе — только компактнее */
-      '@media (max-width:1024px){#bsb-btn{left:20px !important;right:auto !important;bottom:60px !important;top:auto !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-logo{width:28px;height:26px}}',
+      '@media (max-width:1024px){#bsb-btn{left:20px !important;right:auto !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-logo{width:28px;height:26px}}',
       '@media (max-width:480px){#bsb-panel{height:70vh;max-height:70vh}#bsb-head{--bsb-avatar:44px;min-height:72px;padding:8px 36px 8px 10px;gap:6px}#bsb-head-left,#bsb-head-right{gap:6px}#bsb-avatar{border-width:1.5px}.bsb-oleg-name{font-size:13px}.bsb-oleg-role,.bsb-helper-line{font-size:11px}#bsb-head .bsb-logo{width:24px;height:22px}#bsb-close{right:6px;top:6px}#bsb-close .bsb-ico{width:18px;height:18px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
