@@ -326,9 +326,9 @@
     function pinFab() {
       var base = fabBaseBottom();
       var vv = window.visualViewport;
-      var w = btn.offsetWidth || 224;
-      var h = btn.offsetHeight || 61;
       var mobile = window.matchMedia('(max-width:1024px)').matches;
+      var w = btn.offsetWidth || (mobile ? 194 : 224);
+      var h = btn.offsetHeight || 61;
       // мобилка: 20px слева, 20px снизу; десктоп: справа 16px, снизу 20px + подъём на 2 ширины
       if (mobile) {
         btn.style.left = '20px';
