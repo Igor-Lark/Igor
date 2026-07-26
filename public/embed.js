@@ -319,7 +319,7 @@
     }
 
     function fabBaseBottom() {
-      return 20;
+      return 20; // мобилка и десктоп: 20px от низа
     }
 
     /** Держим кнопку у нижнего края visual viewport — без прыжка при скролле на мобиле. */
