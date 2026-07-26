@@ -166,10 +166,10 @@
       '#bsb-root *{box-sizing:border-box;font-family:inherit}',
       '#bsb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:20px !important;min-width:56px !important;height:56px !important;border:2px solid rgba(239,31,31,.8) !important;border-radius:5px !important;cursor:pointer;background:rgba(32,67,96,.8) !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.32);display:flex !important;flex-direction:column !important;align-items:center;justify-content:center;gap:2px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 12px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:20px !important;min-width:112px !important;height:61px !important;border:2px solid rgba(239,31,31,.7) !important;border-radius:5px !important;cursor:pointer;background:rgba(32,67,96,.7) !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.28);display:flex !important;flex-direction:column !important;align-items:center;justify-content:center;gap:2px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 12px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#bsb-btn.bsb-hidden,#bsb-btn.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       '#bsb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
-      '#bsb-btn:hover{background:rgba(24,52,76,.8) !important}',
+      '#bsb-btn:hover{background:rgba(24,52,76,.7) !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
       '#bsb-btn .bsb-ai-label{font-size:16px;font-weight:800;letter-spacing:.04em;line-height:1}',
       '#bsb-btn .bsb-ai-sub{font-size:10px;font-weight:600;opacity:.95;letter-spacing:.01em;line-height:1;white-space:nowrap}',
@@ -326,8 +326,8 @@
     function pinFab() {
       var base = fabBaseBottom();
       var vv = window.visualViewport;
-      var w = btn.offsetWidth || 56;
-      var h = btn.offsetHeight || 56;
+      var w = btn.offsetWidth || 112;
+      var h = btn.offsetHeight || 61;
       var mobile = window.matchMedia('(max-width:1024px)').matches;
       // мобилка: 20px слева, 20px снизу; десктоп: справа 16px, снизу 20px + подъём на 2 ширины
       if (mobile) {
