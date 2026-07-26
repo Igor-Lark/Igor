@@ -1,5 +1,19 @@
 # Запуск KlinkerPro Bot на VPS (подробно)
 
+**Быстрые ссылки**
+
+- [Скрипт деплоя базы знаний (GitHub)](https://github.com/Igor-Lark/Igor/blob/cursor/termopaneli-bot-bfbc/bots/klinkerpro-bot/scripts/deploy-knowledge.sh)
+- [Раздел «Обновление инструкций бота» в этом файле](#10-обновление-инструкций-бота-база-знаний)
+- [Проверка после деплоя — health](https://klinker.webtaxi2.ru/health)
+- [Виджет на сайте — embed.js](https://klinker.webtaxi2.ru/embed.js)
+- [Каталог термопанелей на Tilda](https://marmara-pro.ru/termo)
+
+**На VPS одной командой** (из корня репозитория, путь замените на свой):
+
+```bash
+bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
+```
+
 Бот: виджет на **marmara-pro.ru** + заявки в **MAX**.  
 URL: **https://klinker.webtaxi2.ru** · порт процесса: **3001** (boat-sochi обычно **3000**).
 
@@ -295,6 +309,7 @@ curl -s http://127.0.0.1:3001/health
 |------|------------|
 | `knowledge/site-home.md` | Тексты с главной marmara-pro.ru |
 | `knowledge/site-termo.md` | Каталог /termo (размеры панелей и т.д.) |
+| `knowledge/site-termo-catalog.md` | Цены и названия термопанелей с карточек /termo |
 | `knowledge/faq.md` | FAQ |
 | `src/knowledge.js` | Сборка промпта, приветствия, запрет гибкого кирpicha/камня/доски |
 

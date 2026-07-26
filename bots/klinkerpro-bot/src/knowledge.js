@@ -8,7 +8,12 @@ const { managerPhoneLink, SITE_TERMO, SITE_MAIN } = require('./contacts');
 const FAQ_PATH = path.join(__dirname, '..', 'knowledge', 'faq.md');
 const SITE_HOME_PATH = path.join(__dirname, '..', 'knowledge', 'site-home.md');
 const SITE_TERMO_PATH = path.join(__dirname, '..', 'knowledge', 'site-termo.md');
-const MARKET_PATH = path.join(__dirname, '..', 'knowledge', 'market-and-mounting.md');
+const SITE_TERMO_CATALOG_PATH = path.join(
+  __dirname,
+  '..',
+  'knowledge',
+  'site-termo-catalog.md'
+);
 
 function readUtf8(filePath) {
   try {
@@ -25,16 +30,19 @@ function loadKnowledge() {
   const faq = readUtf8(FAQ_PATH);
   const siteHome = readUtf8(SITE_HOME_PATH);
   const siteTermo = readUtf8(SITE_TERMO_PATH);
+  const siteTermoCatalog = readUtf8(SITE_TERMO_CATALOG_PATH);
   const market = readUtf8(MARKET_PATH);
   const combined = [
     siteHome && '=== САЙТ: ГЛАВНАЯ (marmara-pro.ru) ===\n' + siteHome,
     siteTermo && '=== САЙТ: ТЕРМОПАНЕЛИ (/termo) ===\n' + siteTermo,
+    siteTermoCatalog &&
+      '=== КАТАЛОГ И ЦЕНЫ С САЙТА (/termo) ===\n' + siteTermoCatalog,
     market && '=== РЫНОК, МОНТАЖ, РАСХОД (СПб/ЛО) ===\n' + market,
     faq && '=== FAQ ===\n' + faq,
   ]
     .filter(Boolean)
     .join('\n\n');
-  cached = { faq, siteHome, siteTermo, market, combined };
+  cached = { faq, siteHome, siteTermo, siteTermoCatalog, market, combined };
   return cached;
 }
 
@@ -123,7 +131,8 @@ function buildSystemPrompt() {
     '- Бесплатную доставку обещай только в рамках FAQ (Выборгский район); для других районов — доставка по договорённости.',
     '',
     'Цены:',
-    '- Прикидка термопанелей: **1 460 ₽/шт.** (минимум с сайта) × **N**. Площадь **0,54 кв.м** — только для **N = ceil(S/0,54)**. Не выдумывай прайс.',
+    '- **«Сколько стоят термопанели?» / цена / стоимость:** отвечай по **каталогу сайта** (блок «КАТАЛОГ И ЦЕНЫ С САЙТА»): **1 460 ₽ за термопанель**, на карточках **2 350 ₽/м²**, примеры моделей (Колорадо, Амsterdam). Ссылка: ' + SITE_TERMO + '. **Не** используй диапазоны «1 400–4 800 ₽/м²» и прочие не из каталога КлинкерПрофи.',
+    '- Прикидка по дому: **1 460 ₽/шт.** × количество; N = ceil(S/0,54). Не выдумывай другие ₽/шт.',
     '',
     'Контакты (всегда сюда):',
     `- Телефон: ${managerPhoneLink()} (другие номера — на сайте).`,
