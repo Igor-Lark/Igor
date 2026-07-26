@@ -8,6 +8,7 @@
 | `termo-microdata.html` | JSON-LD в `<head>` страницы `/termo` |
 | `llms.txt` | Корень домена: `https://marmara-pro.ru/llms.txt` |
 | `llms-termo.txt` | Каталог: `https://marmara-pro.ru/llms-termo.txt` (или ссылка из llms.txt) |
+| `faq-klej-pena-tilda.md` | Готовые вопросы/ответы для аккордеона FAQ на Tilda (/termo) |
 
 Проверка микроразметки: [YANDEX-CHECK.md](./YANDEX-CHECK.md) · `./validate-markup.sh --live`
 
