@@ -319,7 +319,7 @@
     }
 
     function fabBaseBottom() {
-      if (window.matchMedia('(max-width:1024px)').matches) return 60;
+      if (window.matchMedia('(max-width:1024px)').matches) return 40;
       return 20;
     }
 
@@ -330,7 +330,7 @@
       var w = btn.offsetWidth || 56;
       var h = btn.offsetHeight || 56;
       var mobile = window.matchMedia('(max-width:1024px)').matches;
-      // мобилка: 20px слева, 60px снизу; десктоп: справа 16px, снизу 20px + подъём на 2 ширины
+      // мобилка: 20px слева, 40px снизу; десктоп: справа 16px, снизу 20px + подъём на 2 ширины
       if (mobile) {
         btn.style.left = '20px';
         btn.style.right = 'auto';
