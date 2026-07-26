@@ -14,6 +14,7 @@ const SITE_TERMO_CATALOG_PATH = path.join(
   'knowledge',
   'site-termo-catalog.md'
 );
+const MARKET_PATH = path.join(__dirname, '..', 'knowledge', 'market-and-mounting.md');
 
 function readUtf8(filePath) {
   try {
