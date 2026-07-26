@@ -178,7 +178,7 @@
       '#bsb-btn:hover{background:rgba(24,52,76,.8) !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
       '#bsb-btn .bsb-logo{display:block;flex-shrink:0;width:28px;height:26px}',
-      '#bsb-btn .bsb-ai-block{margin-left:auto;display:flex;flex-direction:row;align-items:center;gap:6px;flex-shrink:0}',
+      '#bsb-btn .bsb-ai-block{margin-left:auto;margin-right:20px;display:flex;flex-direction:row;align-items:center;gap:6px;flex-shrink:0}',
       '#bsb-btn .bsb-ai-label{font-size:26px;font-weight:600;letter-spacing:.04em;line-height:1;flex-shrink:0}',
       '#bsb-btn .bsb-ai-sub{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;font-size:12px;font-weight:600;opacity:.95;letter-spacing:.01em;line-height:1.1;text-align:left;min-width:0}',
       '#bsb-btn .bsb-ai-sub-line{display:block;white-space:nowrap}',
