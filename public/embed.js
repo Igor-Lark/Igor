@@ -168,6 +168,8 @@
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
       '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:20px !important;min-width:224px !important;height:61px !important;border:2px solid rgba(239,31,31,.8) !important;border-radius:5px !important;cursor:pointer;background:rgba(32,67,96,.8) !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.32);display:flex !important;flex-direction:column !important;align-items:center;justify-content:center;gap:2px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 12px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#bsb-btn.bsb-hidden,#bsb-btn.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
+      /* Под боковым меню Tilda (t450__menu_show z-index 999999 / overlay 99999) */
+      '#bsb-btn.bsb-under-menu{z-index:99990 !important}',
       '#bsb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
       '#bsb-btn:hover{background:rgba(24,52,76,.8) !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
@@ -357,17 +359,65 @@
       });
     }
 
+    /** Открыто ли боковое меню Tilda (t450). */
+    function isTildaSideMenuOpen() {
+      return Boolean(
+        document.querySelector('.t450__menu_show') ||
+          document.querySelector('.t-menuburger-opened') ||
+          document.querySelector('.t450__overlay.t450__menu_show')
+      );
+    }
+
+    /** На мобилке кнопка уходит под развёрнутое боковое меню. */
+    function syncFabUnderMenu() {
+      var mobile = window.matchMedia('(max-width:1024px)').matches;
+      btn.classList.toggle('bsb-under-menu', mobile && isTildaSideMenuOpen());
+    }
+
+    var menuSyncRaf = 0;
+    function scheduleSyncFabUnderMenu() {
+      if (menuSyncRaf) return;
+      menuSyncRaf = requestAnimationFrame(function () {
+        menuSyncRaf = 0;
+        syncFabUnderMenu();
+      });
+    }
+
     updateFabScrollVisibility();
     pinFab();
+    syncFabUnderMenu();
     window.addEventListener('scroll', function () {
       updateFabScrollVisibility();
       schedulePinFab();
     }, { passive: true });
-    window.addEventListener('resize', schedulePinFab);
-    window.addEventListener('orientationchange', schedulePinFab);
+    window.addEventListener('resize', function () {
+      schedulePinFab();
+      scheduleSyncFabUnderMenu();
+    });
+    window.addEventListener('orientationchange', function () {
+      schedulePinFab();
+      scheduleSyncFabUnderMenu();
+    });
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', schedulePinFab);
       window.visualViewport.addEventListener('scroll', schedulePinFab);
+    }
+    document.addEventListener(
+      'click',
+      function () {
+        scheduleSyncFabUnderMenu();
+        setTimeout(syncFabUnderMenu, 80);
+        setTimeout(syncFabUnderMenu, 350);
+      },
+      true
+    );
+    if (typeof MutationObserver !== 'undefined') {
+      var menuObs = new MutationObserver(scheduleSyncFabUnderMenu);
+      menuObs.observe(document.documentElement, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ['class'],
+      });
     }
 
     function addBubble(text, kind) {
