@@ -656,8 +656,25 @@
       sendMessage(text);
     });
 
+    /** Первое сообщение из окна приветствия → полный диалог с тем же текстом в ленте. */
+    function switchFromIntroToDialog() {
+      if (!panel.classList.contains('kpb-intro')) return false;
+      endAutoIntro();
+      setOpen(true, {
+        backdrop: true,
+        lockScroll: true,
+        compact: false,
+        intro: false,
+      });
+      return true;
+    }
+
     function sendMessage(text) {
+      var fromIntro = switchFromIntroToDialog();
       addBubble(text, 'user');
+      if (fromIntro) {
+        msgs.scrollTop = msgs.scrollHeight;
+      }
       messages.push({ role: 'user', content: text });
       sending = true;
       sendBtn.disabled = true;
