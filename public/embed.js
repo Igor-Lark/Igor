@@ -156,7 +156,7 @@
     var ICON_CLOSE =
       '<svg class="bsb-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.4 6.4l11.2 11.2M17.6 6.4L6.4 17.6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
     var BTN_AI_LABEL =
-      '<span class="bsb-ai-label">AI</span><span class="bsb-ai-sub">помощник капитана</span>';
+      '<span class="bsb-ai-label">AI</span><span class="bsb-ai-sub"><span class="bsb-ai-sub-line">помощник</span><span class="bsb-ai-sub-line">капитана</span></span>';
     var AVATAR_URL = API_BASE + '/avatar-oleg.jpg';
     var LOGO_URL = API_BASE + '/logo-stripes.svg';
 
@@ -166,15 +166,16 @@
       '#bsb-root *{box-sizing:border-box;font-family:inherit}',
       '#bsb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:20px !important;min-width:224px !important;height:61px !important;border:2px solid rgba(239,31,31,.8) !important;border-radius:5px !important;cursor:pointer;background:rgba(32,67,96,.8) !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.32);display:flex !important;flex-direction:column !important;align-items:center;justify-content:center;gap:2px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 12px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:20px !important;width:180px !important;min-width:180px !important;height:61px !important;border:2px solid rgba(239,31,31,.8) !important;border-radius:5px !important;cursor:pointer;background:rgba(32,67,96,.8) !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.32);display:flex !important;flex-direction:row !important;align-items:center;justify-content:center;gap:8px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 10px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#bsb-btn.bsb-hidden,#bsb-btn.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       /* Под боковым меню Tilda (t450__menu_show z-index 999999 / overlay 99999) */
       '#bsb-btn.bsb-under-menu{z-index:99990 !important}',
       '#bsb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
       '#bsb-btn:hover{background:rgba(24,52,76,.8) !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
-      '#bsb-btn .bsb-ai-label{font-size:16px;font-weight:800;letter-spacing:.04em;line-height:1}',
-      '#bsb-btn .bsb-ai-sub{font-size:12px;font-weight:600;opacity:.95;letter-spacing:.01em;line-height:1;white-space:nowrap}',
+      '#bsb-btn .bsb-ai-label{font-size:32px;font-weight:800;letter-spacing:.04em;line-height:1;flex-shrink:0}',
+      '#bsb-btn .bsb-ai-sub{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;font-size:12px;font-weight:600;opacity:.95;letter-spacing:.01em;line-height:1.1;text-align:left}',
+      '#bsb-btn .bsb-ai-sub-line{display:block;white-space:nowrap}',
       '#bsb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
       '#bsb-panel.open{transform:translateX(0)}',
       '#bsb-head{--bsb-avatar:64px;position:relative;background:#204360;color:#fff;min-height:96px;padding:12px 44px 12px 14px;display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-shrink:0;flex-wrap:nowrap}',
@@ -211,7 +212,7 @@
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
       /* та же компоновка шапки, что на десктопе — только компактнее */
-      '@media (max-width:1024px){#bsb-btn{left:20px !important;right:auto !important;min-width:194px !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-logo{width:28px;height:26px}}',
+      '@media (max-width:1024px){#bsb-btn{left:20px !important;right:auto !important;width:180px !important;min-width:180px !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-logo{width:28px;height:26px}}',
       '@media (max-width:480px){#bsb-panel{height:70vh;max-height:70vh}#bsb-head{--bsb-avatar:44px;min-height:72px;padding:8px 36px 8px 10px;gap:6px}#bsb-head-left,#bsb-head-right{gap:6px}#bsb-avatar{border-width:1.5px}.bsb-oleg-name{font-size:13px}.bsb-oleg-role,.bsb-helper-line{font-size:11px}#bsb-head .bsb-logo{width:24px;height:22px}#bsb-close{right:6px;top:6px}#bsb-close .bsb-ico{width:18px;height:18px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
@@ -329,7 +330,7 @@
       var base = fabBaseBottom();
       var vv = window.visualViewport;
       var mobile = window.matchMedia('(max-width:1024px)').matches;
-      var w = btn.offsetWidth || (mobile ? 194 : 224);
+      var w = btn.offsetWidth || 180;
       var h = btn.offsetHeight || 61;
       // мобилка: 20px слева, 20px снизу; десктоп: справа 16px, снизу 20px + подъём на 2 ширины
       if (mobile) {
