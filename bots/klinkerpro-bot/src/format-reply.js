@@ -21,8 +21,8 @@ function formatBotReply(text) {
   s = s.replace(/\$\$[\s\S]*?\$\$/g, '');
   s = s.replace(/\$([^$\n]+)\$/g, (_m, inner) => latexInlineToPlain(inner));
   s = s.replace(/\n{3,}/g, '\n\n');
+  s = s.replace(/\\?\s*м\^2/gi, 'кв.м');
   s = s.replace(/\bм²\b/g, 'кв.м');
-  s = s.replace(/\n{3,}/g, '\n\n');
   return s.trim();
 }
 
