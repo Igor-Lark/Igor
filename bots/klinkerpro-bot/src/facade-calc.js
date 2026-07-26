@@ -114,23 +114,43 @@ function estimateFromHistory(history) {
   return computeEstimate(dims.L, dims.W, dims.H);
 }
 
+function fmtArea(n) {
+  return Number(n)
+    .toFixed(2)
+    .replace('.', ',')
+    .replace(/,00$/, '');
+}
+
+function buildClientItogo(est) {
+  const sOrder = fmtArea(est.S_order);
+  return [
+    'Итого (ориентир):',
+    `— Термопанели: ${est.N} шт. · ${fmtInt(est.costPanels)} ₽`,
+    `— Клей-пена: ${est.N_foam} балл. (800 мл) · ${fmtInt(est.costFoam)} ₽ (на ${est.N} термопанелей, ${sOrder} кв.м)`,
+    `— Затирка: ${est.N_grout} меш. (25 кг) · ${fmtInt(est.costGrout)} ₽ (на ту же площадь клинкера)`,
+    `— Дюбели: ${fmtInt(est.N_anchors)} шт.`,
+  ].join('\n');
+}
+
 /**
  * @param {ReturnType<typeof computeEstimate>} est
  * @returns {string}
  */
 function buildCalcSystemBlock(est) {
-  const { L, W, H, S, N, N_foam, N_grout, N_anchors } = est;
+  const { L, W, H, S, N, N_foam, N_grout, N_anchors, S_order } = est;
   const sum = L + W;
   return [
-    '=== РАСЧЁТ СЕРВЕРА (обязательно, арифметика уже проверена) ===',
-    `Размеры клиента: длина ${L} м, ширина ${W} м, высота стен ${H} м (прямоугольный дом, 4 стены, без вычета проёмов).`,
-    `Площадь стен: S = 2×(${L}+${W})×${H} = 2×${sum}×${H} = **${S}** кв.м.`,
-    `Запрещено писать другой итог площади (типичная ошибка модели: ${S - 20} или ${S + 20} — неверно).`,
-    `Термопанели: ${N} шт. · ${fmtInt(est.costPanels)} ₽ (ceil(${S}/0,54)).`,
-    `Клей-пена: ${N_foam} балл. (800 мл) · ${fmtInt(est.costFoam)} ₽.`,
-    `Затирка: ${N_grout} меш. (25 кг) · ${fmtInt(est.costGrout)} ₽.`,
-    `Дюбели: ${fmtInt(N_anchors)} шт. (6×${N}).`,
-    'В ответе клиенту используй **только** эти числа для «Итого (ориентир)». Одна строка площади — с **верным** итогом после «=».',
+    '=== РАСЧЁТ СЕРВЕРА (только для модели, клиенту не цитировать этот блок и не приводить чужие «контрольные» размеры) ===',
+    `Размеры клиента: длина ${L} м, ширина ${W} м, высота стен ${H} м (4 стены, без вычета проёмов).`,
+    `Площадь стен: S = 2×(${L}+${W})×${H} = 2×${sum}×${H} = ${S} кв.м — только этот итог площади.`,
+    `Термопанели: N = ceil(${S}/0,54) = ${N} шт.; S_order = N×0,54 = ${S_order} кв.м (для клея и затирки).`,
+    `Клей-пена: ceil(S_order/6) = ${N_foam} балл. × 800 ₽ = ${fmtInt(est.costFoam)} ₽.`,
+    `Затирка: ${N_grout} меш. × 1 450 ₽ = ${fmtInt(est.costGrout)} ₽.`,
+    `Термопанели ₽: ${N} × 1 460 = ${fmtInt(est.costPanels)} ₽.`,
+    `Дюбели: ${N_anchors} шт. (6×${N}).`,
+    'Клиенту: без учебных примеров и без чужих размеров. Обязательно блок «Итого (ориентир)» — каждая позиция с количеством и **₽** (дюбели — только шт.). Клей и затирка **всегда** вместе с термопанелями, от расчётного N.',
+    'Текст для клиента (можно дословно):',
+    buildClientItogo(est),
   ].join('\n');
 }
 
@@ -159,12 +179,35 @@ function fixWallAreaInReply(reply, est) {
   return s;
 }
 
+/** Подставляет проверенный блок «Итого» с ₽ и клеем/затиркой от N панелей. */
+function injectServerItogo(reply, est) {
+  if (!est || !reply) return reply;
+  const block = buildClientItogo(est);
+  let s = String(reply).trimEnd();
+
+  const itogoRe =
+    /Итого\s*\(ориентир\)\s*:[\s\S]*?(?=\n\n(?:Чтобы|Для более|Уточн|Если удобно|Проём|Окон|Контакт|\+\s*7|https?:)|$)/i;
+  if (itogoRe.test(s)) {
+    return s.replace(itogoRe, block).trim();
+  }
+
+  const insertBefore = s.search(
+    /\n(?:Чтобы уточн|Для более точн|Уточните проёмы|Сколько окон|Если удобно|\+\s*7\s*\(|https:\/\/marmara)/i
+  );
+  if (insertBefore > 0) {
+    return (s.slice(0, insertBefore).trimEnd() + '\n\n' + block + '\n' + s.slice(insertBefore).trimStart()).trim();
+  }
+  return s + '\n\n' + block;
+}
+
 module.exports = {
   parseDimensionsFromText,
   extractDimensionsFromHistory,
   computeEstimate,
   estimateFromHistory,
   buildCalcSystemBlock,
+  buildClientItogo,
   fixWallAreaInReply,
+  injectServerItogo,
   wallAreaGross,
 };

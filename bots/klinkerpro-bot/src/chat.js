@@ -10,6 +10,7 @@ const {
   estimateFromHistory,
   buildCalcSystemBlock,
   fixWallAreaInReply,
+  injectServerItogo,
 } = require('./facade-calc');
 
 /**
@@ -63,7 +64,10 @@ async function handleChat(input) {
       ...cleaned,
     ]);
     reply = formatBotReply(out.reply);
-    if (estimate) reply = fixWallAreaInReply(reply, estimate);
+    if (estimate) {
+      reply = fixWallAreaInReply(reply, estimate);
+      reply = injectServerItogo(reply, estimate);
+    }
     provider = out.provider;
   } catch (err) {
     console.error('[chat] AI failed:', err.message);
