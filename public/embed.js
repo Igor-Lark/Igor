@@ -173,7 +173,7 @@
       '#bsb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
       '#bsb-btn:hover{background:rgba(24,52,76,.8) !important}',
       '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
-      '#bsb-btn .bsb-ai-label{font-size:32px;font-weight:800;letter-spacing:.04em;line-height:1;flex-shrink:0}',
+      '#bsb-btn .bsb-ai-label{font-size:32px;font-weight:700;letter-spacing:.04em;line-height:1;flex-shrink:0}',
       '#bsb-btn .bsb-ai-sub{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;font-size:12px;font-weight:600;opacity:.95;letter-spacing:.01em;line-height:1.1;text-align:left}',
       '#bsb-btn .bsb-ai-sub-line{display:block;white-space:nowrap}',
       '#bsb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
