@@ -312,8 +312,8 @@ def paid_search_condition_note(detail):
 
 
 def add_action_block(doc, detail):
-    """Block 9: minus words, keywords, RSYA bans — included in every report."""
-    doc.add_heading("9. Минус-слова, ключевые фразы, площадки к отключению", level=1)
+    """Block 8: minus words, keywords, RSYA bans — included in every report."""
+    doc.add_heading("8. Минус-слова, ключевые фразы, площадки к отключению", level=1)
     doc.add_paragraph(
         "Блок формируется автоматически при каждом анализе: базовые списки для ниши "
         "фасадов/термопанелей + данные из вашей выгрузки (запросы и площадки РСЯ)."
@@ -323,13 +323,13 @@ def add_action_block(doc, detail):
     extra_minus = minus_words_from_data(qs) if len(qs) else []
     minus_words = sorted(set(BASE_MINUS_WORDS + extra_minus))
 
-    doc.add_heading("9.1. Минус-слова (уровень кампании)", level=2)
+    doc.add_heading("8.1. Минус-слова (уровень кампании)", level=2)
     add_code_block(doc, "Скопировать в Директ (по одному слову на строку):", minus_words)
 
-    doc.add_heading("9.2. Минус-фразы", level=2)
+    doc.add_heading("8.2. Минус-фразы", level=2)
     add_code_block(doc, "Рекомендуемые минус-фразы:", BASE_MINUS_PHRASES)
 
-    doc.add_heading("9.3. Опционально (если не продаёте панели без утепления)", level=2)
+    doc.add_heading("8.3. Опционально (если не продаёте панели без утепления)", level=2)
     add_code_block(doc, "", OPTIONAL_MINUS_IF_NO_DRY_PANELS)
 
     # Paid off-target from report
@@ -344,10 +344,10 @@ def add_action_block(doc, detail):
                     [q[:60], f"{r['Расход, ₽']:.0f}", int(r["Клики"]), int(r["Конверсии"]), "в минус-фразы"]
                 )
         if off_paid:
-            doc.add_heading("9.4. Платные запросы — отсечь", level=2)
+            doc.add_heading("8.4. Платные запросы — отсечь", level=2)
             add_table(doc, ["Запрос", "₽", "Клики", "Конв.", "Действие"], off_paid)
 
-    doc.add_heading("9.5. Ключевые фразы по группам", level=2)
+    doc.add_heading("8.5. Ключевые фразы по группам", level=2)
     auto_note = paid_search_condition_note(detail)
     if auto_note:
         doc.add_paragraph(auto_note)
@@ -355,7 +355,7 @@ def add_action_block(doc, detail):
         doc.add_paragraph(f"Группа: {gname}", style="List Bullet")
         add_code_block(doc, "", phrases)
 
-    doc.add_heading("9.6. Площадки РСЯ — убрать из показов", level=2)
+    doc.add_heading("8.6. Площадки РСЯ — убрать из показов", level=2)
     doc.add_paragraph(
         "В интерфейсе Директа: кампания → «Площадки» → «Запретить площадки» "
         "(или снизить/отключить показы в сетях). Ниже — площадки из отчёта с признаками "
@@ -374,7 +374,7 @@ def add_action_block(doc, detail):
     else:
         doc.add_paragraph("В выгрузке мало данных по сетям — проверьте отчёт «Площадки» за тот же период.")
 
-    doc.add_heading("9.7. Настройки (кратко)", level=2)
+    doc.add_heading("8.7. Настройки (кратко)", level=2)
     for b in [
         "Поиск: фразовое + точное соответствие; не полагаться только на автотаргет.",
         "Сети: отдельная кампания с низким бюджетом или отключить до настройки поиска.",
@@ -464,7 +464,7 @@ def build_report(csv_path, out_docx):
     rsy_spend = float(rsy["Расход, ₽"].sum())
     doc.add_paragraph(
         f"За период: {rsy_shows} показов, {rsy_clicks} кликов, расход {rsy_spend:.2f} ₽. "
-        "Список площадок к отключению — в разделе 9.6."
+        "Список площадок к отключению — в разделе 8.6."
     )
     pl = (
         rsy.groupby("Название площадки")
@@ -509,22 +509,24 @@ def build_report(csv_path, out_docx):
         bullets.append(auto_note)
     bullets.extend(
         [
-            "Часть трафика с поиска — запросы к сторонним магазинам (Петрович, Вимос); см. раздел 9.",
-            "Целевые платные запросы («термопанели», «фасадные панели…») — оставить и усилить ключами из раздела 9.5.",
-            "РСЯ: отключить или запретить площадки из раздела 9.6 (Дзен, игры, погода).",
+            "Часть трафика с поиска — запросы к сторонним магазинам (Петрович, Вимос); см. раздел 8.",
+            "Целевые платные запросы («термопанели», «фасадные панели…») — оставить и усилить ключами из раздела 8.5.",
+            "РСЯ: отключить или запретить площадки из раздела 8.6 (Дзен, игры, погода).",
             "Масштабировать объявления с сильным CPA/конверсиями (см. раздел 4).",
         ]
     )
     for b in bullets:
         doc.add_paragraph(b, style="List Bullet")
 
-    doc.add_heading("8. Техническая справка", level=2)
+    doc.add_page_break()
+    add_action_block(doc, detail)
+
+    doc.add_page_break()
+    doc.add_heading("9. Техническая справка", level=1)
     doc.add_paragraph(
         "Отчёт: scripts/yandex_direct_report_docx.py — Master report Директа. "
-        "Раздел 9 (минус-слова, ключи, площадки) добавляется при каждом запуске анализа."
+        "Раздел 8 (минус-слова, ключи, площадки) добавляется при каждом запуске анализа."
     )
-
-    add_action_block(doc, detail)
 
     doc.save(out_docx)
     return out_docx
