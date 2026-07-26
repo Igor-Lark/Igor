@@ -201,22 +201,44 @@ function injectServerItogo(reply, est) {
 }
 
 /**
- * После расчёта — жирная пометка и направление к менеджеру.
+ * Убирает хвост с дублирующимися оговорками и контактами менеджера.
+ */
+function stripCalcFooterTail(text) {
+  let s = String(text);
+  const res = [
+    /\n\s*\*\*Данный\s+расч[её]т\s+являет/i,
+    /\n\s*Данный\s+расч[её]т\s+являет/i,
+    /\n\s*Для\s+получения\s+более\s+точн/i,
+    /\n\s*Для\s+точной\s+сметы/i,
+    /\n\s*Если\s+удобно\s+—/i,
+  ];
+  let cut = s.length;
+  for (const re of res) {
+    const m = re.exec(s);
+    if (m && m.index < cut) cut = m.index;
+  }
+  return s.slice(0, cut).trimEnd();
+}
+
+function buildCalcFooter(opts) {
+  return [
+    '**Данный расчёт является ориентировочным.**',
+    '',
+    'Для получения более точной сметы и подбора фактуры свяжитесь с менеджером КлинкерПрофи:',
+    `- Телефон: ${opts.managerPhone}`,
+    `- Контакты и мессенджеры: ${opts.contactsUrl}`,
+  ].join('\n');
+}
+
+/**
+ * После расчёта — одна оговорка (жирная) и один блок контактов менеджера.
  * @param {string} reply
  * @param {{ hasCalc: boolean, managerPhone: string, contactsUrl: string }} opts
  */
 function appendCalcDisclaimer(reply, opts) {
   if (!opts || !opts.hasCalc || !reply) return reply;
-  if (/данный\s+расч[её]т\s+являет/i.test(reply)) return reply;
-
-  const block = [
-    '',
-    '**Данный расчёт является ориентировочным.**',
-    '',
-    `Для точной сметы, замера и подбора фактуры обратитесь к **менеджеру КлинкерПрофи**: ${opts.managerPhone} или ${opts.contactsUrl}`,
-  ].join('\n');
-
-  return String(reply).trimEnd() + block;
+  const body = stripCalcFooterTail(reply);
+  return body + '\n\n' + buildCalcFooter(opts);
 }
 
 module.exports = {
