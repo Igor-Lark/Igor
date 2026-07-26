@@ -6,6 +6,11 @@ const { shouldNotifyLead, notifyManager, extractPhone } = require('./leads');
 const { logChatTurn } = require('./chat-log');
 const { touchSession, markContact } = require('./no-contact');
 const { formatBotReply } = require('./format-reply');
+const {
+  estimateFromHistory,
+  buildCalcSystemBlock,
+  fixWallAreaInReply,
+} = require('./facade-calc');
 
 /**
  * @param {{
@@ -45,12 +50,20 @@ async function handleChat(input) {
   }
 
   const system = buildSystemPrompt();
+  const estimate = estimateFromHistory(cleaned);
+  const systemWithCalc = estimate
+    ? system + '\n\n' + buildCalcSystemBlock(estimate)
+    : system;
 
   let reply;
   let provider;
   try {
-    const out = await completeChat([{ role: 'system', content: system }, ...cleaned]);
+    const out = await completeChat([
+      { role: 'system', content: systemWithCalc },
+      ...cleaned,
+    ]);
     reply = formatBotReply(out.reply);
+    if (estimate) reply = fixWallAreaInReply(reply, estimate);
     provider = out.provider;
   } catch (err) {
     console.error('[chat] AI failed:', err.message);
