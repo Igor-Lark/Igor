@@ -109,7 +109,17 @@
 
   /** Телефоны, https-ссылки и заявка на обратный звонок → кликабельные. */
   function linkifyText(text) {
-    var escaped = escapeHtml(normalizeCyrillicBrick(text));
+    var raw = normalizeCyrillicBrick(text);
+    var boldChunks = [];
+    raw = raw.replace(/\*\*([^*\n]+)\*\*/g, function (_m, inner) {
+      var idx = boldChunks.length;
+      boldChunks.push(inner);
+      return '\uE000B' + idx + '\uE001';
+    });
+    var escaped = escapeHtml(raw);
+    escaped = escaped.replace(/\uE000B(\d+)\uE001/g, function (_m, idx) {
+      return '<strong>' + escapeHtml(boldChunks[Number(idx)] || '') + '</strong>';
+    });
     // явные маркеры {{tel:+79…|подпись}} из приветствий / сервера
     escaped = escaped.replace(/\{\{tel:(\+?\d+)\|([^}]+)\}\}/g, function (_m, tel, label) {
       return '<a class="kpb-tel" href="tel:' + tel + '">' + label + '</a>';
@@ -289,6 +299,7 @@
       '#kpb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
       '.kpb-msg{max-width:88%;padding:10px 12px;border-radius:5px;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}',
       '.kpb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#2d2d2d}',
+      '.kpb-msg.bot strong{font-weight:700;color:#2d2d2d}',
       '.kpb-msg.user{align-self:flex-end;background:#8B7355;color:#fff;border-radius:20px}',
       '.kpb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:13px}',
       '#kpb-root a.kpb-tel,#kpb-root a.kpb-link{color:#6B5344 !important;font-weight:600 !important;text-decoration:underline !important;text-underline-offset:2px;cursor:pointer !important;pointer-events:auto !important}',

@@ -2,6 +2,8 @@
 
 const { buildSystemPrompt } = require('./knowledge');
 const { completeChat } = require('./ai');
+const { alertAiFailure } = require('./ai-alert');
+const { managerPhoneLink, SITE_MAIN } = require('./contacts');
 const { shouldNotifyLead, notifyManager, extractPhone } = require('./leads');
 const { logChatTurn } = require('./chat-log');
 const { touchSession, markContact } = require('./no-contact');
@@ -11,6 +13,7 @@ const {
   buildCalcSystemBlock,
   fixWallAreaInReply,
   injectServerItogo,
+  appendCalcDisclaimer,
 } = require('./facade-calc');
 
 /**
@@ -68,6 +71,11 @@ async function handleChat(input) {
       reply = fixWallAreaInReply(reply, estimate);
       reply = injectServerItogo(reply, estimate);
     }
+    reply = appendCalcDisclaimer(reply, {
+      hasCalc: Boolean(estimate) || /Итого\s*\(ориентир\)/i.test(reply),
+      managerPhone: managerPhoneLink(),
+      contactsUrl: SITE_MAIN + '#contacts',
+    });
     provider = out.provider;
   } catch (err) {
     console.error('[chat] AI failed:', err.message);

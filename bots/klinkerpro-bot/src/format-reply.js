@@ -20,8 +20,7 @@ function formatBotReply(text) {
   let s = String(text);
   s = s.replace(/\$\$[\s\S]*?\$\$/g, '');
   s = s.replace(/\$([^$\n]+)\$/g, (_m, inner) => latexInlineToPlain(inner));
-  s = s.replace(/\*\*([^*]+)\*\*/g, '$1');
-  s = s.replace(/\\?\s*м\^2/gi, 'кв.м');
+  s = s.replace(/\n{3,}/g, '\n\n');
   s = s.replace(/\bм²\b/g, 'кв.м');
   s = s.replace(/\n{3,}/g, '\n\n');
   return s.trim();

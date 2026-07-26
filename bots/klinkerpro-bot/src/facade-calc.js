@@ -200,6 +200,25 @@ function injectServerItogo(reply, est) {
   return s + '\n\n' + block;
 }
 
+/**
+ * После расчёта — жирная пометка и направление к менеджеру.
+ * @param {string} reply
+ * @param {{ hasCalc: boolean, managerPhone: string, contactsUrl: string }} opts
+ */
+function appendCalcDisclaimer(reply, opts) {
+  if (!opts || !opts.hasCalc || !reply) return reply;
+  if (/данный\s+расч[её]т\s+являет/i.test(reply)) return reply;
+
+  const block = [
+    '',
+    '**Данный расчёт является ориентировочным.**',
+    '',
+    `Для точной сметы, замера и подбора фактуры обратитесь к **менеджеру КлинкерПрофи**: ${opts.managerPhone} или ${opts.contactsUrl}`,
+  ].join('\n');
+
+  return String(reply).trimEnd() + block;
+}
+
 module.exports = {
   parseDimensionsFromText,
   extractDimensionsFromHistory,
@@ -209,5 +228,6 @@ module.exports = {
   buildClientItogo,
   fixWallAreaInReply,
   injectServerItogo,
+  appendCalcDisclaimer,
   wallAreaGross,
 };
