@@ -44,14 +44,41 @@ const UNAVAILABLE_REPLY = [
   'Или оставьте заявку на обратный звонок: https://boat-sochi.ru/#bot',
 ].join('\n');
 
+const CALLBACK_FORM_URL = 'https://boat-sochi.ru/#bot';
+
+/**
+ * Клиент просит, чтобы ему написали / связались письменно —
+ * направляем на форму обратной связи (#bot), как при обратном звонке.
+ */
+const WRITE_TO_CLIENT_RE =
+  /напиш(?:и|ите)\s+мне|напишите\s+пожалуйста\s+мне|напишите\s+мне\s+в|напиш(?:и|ите)\s+в\s+(?:whats?app|ватсап|вацап|телеграм|telegram|max|макс)|напишите\s+на\s+(?:мой\s+)?(?:телефон|номер)|свяжитесь\s+со\s+мной|отправьте\s+мне(?:\s+(?:сообщение|смс))?|хочу\s+чтобы\s+мне\s+написали|пусть\s+мне\s+напишут|напишите\s+клиенту/i;
+
+function isWriteToClientIntent(text) {
+  return WRITE_TO_CLIENT_RE.test(String(text || ''));
+}
+
+/**
+ * @param {string} [source]
+ */
+function buildCallbackFormReply(source) {
+  const link = source === 'web' || source === 'widget' ? '#bot' : CALLBACK_FORM_URL;
+  return [
+    'Хорошо — оставьте, пожалуйста, заявку на обратный звонок на сайте, и мы с вами свяжемся (напишем или перезвоним):',
+    link,
+  ].join('\n');
+}
+
 module.exports = {
   NATALIA_PHONE,
   NATALIA_PHONE_TEL,
   OLEG_PHONE,
   OLEG_PHONE_TEL,
+  CALLBACK_FORM_URL,
   phoneToken,
   nataliaPhoneLink,
   olegPhoneLink,
   stripPhoneTokens,
   UNAVAILABLE_REPLY,
+  isWriteToClientIntent,
+  buildCallbackFormReply,
 };

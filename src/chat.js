@@ -23,6 +23,7 @@ const {
   buildSwimWaterNote,
 } = require('./weather');
 const { isCapacityIntent, buildCapacityReply, capacityPromptBlock } = require('./fleet');
+const { isWriteToClientIntent, buildCallbackFormReply } = require('./contacts');
 
 /**
  * @param {{
@@ -125,6 +126,22 @@ async function handleChat(input) {
       });
       return { reply, provider: 'fleet', lead: null };
     }
+  }
+
+  // «Напишите мне» — форма обратной связи (#bot), как обратный звонок
+  if (lastUser && isWriteToClientIntent(lastUser.content)) {
+    const reply = buildCallbackFormReply(input.source || 'web');
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'callback-form',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'callback-form', lead: null };
   }
 
   let system = buildSystemPrompt();
