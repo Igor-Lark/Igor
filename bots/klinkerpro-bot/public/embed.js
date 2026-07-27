@@ -265,7 +265,7 @@
       '#kpb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
       '#kpb-fab-stack{all:initial;position:fixed !important;left:auto !important;right:60px !important;bottom:100px !important;z-index:2147483001 !important;display:flex !important;flex-direction:column !important;gap:0 !important;align-items:flex-start !important;pointer-events:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important}',
       '#kpb-fab-stack.kpb-hidden,#kpb-fab-stack.kpb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
-      '#kpb-mascot{height:100px;width:auto;display:block;margin:0;padding:0;border:0;pointer-events:none;line-height:0;vertical-align:bottom}',
+      '#kpb-mascot{height:100px;width:auto;display:block;margin:0;padding:0;border:0;pointer-events:auto;cursor:pointer;line-height:0;vertical-align:bottom;-webkit-tap-highlight-color:transparent}',
       '#kpb-fab-stack #kpb-btn{position:relative !important;left:auto !important;right:auto !important;top:auto !important;bottom:auto !important;margin:0 !important}',
       '#kpb-btn{all:initial;width:220px !important;min-width:220px !important;max-width:220px !important;height:60px !important;border:1px solid rgba(255,255,255,.8) !important;border-radius:10px !important;cursor:pointer;background:rgba(213,77,0,.8) !important;color:#fff !important;line-height:1.1 !important;box-shadow:0 8px 24px rgba(213,77,0,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:flex-start;gap:8px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;padding:0 12px 0 14px !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#kpb-btn.kpb-pre-show{display:flex !important;visibility:visible !important;opacity:0 !important;pointer-events:none !important}',
@@ -361,6 +361,9 @@
     mascot.id = 'kpb-mascot';
     mascot.alt = '';
     mascot.setAttribute('aria-hidden', 'true');
+    mascot.setAttribute('role', 'button');
+    mascot.setAttribute('tabindex', '0');
+    mascot.title = 'Открыть ИИ-помощника';
     mascot.decoding = 'async';
     mascot.src = resolveMascotUrl('');
     mascot.addEventListener('error', function () {
@@ -680,9 +683,18 @@
       }
     }
 
-    btn.addEventListener('click', function () {
+    function openWidgetFromFab() {
       if (open) return;
       setOpen(true, { backdrop: true, lockScroll: true, compact: false });
+    }
+
+    btn.addEventListener('click', openWidgetFromFab);
+    mascot.addEventListener('click', openWidgetFromFab);
+    mascot.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openWidgetFromFab();
+      }
     });
     closeBtn.addEventListener('click', function () {
       setOpen(false, { collapseToFab: false, keepCompactUntilClosed: true });
