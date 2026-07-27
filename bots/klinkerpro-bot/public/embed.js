@@ -689,7 +689,7 @@
       document.documentElement.style.overflow = lockScroll ? 'hidden' : '';
       if (!open) {
         schedulePinFab();
-      } else if (!wasOpen) {
+      } else if (!wasOpen && isDesktopUi()) {
         focusChatInput();
         requestAnimationFrame(focusChatInput);
         setTimeout(focusChatInput, 120);
