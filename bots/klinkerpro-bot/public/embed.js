@@ -239,6 +239,7 @@
     var FAB_HEIGHT_PX = 60;
     var FAB_RIGHT_PX = 60;
     var FAB_BOTTOM_PX = 100;
+    var FAB_MASCOT_HEIGHT_PX = 100;
     var MOBILE_FAB_BOTTOM_PX = 40;
     var DESKTOP_MQ = '(min-width:1025px)';
     var MOBILE_MQ = '(max-width:1024px)';
@@ -251,12 +252,17 @@
       return window.matchMedia(MOBILE_MQ).matches;
     }
 
+    /** На мобиле — только кнопка (как до fab-stack); на десктопе — обёртка с маскотом. */
+    function fabShell() {
+      return isMobileUi() ? btn : fabStack;
+    }
+
     var autoIntroActive = shouldAutoIntro() && !isMobileUi();
 
     function endAutoIntro() {
       autoIntroActive = false;
       markIntroSeen();
-      fabStack.classList.remove('kpb-scroll-hidden');
+      fabShell().classList.remove('kpb-scroll-hidden');
     }
 
     var style = document.createElement('style');
@@ -267,6 +273,7 @@
       '#kpb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
       '#kpb-fab-stack{all:initial;position:fixed !important;left:auto !important;right:60px !important;bottom:100px !important;z-index:2147483001 !important;display:flex !important;flex-direction:column !important;gap:0 !important;align-items:flex-start !important;pointer-events:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important}',
       '#kpb-fab-stack.kpb-hidden,#kpb-fab-stack.kpb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
+      '#kpb-mascot{height:100px;width:auto;display:block;margin:0;padding:0;border:0;pointer-events:auto;cursor:pointer;line-height:0;vertical-align:bottom;-webkit-tap-highlight-color:transparent}',
       '#kpb-fab-stack #kpb-btn{position:relative !important;left:auto !important;right:auto !important;top:auto !important;bottom:auto !important;margin:0 !important}',
       '#kpb-btn{all:initial;width:220px !important;min-width:220px !important;max-width:220px !important;height:60px !important;border:1px solid rgba(255,255,255,.8) !important;border-radius:10px !important;cursor:pointer;background:rgba(213,77,0,.8) !important;color:#fff !important;line-height:1.1 !important;box-shadow:0 8px 24px rgba(213,77,0,.35);display:flex !important;flex-direction:row !important;align-items:center;justify-content:flex-start;gap:8px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;padding:0 12px 0 14px !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#kpb-btn.kpb-pre-show{display:flex !important;visibility:visible !important;opacity:0 !important;pointer-events:none !important}',
@@ -320,10 +327,10 @@
       '#kpb-send .kpb-ico{width:20px;height:20px}',
       '#kpb-panel.kpb-intro #kpb-send{flex:0 0 auto;min-width:48px !important;max-width:48px;padding:0 7px !important}',
       '@media (min-width:1025px){#kpb-panel.kpb-desk-modal{position:fixed;left:20vw;top:20vh;right:auto;bottom:auto;width:60vw;height:60vh;max-width:60vw;max-height:60vh;border-radius:5px;box-shadow:0 24px 60px rgba(15,23,42,.25);transform:translateX(100vw)}#kpb-panel.kpb-desk-modal.open{transform:translateX(0)}#kpb-send{min-width:96px;padding:0 28px;flex-shrink:0}#kpb-panel.kpb-intro #kpb-send{min-width:48px !important;max-width:48px;padding:0 7px !important}.kpb-msg.bot.kpb-msg-greeting{display:flex;flex-direction:row;align-items:flex-start;gap:10px;max-width:92%}.kpb-greeting-mascot{flex-shrink:0;display:block;height:100px;width:auto;object-fit:contain;object-position:left top}.kpb-greeting-text{flex:1;min-width:0;line-height:1.5}}',
-      '@media (max-width:1024px){.kpb-greeting-mascot{display:none !important}}',
-      /* планшет/мобила — без изменений в этом релизе */
-      '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:86.25vh;max-height:86.25vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-panel.kpb-compact{height:43.125vh;max-height:43.125vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:60.375vh;max-height:60.375vh;bottom:80px}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 40px 0 12px;gap:18px}#kpb-head .kpb-logo-wide{display:none}#kpb-head .kpb-logo-square{display:block;height:32px;width:auto;max-width:110px;max-height:32px}#kpb-head .kpb-head-assist{margin-left:15px;gap:18px}#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:15px}#kpb-head .kpb-head-assist .kpb-btn-icon{margin-left:5px}#kpb-btn .kpb-btn-icon{margin-left:5px}#kpb-head .kpb-btn-line1{font-size:15px}#kpb-head .kpb-btn-line2{font-size:10.5px}#kpb-close .kpb-ico{width:22px;height:22px}#kpb-fab-stack{left:20px !important;right:auto !important;bottom:40px !important}#kpb-btn{width:220px !important;min-width:220px !important;max-width:220px !important;justify-content:flex-start !important;background:rgba(213,77,0,.8) !important;border:1px solid rgba(255,255,255,.8) !important}#kpb-btn:hover{background:rgba(192,69,0,.8) !important}}',
-      '@media (max-width:480px){#kpb-panel{height:80.5vh;max-height:80.5vh}#kpb-panel.kpb-compact{height:40.25vh;max-height:40.25vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:56.35vh;max-height:56.35vh;bottom:80px}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 36px 0 10px;gap:18px}#kpb-head .kpb-logo-square{height:28px;width:auto;max-width:96px;max-height:28px}#kpb-head .kpb-head-assist{margin-left:15px;gap:18px}#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:15px}#kpb-head .kpb-head-assist .kpb-btn-icon{margin-left:5px}#kpb-btn .kpb-btn-icon{margin-left:5px}#kpb-head .kpb-btn-icon,#kpb-head .kpb-btn-home{width:30px;height:30px}#kpb-head .kpb-btn-line1{font-size:14px}#kpb-head .kpb-btn-line2{font-size:10px}#kpb-close{right:6px}#kpb-close .kpb-ico{width:22px;height:22px}#kpb-btn .kpb-btn-line2{font-size:10.5px}#kpb-fab-stack{bottom:40px !important}}',
+      '@media (max-width:1024px){#kpb-mascot{display:none !important;height:0 !important;overflow:hidden !important}.kpb-greeting-mascot{display:none !important}#kpb-fab-stack{display:contents !important;position:static !important;inset:auto !important;visibility:visible !important;opacity:1 !important}#kpb-fab-stack.kpb-hidden,#kpb-fab-stack.kpb-scroll-hidden{display:contents !important}#kpb-btn.kpb-hidden,#kpb-btn.kpb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}}',
+      /* планшет/мобила — кнопка как до fab-stack (2ade874) */
+      '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:86.25vh;max-height:86.25vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-panel.kpb-compact{height:43.125vh;max-height:43.125vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:60.375vh;max-height:60.375vh;bottom:80px}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 40px 0 12px;gap:18px}#kpb-head .kpb-logo-wide{display:none}#kpb-head .kpb-logo-square{display:block;height:32px;width:auto;max-width:110px;max-height:32px}#kpb-head .kpb-head-assist{margin-left:15px;gap:18px}#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:15px}#kpb-head .kpb-head-assist .kpb-btn-icon{margin-left:5px}#kpb-btn .kpb-btn-icon{margin-left:5px}#kpb-head .kpb-btn-line1{font-size:15px}#kpb-head .kpb-btn-line2{font-size:10.5px}#kpb-close .kpb-ico{width:22px;height:22px}#kpb-btn{position:fixed !important;z-index:2147483001 !important;left:20px !important;right:auto !important;bottom:40px !important;width:220px !important;min-width:220px !important;max-width:220px !important;justify-content:flex-start !important;background:rgba(213,77,0,.8) !important;border:1px solid rgba(255,255,255,.8) !important}#kpb-btn:hover{background:rgba(192,69,0,.8) !important}}',
+      '@media (max-width:480px){#kpb-panel{height:80.5vh;max-height:80.5vh}#kpb-panel.kpb-compact{height:40.25vh;max-height:40.25vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:56.35vh;max-height:56.35vh;bottom:80px}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 36px 0 10px;gap:18px}#kpb-head .kpb-logo-square{height:28px;width:auto;max-width:96px;max-height:28px}#kpb-head .kpb-head-assist{margin-left:15px;gap:18px}#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:15px}#kpb-head .kpb-head-assist .kpb-btn-icon{margin-left:5px}#kpb-btn .kpb-btn-icon{margin-left:5px}#kpb-head .kpb-btn-icon,#kpb-head .kpb-btn-home{width:30px;height:30px}#kpb-head .kpb-btn-line1{font-size:14px}#kpb-head .kpb-btn-line2{font-size:10px}#kpb-close{right:6px}#kpb-close .kpb-ico{width:22px;height:22px}#kpb-btn .kpb-btn-line2{font-size:10.5px}#kpb-btn{bottom:40px !important}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
@@ -358,14 +365,30 @@
 
     var fabStack = document.createElement('div');
     fabStack.id = 'kpb-fab-stack';
+    var mascot = document.createElement('img');
+    mascot.id = 'kpb-mascot';
+    mascot.alt = '';
+    mascot.setAttribute('aria-hidden', 'true');
+    mascot.setAttribute('role', 'button');
+    mascot.setAttribute('tabindex', '0');
+    mascot.title = 'Открыть ИИ-помощника';
+    mascot.decoding = 'async';
+    mascot.src = resolveMascotUrl('');
+    mascot.addEventListener('error', function () {
+      mascot.style.display = 'none';
+    });
+    mascot.addEventListener('load', function () {
+      alignMascotOverAiLabel();
+    });
+    fabStack.appendChild(mascot);
     fabStack.appendChild(btn);
 
     if (autoIntroActive) {
-      fabStack.classList.add('kpb-hidden');
+      fabShell().classList.add('kpb-hidden');
     } else if (isMobileUi() && pageScrollY() < MOBILE_FAB_SCROLL_PX) {
-      fabStack.classList.add('kpb-scroll-hidden');
+      fabShell().classList.add('kpb-scroll-hidden');
     } else {
-      fabStack.classList.remove('kpb-scroll-hidden');
+      fabShell().classList.remove('kpb-scroll-hidden');
     }
     document.body.appendChild(fabStack);
 
@@ -378,6 +401,20 @@
     var sendBtn = root.querySelector('#kpb-send');
     var title = root.querySelector('#kpb-title');
 
+    function alignMascotOverAiLabel() {
+      if (!mascot || mascot.style.display === 'none' || !isDesktopUi()) {
+        if (mascot) mascot.style.marginLeft = '';
+        return;
+      }
+      var target = btn.querySelector('.kpb-btn-line1') || btn.querySelector('.kpb-btn-copy');
+      if (!target || !mascot.offsetWidth) return;
+      var stackRect = fabStack.getBoundingClientRect();
+      var tRect = target.getBoundingClientRect();
+      var centerX = tRect.left + tRect.width / 2;
+      mascot.style.marginLeft =
+        Math.round(centerX - stackRect.left - mascot.offsetWidth / 2) + 'px';
+    }
+
     function pageScrollY() {
       return (
         window.pageYOffset ||
@@ -389,14 +426,14 @@
 
     function updateFabScrollVisibility() {
       if (open) {
-        fabStack.classList.remove('kpb-scroll-hidden');
+        fabShell().classList.remove('kpb-scroll-hidden');
         return;
       }
       if (autoIntroActive) return;
       if (isMobileUi() && pageScrollY() < MOBILE_FAB_SCROLL_PX) {
-        fabStack.classList.add('kpb-scroll-hidden');
+        fabShell().classList.add('kpb-scroll-hidden');
       } else {
-        fabStack.classList.remove('kpb-scroll-hidden');
+        fabShell().classList.remove('kpb-scroll-hidden');
       }
     }
 
@@ -422,22 +459,23 @@
         var side = 20;
         var bottom = MOBILE_FAB_BOTTOM_PX;
         var w = FAB_WIDTH_PX;
+        var hBtn = btn.offsetHeight || FAB_HEIGHT_PX;
         btn.style.minWidth = w + 'px';
         btn.style.maxWidth = w + 'px';
         if (!vv) {
-          stackEl.style.left = side + 'px';
-          stackEl.style.right = 'auto';
-          stackEl.style.width = w + 'px';
-          stackEl.style.top = 'auto';
-          stackEl.style.bottom = bottom + 'px';
+          btn.style.left = side + 'px';
+          btn.style.right = 'auto';
+          btn.style.width = w + 'px';
+          btn.style.top = 'auto';
+          btn.style.bottom = bottom + 'px';
           return;
         }
-        stackEl.style.left = vv.offsetLeft + side + 'px';
-        stackEl.style.width = w + 'px';
-        stackEl.style.right = 'auto';
-        stackEl.style.bottom = 'auto';
-        var top = vv.offsetTop + vv.height - bottom - h;
-        stackEl.style.top = Math.max(vv.offsetTop, top) + 'px';
+        btn.style.left = vv.offsetLeft + side + 'px';
+        btn.style.width = w + 'px';
+        btn.style.right = 'auto';
+        btn.style.bottom = 'auto';
+        var topMob = vv.offsetTop + vv.height - bottom - hBtn;
+        btn.style.top = Math.max(vv.offsetTop, topMob) + 'px';
         return;
       }
       var w = btn.offsetWidth || FAB_WIDTH_PX;
@@ -450,6 +488,7 @@
         stackEl.style.right = FAB_RIGHT_PX + 'px';
         stackEl.style.top = 'auto';
         stackEl.style.bottom = FAB_BOTTOM_PX + 'px';
+        alignMascotOverAiLabel();
         return;
       }
       stackEl.style.right = 'auto';
@@ -458,6 +497,7 @@
       stackEl.style.bottom = 'auto';
       var topDesk = vv.offsetTop + vv.height - FAB_BOTTOM_PX - h;
       stackEl.style.top = Math.max(vv.offsetTop, topDesk) + 'px';
+      alignMascotOverAiLabel();
     }
 
     var pinFabRaf = 0;
@@ -478,6 +518,7 @@
     window.addEventListener('resize', function () {
       schedulePinFab();
       updateFabScrollVisibility();
+      alignMascotOverAiLabel();
     });
     window.addEventListener('orientationchange', schedulePinFab);
     if (window.visualViewport) {
@@ -489,6 +530,7 @@
 
     function applyMascotUrl(url) {
       activeMascotUrl = url || DEFAULT_MASCOT_URL;
+      if (mascot) mascot.src = activeMascotUrl;
       var greetingImg = msgs.querySelector('.kpb-greeting-mascot');
       if (greetingImg) greetingImg.src = activeMascotUrl;
     }
@@ -540,9 +582,9 @@
     }
 
     function pulseFabAttention() {
-      fabStack.classList.remove('kpb-pre-show', 'kpb-hidden');
+      fabShell().classList.remove('kpb-pre-show', 'kpb-hidden');
       btn.classList.add('kpb-attention');
-      fabStack.setAttribute('aria-hidden', 'false');
+      fabShell().setAttribute('aria-hidden', 'false');
       setTimeout(function () {
         btn.classList.remove('kpb-attention');
       }, 1800);
@@ -590,7 +632,7 @@
       panel.style.overflow = 'hidden';
       panel.style.opacity = '1';
 
-      fabStack.classList.remove('kpb-hidden', 'kpb-scroll-hidden');
+      fabShell().classList.remove('kpb-hidden', 'kpb-scroll-hidden');
       btn.classList.add('kpb-pre-show');
 
       requestAnimationFrame(function () {
@@ -679,8 +721,8 @@
       var showBackdrop = open && opts.backdrop !== false;
       backdrop.classList.toggle('open', showBackdrop);
       panel.setAttribute('aria-hidden', open ? 'false' : 'true');
-      fabStack.classList.toggle('kpb-hidden', open);
-      fabStack.setAttribute('aria-hidden', open ? 'true' : 'false');
+      fabShell().classList.toggle('kpb-hidden', open);
+      fabShell().setAttribute('aria-hidden', open ? 'true' : 'false');
       var lockScroll = open && opts.lockScroll !== false;
       document.documentElement.style.overflow = lockScroll ? 'hidden' : '';
       if (!open) {
@@ -699,6 +741,13 @@
     }
 
     btn.addEventListener('click', openWidgetFromFab);
+    mascot.addEventListener('click', openWidgetFromFab);
+    mascot.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openWidgetFromFab();
+      }
+    });
     closeBtn.addEventListener('click', function () {
       setOpen(false, { collapseToFab: false, keepCompactUntilClosed: true });
       endAutoIntro();
@@ -791,17 +840,15 @@
           if (cfg.name) botName = cfg.name;
           if (cfg.greeting) greeting = cfg.greeting;
           if (cfg.unavailableReply) unavailableReply = cfg.unavailableReply;
+          if (cfg.mascotUrl) activeMascotUrl = resolveMascotUrl(cfg.mascotUrl);
+          if (cfg.mascotUrl) mascot.src = activeMascotUrl;
         }
-        applyMascotUrl(resolveMascotUrl(cfg && cfg.mascotUrl));
       })
-      .catch(function () {
-        applyMascotUrl(DEFAULT_MASCOT_URL);
-      })
+      .catch(function () {})
       .finally(function () {
         title.textContent = botName;
         msgs.innerHTML = '';
         addGreetingBubble(greeting);
-        applyMascotUrl(activeMascotUrl);
       });
   }
 
