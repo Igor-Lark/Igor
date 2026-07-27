@@ -38,20 +38,9 @@
     }
   }
 
-  /** При полной перезагрузке (Ctrl+F5 / F5) снова показываем приветствие. */
+  /** Авто-окно приветствия при загрузке отключено — только кнопка виджета. */
   function shouldAutoIntro() {
-    try {
-      var nav =
-        performance.getEntriesByType &&
-        performance.getEntriesByType('navigation')[0];
-      if (nav && nav.type === 'reload') {
-        localStorage.removeItem(INTRO_SEEN_KEY);
-        return true;
-      }
-    } catch (e) {
-      /* ignore */
-    }
-    return !hasSeenIntro();
+    return false;
   }
 
   function markIntroSeen() {
@@ -738,18 +727,6 @@
       .finally(function () {
         title.textContent = botName;
         addBubble(greeting, 'bot');
-        if (autoIntroActive) {
-          setTimeout(function () {
-            if (!autoIntroActive) return;
-            introStartScrollY = pageScrollY();
-            setOpen(true, {
-              backdrop: false,
-              lockScroll: false,
-              compact: true,
-              intro: true,
-            });
-          }, INTRO_OPEN_DELAY_MS);
-        }
       });
   }
 
