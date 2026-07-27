@@ -24,9 +24,7 @@ const FLEET = [
     maxGuests: 7,
     port: 'sirius',
     portLabel: 'Сириус',
-    price: '6 000 ₽/час',
-    speed: '10–25 узлов (≈ 19–46 км/ч)',
-    offWebsite: true,
+    price: '7 000 ₽/час',
   },
   {
     id: 'sirius',
