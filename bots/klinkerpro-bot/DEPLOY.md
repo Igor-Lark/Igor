@@ -264,13 +264,10 @@ curl -sI https://klinker.webtaxi2.ru/embed.js | head -5
 3. **HTML перед `</body>`** (на всём сайте или только на нужных страницах):
 
 ```html
-<script
-  src="https://klinker.webtaxi2.ru/embed.js"
-  data-mascot-src="https://static.tildacdn.com/…/robot.png"
-></script>
+<script src="https://klinker.webtaxi2.ru/embed.js"></script>
 ```
 
-Маскот (PNG/WebP, **только desktop**): высота **100 px**, вплотную (**0 px**) над кнопкой, по центру строки «AI помощник». Файл — в медиа Tilda (URL в `data-mascot-src`) или `public/ai-assistant-mascot.png` на VPS; альтернатива — `WIDGET_MASCOT_URL` в `.env`.
+Маскот (desktop): по умолчанию `https://static.tildacdn.com/tild6439-3535-4431-b439-336333313030/klinker-PNG.png` (100 px над кнопкой). Переопределение: `data-mascot-src` на `<script>` или `WIDGET_MASCOT_URL` в `.env`.
 
 4. Опубликуйте сайт.
 5. Откройте https://marmara-pro.ru/termo — в углу должна появиться кнопка чата.

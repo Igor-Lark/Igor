@@ -24,7 +24,7 @@
   function resolveMascotUrl(fromConfig) {
     if (fromConfig) return fromConfig;
     if (mascotUrlOverride) return mascotUrlOverride;
-    return API_BASE + '/ai-assistant-mascot.png';
+    return 'https://static.tildacdn.com/tild6439-3535-4431-b439-336333313030/klinker-PNG.png';
   }
 
   function onReady(fn) {

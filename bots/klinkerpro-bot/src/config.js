@@ -13,7 +13,9 @@ const config = {
   publicUrl: (process.env.PUBLIC_URL || '').replace(/\/$/, ''),
   botName: process.env.BOT_NAME || 'КлинкерПрофи',
   /** PNG/WebP маскота над кнопкой виджета (desktop), отдаётся в /api/widget-config */
-  widgetMascotUrl: (process.env.WIDGET_MASCOT_URL || '').trim(),
+  widgetMascotUrl:
+    (process.env.WIDGET_MASCOT_URL || '').trim() ||
+    'https://static.tildacdn.com/tild6439-3535-4431-b439-336333313030/klinker-PNG.png',
 
   yandex: {
     apiKey: process.env.YANDEX_API_KEY || '',
