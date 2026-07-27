@@ -178,6 +178,53 @@
     return escaped;
   }
 
+  function parseCalcNum(s) {
+    var n = parseFloat(String(s).replace(',', '.'));
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+
+  /** Совпадает с серверным parseDimensionsFromText (facade-calc). */
+  function parseDimensionsFromText(text) {
+    var t = String(text).toLowerCase().replace(/\s+/g, ' ');
+    var m = t.match(
+      /(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*[x×х*]\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*[x×х*]\s*(\d+(?:[.,]\d+)?)/
+    );
+    if (m) {
+      var L = parseCalcNum(m[1]);
+      var W = parseCalcNum(m[2]);
+      var H = parseCalcNum(m[3]);
+      if (L && W && H) return true;
+    }
+    m = t.match(
+      /(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*на\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*на\s*(\d+(?:[.,]\d+)?)/
+    );
+    if (m) {
+      L = parseCalcNum(m[1]);
+      W = parseCalcNum(m[2]);
+      H = parseCalcNum(m[3]);
+      if (L && W && H) return true;
+    }
+    var len = t.match(/(?:длин[аы]|length)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+    var wid = t.match(/(?:ширин[аы]|width)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+    var hei = t.match(/(?:высот[аы]|height)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+    if (len && wid && hei) {
+      L = parseCalcNum(len[1]);
+      W = parseCalcNum(wid[1]);
+      H = parseCalcNum(hei[1]);
+      if (L && W && H) return true;
+    }
+    return false;
+  }
+
+  function historyHasCalcDimensions(messageList) {
+    for (var i = 0; i < messageList.length; i++) {
+      if (messageList[i].role === 'user' && parseDimensionsFromText(messageList[i].content)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   function mount() {
     if (window.__klinkerProBotLoaded) return;
     if (!document.body) return;
@@ -330,9 +377,10 @@
       '#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:20px}',
       '#kpb-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}',
       '#kpb-close{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px;display:flex;align-items:center;justify-content:center;z-index:2}',
-      '#kpb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
+      '#kpb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;min-height:0;-webkit-overflow-scrolling:touch}',
       '.kpb-msg{max-width:88%;padding:10px 12px;border-radius:5px;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}',
       '.kpb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#2d2d2d}',
+      '.kpb-msg.bot.kpb-thinking{color:#64748b;border-style:dashed;font-style:italic}',
       '.kpb-msg.bot strong{font-weight:700;color:#2d2d2d}',
       '.kpb-msg.user{align-self:flex-end;background:#8B7355;color:#fff;border-radius:20px}',
       '.kpb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:13px}',
@@ -444,6 +492,30 @@
     var input = root.querySelector('#kpb-input');
     var sendBtn = root.querySelector('#kpb-send');
     var title = root.querySelector('#kpb-title');
+    var thinkingEl = null;
+
+    function scrollMsgsToBottom() {
+      requestAnimationFrame(function () {
+        msgs.scrollTop = msgs.scrollHeight;
+      });
+    }
+
+    function showThinkingBubble() {
+      removeThinkingBubble();
+      thinkingEl = document.createElement('div');
+      thinkingEl.className = 'kpb-msg bot kpb-thinking';
+      thinkingEl.setAttribute('aria-live', 'polite');
+      thinkingEl.textContent = 'Считаю....';
+      msgs.appendChild(thinkingEl);
+      scrollMsgsToBottom();
+    }
+
+    function removeThinkingBubble() {
+      if (thinkingEl && thinkingEl.parentNode) {
+        thinkingEl.parentNode.removeChild(thinkingEl);
+      }
+      thinkingEl = null;
+    }
 
     function alignMascotOverAiLabel() {
       if (!mascot || mascot.style.display === 'none' || !isDesktopUi()) {
@@ -608,7 +680,7 @@
       el.appendChild(wrap);
       el.appendChild(textWrap);
       msgs.appendChild(el);
-      msgs.scrollTop = msgs.scrollHeight;
+      scrollMsgsToBottom();
     }
 
     function addBubble(text, kind) {
@@ -616,7 +688,7 @@
       el.className = 'kpb-msg ' + kind;
       el.innerHTML = linkifyText(text);
       msgs.appendChild(el);
-      msgs.scrollTop = msgs.scrollHeight;
+      scrollMsgsToBottom();
     }
 
     function resetPanelInlineStyles() {
@@ -849,11 +921,14 @@
       var fromIntro = switchFromIntroToDialog();
       addBubble(text, 'user');
       if (fromIntro) {
-        msgs.scrollTop = msgs.scrollHeight;
+        scrollMsgsToBottom();
       }
       messages.push({ role: 'user', content: text });
       sending = true;
       sendBtn.disabled = true;
+      if (historyHasCalcDimensions(messages)) {
+        showThinkingBubble();
+      }
 
       fetch(API_BASE + '/api/chat', {
         method: 'POST',
@@ -867,6 +942,7 @@
           });
         })
         .then(function (data) {
+          removeThinkingBubble();
           var reply = data.reply || unavailableReply;
           messages.push({ role: 'assistant', content: reply });
           addBubble(reply, 'bot');
@@ -876,10 +952,11 @@
             img.alt = 'Схема прохода к причалу';
             img.src = data.mapUrl.indexOf('http') === 0 ? data.mapUrl : API_BASE + data.mapUrl;
             msgs.appendChild(img);
-            msgs.scrollTop = msgs.scrollHeight;
+            scrollMsgsToBottom();
           }
         })
         .catch(function () {
+          removeThinkingBubble();
           addBubble(unavailableReply, 'bot');
         })
         .finally(function () {
