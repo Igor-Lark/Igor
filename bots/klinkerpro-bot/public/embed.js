@@ -21,10 +21,13 @@
     mascotUrlOverride = (scriptEl.getAttribute('data-mascot-src') || '').trim();
   }
 
+  var DEFAULT_MASCOT_URL =
+    'https://static.tildacdn.com/tild6439-3535-4431-b439-336333313030/klinker-PNG.png';
+
   function resolveMascotUrl(fromConfig) {
     if (fromConfig) return fromConfig;
     if (mascotUrlOverride) return mascotUrlOverride;
-    return 'https://static.tildacdn.com/tild6439-3535-4431-b439-336333313030/klinker-PNG.png';
+    return DEFAULT_MASCOT_URL;
   }
 
   function onReady(fn) {
@@ -520,6 +523,13 @@
     }
 
     var activeMascotUrl = resolveMascotUrl('');
+
+    function applyMascotUrl(url) {
+      activeMascotUrl = url || DEFAULT_MASCOT_URL;
+      if (mascot) mascot.src = activeMascotUrl;
+      var greetingImg = msgs.querySelector('.kpb-greeting-mascot');
+      if (greetingImg) greetingImg.src = activeMascotUrl;
+    }
 
     function addGreetingBubble(text) {
       if (!isDesktopUi()) {
