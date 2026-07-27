@@ -17,6 +17,18 @@ const FLEET = [
     price: 'от 6 000 ₽/час',
   },
   {
+    id: 'rinker232',
+    name: 'Rinker 232',
+    kind: 'boat',
+    label: 'катер «Rinker 232»',
+    maxGuests: 7,
+    port: 'sirius',
+    portLabel: 'Сириус',
+    price: '6 000 ₽/час',
+    speed: '10–25 узлов (≈ 19–46 км/ч)',
+    offWebsite: true,
+  },
+  {
     id: 'sirius',
     name: 'Сириус',
     kind: 'yacht',
@@ -188,6 +200,14 @@ function capacityLabel(v) {
   return v.maxGuestsLabel || `до ${v.maxGuests}`;
 }
 
+function vesselLine(v) {
+  const parts = [`• ${v.label} — ${capacityLabel(v)}`, v.portLabel, v.price];
+  if (v.speed) parts.push(v.speed);
+  let line = parts.join(', ');
+  if (v.offWebsite) line += ' (подробности — у Олега или Натальи)';
+  return line;
+}
+
 /**
  * Готовый ответ клиенту.
  * @returns {string|null}
@@ -210,9 +230,7 @@ function buildCapacityReply(text) {
     if (kind) {
       const any = filterFleet(guests, { port });
       if (any.length) {
-        const lines = any.map(
-          (v) => `• ${v.label} — ${capacityLabel(v)}, ${v.portLabel}, ${v.price}`
-        );
+        const lines = any.map((v) => vesselLine(v));
         return [
           `Среди ${kindWord}${portWord} на ${guests} человек подходящих нет, но есть другие суда:`,
           ...lines,
@@ -223,9 +241,7 @@ function buildCapacityReply(text) {
     return `На ${guests} человек${portWord} подходящих ${kindWord} в базе сейчас нет. Уточните число гостей или порт — подберём другой вариант.`;
   }
 
-  const lines = matches.map(
-    (v) => `• ${v.label} — ${capacityLabel(v)}, ${v.portLabel}, ${v.price}`
-  );
+  const lines = matches.map((v) => vesselLine(v));
   return [
     `Для компании из ${guests} человек${portWord} подходят:`,
     ...lines,
@@ -242,9 +258,13 @@ function capacityPromptBlock(text) {
   const kind = extractKindFilter(text);
   const port = extractPortFilter(text);
   const matches = filterFleet(guests, { kind, port });
-  const lines = matches.map(
-    (v) => `- ${v.label}: ${capacityLabel(v)}, ${v.portLabel}, ${v.price}`
-  );
+  const lines = matches.map((v) => {
+    const parts = [`- ${v.label}: ${capacityLabel(v)}`, v.portLabel, v.price];
+    if (v.speed) parts.push(v.speed);
+    let line = parts.join(', ');
+    if (v.offWebsite) line += ' (подробности — у Олега или Натальи)';
+    return line;
+  });
   return [
     `Клиент просит варианты на ${guests} человек${kind === 'yacht' ? ' (яхты)' : ''}${port === 'sirius' ? ' в Сириусе' : port === 'sochi' ? ' в Сочи' : ''}.`,
     'Называй ТОЛЬКО суда из списка ниже. Суда с меньшей вместимостью НЕ упоминай вообще.',
