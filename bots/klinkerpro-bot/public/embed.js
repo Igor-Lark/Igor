@@ -303,6 +303,9 @@
       '#kpb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
       '.kpb-msg{max-width:88%;padding:10px 12px;border-radius:5px;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}',
       '.kpb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#2d2d2d}',
+      '.kpb-msg.bot.kpb-msg-greeting{display:flex;flex-direction:row;align-items:flex-start;gap:10px;max-width:92%}',
+      '.kpb-greeting-mascot{flex-shrink:0;display:block;width:auto;object-fit:contain;object-position:left top}',
+      '.kpb-greeting-text{flex:1;min-width:0;line-height:1.5}',
       '.kpb-msg.bot strong{font-weight:700;color:#2d2d2d}',
       '.kpb-msg.user{align-self:flex-end;background:#8B7355;color:#fff;border-radius:20px}',
       '.kpb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:13px}',
@@ -517,6 +520,45 @@
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', schedulePinFab);
       window.visualViewport.addEventListener('scroll', schedulePinFab);
+    }
+
+    var activeMascotUrl = resolveMascotUrl('');
+
+    function syncGreetingMascotHeight(wrap) {
+      if (!wrap) return;
+      var textEl = wrap.querySelector('.kpb-greeting-text');
+      var img = wrap.querySelector('.kpb-greeting-mascot');
+      if (!textEl || !img) return;
+      img.style.height = textEl.offsetHeight + 'px';
+      img.style.width = 'auto';
+    }
+
+    function addGreetingBubble(text) {
+      var el = document.createElement('div');
+      el.className = 'kpb-msg bot kpb-msg-greeting';
+      var img = document.createElement('img');
+      img.className = 'kpb-greeting-mascot';
+      img.src = activeMascotUrl;
+      img.alt = '';
+      img.setAttribute('aria-hidden', 'true');
+      img.decoding = 'async';
+      var textWrap = document.createElement('div');
+      textWrap.className = 'kpb-greeting-text';
+      textWrap.innerHTML = linkifyText(text);
+      el.appendChild(img);
+      el.appendChild(textWrap);
+      msgs.appendChild(el);
+      function layoutGreeting() {
+        syncGreetingMascotHeight(el);
+        msgs.scrollTop = msgs.scrollHeight;
+      }
+      img.addEventListener('load', layoutGreeting);
+      layoutGreeting();
+      requestAnimationFrame(layoutGreeting);
+      if (typeof ResizeObserver !== 'undefined') {
+        var ro = new ResizeObserver(layoutGreeting);
+        ro.observe(textWrap);
+      }
     }
 
     function addBubble(text, kind) {
@@ -802,13 +844,15 @@
           if (cfg.name) botName = cfg.name;
           if (cfg.greeting) greeting = cfg.greeting;
           if (cfg.unavailableReply) unavailableReply = cfg.unavailableReply;
-          if (cfg.mascotUrl) mascot.src = resolveMascotUrl(cfg.mascotUrl);
+          if (cfg.mascotUrl) activeMascotUrl = resolveMascotUrl(cfg.mascotUrl);
+          if (cfg.mascotUrl) mascot.src = activeMascotUrl;
         }
       })
       .catch(function () {})
       .finally(function () {
         title.textContent = botName;
-        addBubble(greeting, 'bot');
+        msgs.innerHTML = '';
+        addGreetingBubble(greeting);
       });
   }
 
