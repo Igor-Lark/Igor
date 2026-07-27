@@ -621,6 +621,15 @@
       return opts.collapseToFab === true;
     }
 
+    function focusChatInput() {
+      if (!open || !input) return;
+      try {
+        input.focus({ preventScroll: true });
+      } catch (e) {
+        input.focus();
+      }
+    }
+
     function setOpen(v, opts) {
       opts = opts || {};
       if (!v && open && shouldCollapseToFab(opts)) {
@@ -680,6 +689,11 @@
       document.documentElement.style.overflow = lockScroll ? 'hidden' : '';
       if (!open) {
         schedulePinFab();
+      } else if (!wasOpen) {
+        focusChatInput();
+        requestAnimationFrame(focusChatInput);
+        setTimeout(focusChatInput, 120);
+        setTimeout(focusChatInput, PANEL_SLIDE_MS + 60);
       }
     }
 
