@@ -451,10 +451,12 @@
       document.documentElement.style.overflow = open ? 'hidden' : '';
       if (open) {
         prefetchWeatherOnOpen();
-        // Сразу в поле ввода (синхронно — иначе iOS не откроет клавиатуру)
-        try {
-          input.focus();
-        } catch (e) {}
+        // Десктоп: курсор в поле ввода. На мобиле не фокусим — не открываем клавиатуру.
+        if (!window.matchMedia('(max-width:1024px)').matches) {
+          try {
+            input.focus();
+          } catch (e) {}
+        }
       } else {
         setAvatarZoom(false);
         schedulePinFab();
