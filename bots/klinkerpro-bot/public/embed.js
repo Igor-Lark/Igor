@@ -318,7 +318,7 @@
       '#kpb-send:disabled{opacity:.6;cursor:default}',
       '#kpb-send .kpb-ico{width:20px;height:20px}',
       '#kpb-panel.kpb-intro #kpb-send{flex:0 0 auto;min-width:48px !important;max-width:48px;padding:0 7px !important}',
-      '@media (min-width:1025px){#kpb-panel.kpb-desk-modal{position:fixed;left:20vw;top:20vh;right:auto;bottom:auto;width:60vw;height:60vh;max-width:60vw;max-height:60vh;border-radius:5px;box-shadow:0 24px 60px rgba(15,23,42,.25);transform:translateX(100vw)}#kpb-panel.kpb-desk-modal.open{transform:translateX(0)}#kpb-send{min-width:96px;padding:0 28px;flex-shrink:0}#kpb-panel.kpb-intro #kpb-send{min-width:48px !important;max-width:48px;padding:0 7px !important}.kpb-msg.bot.kpb-msg-greeting{display:flex;flex-direction:row;align-items:flex-start;gap:10px;max-width:92%}.kpb-greeting-mascot{flex-shrink:0;display:block;width:auto;object-fit:contain;object-position:left top}.kpb-greeting-text{flex:1;min-width:0;line-height:1.5}}',
+      '@media (min-width:1025px){#kpb-panel.kpb-desk-modal{position:fixed;left:20vw;top:20vh;right:auto;bottom:auto;width:60vw;height:60vh;max-width:60vw;max-height:60vh;border-radius:5px;box-shadow:0 24px 60px rgba(15,23,42,.25);transform:translateX(100vw)}#kpb-panel.kpb-desk-modal.open{transform:translateX(0)}#kpb-send{min-width:96px;padding:0 28px;flex-shrink:0}#kpb-panel.kpb-intro #kpb-send{min-width:48px !important;max-width:48px;padding:0 7px !important}.kpb-msg.bot.kpb-msg-greeting{display:flex;flex-direction:row;align-items:flex-start;gap:10px;max-width:92%}.kpb-greeting-mascot{flex-shrink:0;display:block;height:100px;width:auto;object-fit:contain;object-position:left top}.kpb-greeting-text{flex:1;min-width:0;line-height:1.5}}',
       '@media (max-width:1024px){#kpb-mascot{display:none !important;height:0 !important;overflow:hidden !important}.kpb-greeting-mascot{display:none !important}}',
       /* планшет/мобила — без изменений в этом релизе */
       '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:86.25vh;max-height:86.25vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-panel.kpb-compact{height:43.125vh;max-height:43.125vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:60.375vh;max-height:60.375vh;bottom:80px}#kpb-head{height:60px;min-height:60px;max-height:60px;padding:0 40px 0 12px;gap:18px}#kpb-head .kpb-logo-wide{display:none}#kpb-head .kpb-logo-square{display:block;height:32px;width:auto;max-width:110px;max-height:32px}#kpb-head .kpb-head-assist{margin-left:15px;gap:18px}#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:15px}#kpb-head .kpb-head-assist .kpb-btn-icon{margin-left:5px}#kpb-btn .kpb-btn-icon{margin-left:5px}#kpb-head .kpb-btn-line1{font-size:15px}#kpb-head .kpb-btn-line2{font-size:10.5px}#kpb-close .kpb-ico{width:22px;height:22px}#kpb-fab-stack{left:20px !important;right:auto !important;bottom:40px !important}#kpb-btn{width:220px !important;min-width:220px !important;max-width:220px !important;justify-content:flex-start !important;background:rgba(213,77,0,.8) !important;border:1px solid rgba(255,255,255,.8) !important}#kpb-btn:hover{background:rgba(192,69,0,.8) !important}}',
@@ -521,15 +521,6 @@
 
     var activeMascotUrl = resolveMascotUrl('');
 
-    function syncGreetingMascotHeight(wrap) {
-      if (!wrap) return;
-      var textEl = wrap.querySelector('.kpb-greeting-text');
-      var img = wrap.querySelector('.kpb-greeting-mascot');
-      if (!textEl || !img) return;
-      img.style.height = textEl.offsetHeight + 'px';
-      img.style.width = 'auto';
-    }
-
     function addGreetingBubble(text) {
       if (!isDesktopUi()) {
         addBubble(text, 'bot');
@@ -549,17 +540,7 @@
       el.appendChild(img);
       el.appendChild(textWrap);
       msgs.appendChild(el);
-      function layoutGreeting() {
-        syncGreetingMascotHeight(el);
-        msgs.scrollTop = msgs.scrollHeight;
-      }
-      img.addEventListener('load', layoutGreeting);
-      layoutGreeting();
-      requestAnimationFrame(layoutGreeting);
-      if (typeof ResizeObserver !== 'undefined') {
-        var ro = new ResizeObserver(layoutGreeting);
-        ro.observe(textWrap);
-      }
+      msgs.scrollTop = msgs.scrollHeight;
     }
 
     function addBubble(text, kind) {
