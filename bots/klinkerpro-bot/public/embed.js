@@ -178,6 +178,52 @@
     return escaped;
   }
 
+  function parseCalcNum(s) {
+    var n = parseFloat(String(s).replace(',', '.'));
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+
+  function parseDimensionsFromText(text) {
+    var t = String(text).toLowerCase().replace(/\s+/g, ' ');
+    var m = t.match(
+      /(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*[x×х*]\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*[x×х*]\s*(\d+(?:[.,]\d+)?)/
+    );
+    if (m) {
+      var L = parseCalcNum(m[1]);
+      var W = parseCalcNum(m[2]);
+      var H = parseCalcNum(m[3]);
+      if (L && W && H) return true;
+    }
+    m = t.match(
+      /(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*на\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*на\s*(\d+(?:[.,]\d+)?)/
+    );
+    if (m) {
+      L = parseCalcNum(m[1]);
+      W = parseCalcNum(m[2]);
+      H = parseCalcNum(m[3]);
+      if (L && W && H) return true;
+    }
+    var len = t.match(/(?:длин[аы]|length)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+    var wid = t.match(/(?:ширин[аы]|width)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+    var hei = t.match(/(?:высот[аы]|height)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+    if (len && wid && hei) {
+      L = parseCalcNum(len[1]);
+      W = parseCalcNum(wid[1]);
+      H = parseCalcNum(hei[1]);
+      if (L && W && H) return true;
+    }
+    return false;
+  }
+
+  function historyHasCalcDimensions(messageList) {
+    for (var i = 0; i < messageList.length; i++) {
+      if (messageList[i].role === 'user' && parseDimensionsFromText(messageList[i].content)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   function mount() {
     if (window.__klinkerProBotLoaded) return;
     if (!document.body) return;
@@ -264,10 +310,7 @@
     /** Иконка маскота в мобильной кнопке FAB (слот .kpb-btn-icon) */
     var MOBILE_FAB_MASCOT_PX = 40;
     var MOBILE_FAB_BOTTOM_PX = 40;
-    var REVEAL_TICK_MS = 18;
-    var REVEAL_CHARS_MIN = 2;
-    var REVEAL_CHARS_MAX = 12;
-    var REVEAL_TARGET_MS = 9000;
+    var REVEAL_LINE_MS = 90;
     var DESKTOP_MQ = '(min-width:1025px)';
     var MOBILE_MQ = '(max-width:1024px)';
 
@@ -448,40 +491,67 @@
     var input = root.querySelector('#kpb-input');
     var sendBtn = root.querySelector('#kpb-send');
     var title = root.querySelector('#kpb-title');
+    var thinkingEl = null;
 
     function scrollMsgsToBottom() {
       msgs.scrollTop = msgs.scrollHeight;
     }
 
-    function addBotReplyRevealed(text, onComplete) {
+    function showThinkingBubble() {
+      removeThinkingBubble();
+      thinkingEl = document.createElement('div');
+      thinkingEl.className = 'kpb-msg bot kpb-thinking';
+      thinkingEl.textContent = 'Считаю....';
+      msgs.appendChild(thinkingEl);
+      scrollMsgsToBottom();
+    }
+
+    function removeThinkingBubble() {
+      if (thinkingEl && thinkingEl.parentNode) {
+        thinkingEl.parentNode.removeChild(thinkingEl);
+      }
+      thinkingEl = null;
+    }
+
+    function addBotReplyRevealed(text, onComplete, opts) {
+      opts = opts || {};
+      var onRevealStart = opts.onRevealStart;
       var full = String(text);
+      var lines = full.split('\n');
       var el = document.createElement('div');
       el.className = 'kpb-msg bot';
-      msgs.appendChild(el);
-      scrollMsgsToBottom();
+      var lineIdx = 0;
+      var started = false;
+
+      function finish() {
+        el.innerHTML = linkifyText(full);
+        scrollMsgsToBottom();
+        if (onComplete) onComplete();
+      }
+
+      function beginReveal() {
+        if (started) return;
+        started = true;
+        if (onRevealStart) onRevealStart();
+        msgs.appendChild(el);
+      }
 
       if (!full.length) {
-        if (onComplete) onComplete();
+        beginReveal();
+        finish();
         return;
       }
 
-      var charsPerTick = Math.max(
-        REVEAL_CHARS_MIN,
-        Math.min(REVEAL_CHARS_MAX, Math.ceil(full.length / (REVEAL_TARGET_MS / REVEAL_TICK_MS)))
-      );
-      var pos = 0;
-
       function tick() {
-        if (pos >= full.length) {
-          el.innerHTML = linkifyText(full);
-          scrollMsgsToBottom();
-          if (onComplete) onComplete();
+        if (lineIdx >= lines.length) {
+          finish();
           return;
         }
-        pos = Math.min(full.length, pos + charsPerTick);
-        el.textContent = full.slice(0, pos);
+        beginReveal();
+        lineIdx += 1;
+        el.textContent = lines.slice(0, lineIdx).join('\n');
         scrollMsgsToBottom();
-        setTimeout(tick, REVEAL_TICK_MS);
+        setTimeout(tick, REVEAL_LINE_MS);
       }
       tick();
     }
@@ -895,6 +965,9 @@
       messages.push({ role: 'user', content: text });
       sending = true;
       sendBtn.disabled = true;
+      if (historyHasCalcDimensions(messages)) {
+        showThinkingBubble();
+      }
 
       fetch(API_BASE + '/api/chat', {
         method: 'POST',
@@ -921,9 +994,14 @@
             }
             sending = false;
             sendBtn.disabled = false;
+          }, {
+            onRevealStart: function () {
+              removeThinkingBubble();
+            },
           });
         })
         .catch(function () {
+          removeThinkingBubble();
           addBubble(unavailableReply, 'bot');
           sending = false;
           sendBtn.disabled = false;
