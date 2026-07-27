@@ -192,7 +192,7 @@
       var L = parseCalcNum(m[1]);
       var W = parseCalcNum(m[2]);
       var H = parseCalcNum(m[3]);
-      if (L && W && H) return true;
+      if (L && W && H) return { L: L, W: W, H: H };
     }
     m = t.match(
       /(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*на\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*на\s*(\d+(?:[.,]\d+)?)/
@@ -201,27 +201,71 @@
       L = parseCalcNum(m[1]);
       W = parseCalcNum(m[2]);
       H = parseCalcNum(m[3]);
-      if (L && W && H) return true;
+      if (L && W && H) return { L: L, W: W, H: H };
     }
     var len = t.match(/(?:длин[аы]|length)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
     var wid = t.match(/(?:ширин[аы]|width)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
-    var hei = t.match(/(?:высот[аы]|height)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+    var hei = t.match(/(?:высот[аы](?:\s*стен)?|height)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
     if (len && wid && hei) {
       L = parseCalcNum(len[1]);
       W = parseCalcNum(wid[1]);
       H = parseCalcNum(hei[1]);
-      if (L && W && H) return true;
+      if (L && W && H) return { L: L, W: W, H: H };
     }
-    return false;
+    m = t.match(
+      /(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*[,;\s]\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*[,;\s]\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?/
+    );
+    if (m) {
+      L = parseCalcNum(m[1]);
+      W = parseCalcNum(m[2]);
+      H = parseCalcNum(m[3]);
+      if (L && W && H) return { L: L, W: W, H: H };
+    }
+    return null;
+  }
+
+  function parseLabeledDimensions(text) {
+    var t = String(text).toLowerCase().replace(/\s+/g, ' ');
+    var len = t.match(/(?:длин[аы]|length)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+    var wid = t.match(/(?:ширин[аы]|width)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+    var hei = t.match(/(?:высот[аы](?:\s*стен)?|height)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+    var out = {};
+    if (len) {
+      var l = parseCalcNum(len[1]);
+      if (l) out.L = l;
+    }
+    if (wid) {
+      var w = parseCalcNum(wid[1]);
+      if (w) out.W = w;
+    }
+    if (hei) {
+      var h = parseCalcNum(hei[1]);
+      if (h) out.H = h;
+    }
+    return out;
+  }
+
+  function extractDimensionsFromHistory(messageList) {
+    var latest = null;
+    var merged = { L: null, W: null, H: null };
+    for (var i = 0; i < messageList.length; i++) {
+      if (messageList[i].role !== 'user') continue;
+      var full = parseDimensionsFromText(messageList[i].content);
+      if (full) latest = full;
+      var part = parseLabeledDimensions(messageList[i].content);
+      if (part.L) merged.L = part.L;
+      if (part.W) merged.W = part.W;
+      if (part.H) merged.H = part.H;
+    }
+    if (latest) return latest;
+    if (merged.L && merged.W && merged.H) {
+      return { L: merged.L, W: merged.W, H: merged.H };
+    }
+    return null;
   }
 
   function historyHasCalcDimensions(messageList) {
-    for (var i = 0; i < messageList.length; i++) {
-      if (messageList[i].role === 'user' && parseDimensionsFromText(messageList[i].content)) {
-        return true;
-      }
-    }
-    return false;
+    return extractDimensionsFromHistory(messageList) !== null;
   }
 
   function lastUserMessage(messageList) {

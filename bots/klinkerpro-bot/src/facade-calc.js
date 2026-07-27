@@ -44,7 +44,7 @@ function parseDimensionsFromText(text) {
 
   const len = t.match(/(?:длин[аы]|length)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
   const wid = t.match(/(?:ширин[аы]|width)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
-  const hei = t.match(/(?:высот[аы]|height)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+  const hei = t.match(/(?:высот[аы](?:\s*стен)?|height)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
   if (len && wid && hei) {
     const L = parseNum(len[1]);
     const W = parseNum(wid[1]);
@@ -52,7 +52,38 @@ function parseDimensionsFromText(text) {
     if (L && W && H) return { L, W, H };
   }
 
+  m = t.match(
+    /(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*[,;\s]\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*[,;\s]\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?/
+  );
+  if (m) {
+    const L = parseNum(m[1]);
+    const W = parseNum(m[2]);
+    const H = parseNum(m[3]);
+    if (L && W && H) return { L, W, H };
+  }
+
   return null;
+}
+
+function parseLabeledDimensions(text) {
+  const t = String(text).toLowerCase().replace(/\s+/g, ' ');
+  const len = t.match(/(?:длин[аы]|length)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+  const wid = t.match(/(?:ширин[аы]|width)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+  const hei = t.match(/(?:высот[аы](?:\s*стен)?|height)\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+  const out = {};
+  if (len) {
+    const L = parseNum(len[1]);
+    if (L) out.L = L;
+  }
+  if (wid) {
+    const W = parseNum(wid[1]);
+    if (W) out.W = W;
+  }
+  if (hei) {
+    const H = parseNum(hei[1]);
+    if (H) out.H = H;
+  }
+  return out;
 }
 
 /**
@@ -61,12 +92,21 @@ function parseDimensionsFromText(text) {
  */
 function extractDimensionsFromHistory(history) {
   let latest = null;
+  const merged = { L: null, W: null, H: null };
   for (const msg of history) {
     if (msg.role !== 'user') continue;
     const d = parseDimensionsFromText(msg.content);
     if (d) latest = d;
+    const part = parseLabeledDimensions(msg.content);
+    if (part.L) merged.L = part.L;
+    if (part.W) merged.W = part.W;
+    if (part.H) merged.H = part.H;
   }
-  return latest;
+  if (latest) return latest;
+  if (merged.L && merged.W && merged.H) {
+    return { L: merged.L, W: merged.W, H: merged.H };
+  }
+  return null;
 }
 
 function wallAreaGross(L, W, H) {
