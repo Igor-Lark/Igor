@@ -62,6 +62,7 @@ app.get('/api/widget-config', (_req, res) => {
     name: config.botName,
     greeting: buildWidgetGreeting(),
     unavailableReply: UNAVAILABLE_REPLY,
+    mascotUrl: config.widgetMascotUrl || null,
   });
 });
 

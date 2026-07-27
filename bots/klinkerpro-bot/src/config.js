@@ -12,6 +12,8 @@ const config = {
   port: Number(process.env.PORT) || 3001,
   publicUrl: (process.env.PUBLIC_URL || '').replace(/\/$/, ''),
   botName: process.env.BOT_NAME || 'КлинкерПрофи',
+  /** PNG/WebP маскота над кнопкой виджета (desktop), отдаётся в /api/widget-config */
+  widgetMascotUrl: (process.env.WIDGET_MASCOT_URL || '').trim(),
 
   yandex: {
     apiKey: process.env.YANDEX_API_KEY || '',
