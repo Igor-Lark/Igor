@@ -224,6 +224,24 @@
     return false;
   }
 
+  function lastUserMessage(messageList) {
+    for (var i = messageList.length - 1; i >= 0; i--) {
+      if (messageList[i].role === 'user') return messageList[i];
+    }
+    return null;
+  }
+
+  function userWantsCalcReply(messageList) {
+    if (historyHasCalcDimensions(messageList)) return true;
+    var last = lastUserMessage(messageList);
+    if (!last) return false;
+    return /расч[её]т|посчит|прикидк|смет|пересчит/i.test(last.content);
+  }
+
+  function waitingStatusLabel(messageList) {
+    return userWantsCalcReply(messageList) ? 'Считаю....' : 'Пару секунд.....';
+  }
+
   function mount() {
     if (window.__klinkerProBotLoaded) return;
     if (!document.body) return;
@@ -497,16 +515,16 @@
       msgs.scrollTop = msgs.scrollHeight;
     }
 
-    function showThinkingBubble() {
-      removeThinkingBubble();
+    function showWaitingBubble(label) {
+      removeWaitingBubble();
       thinkingEl = document.createElement('div');
-      thinkingEl.className = 'kpb-msg bot kpb-thinking';
-      thinkingEl.textContent = 'Считаю....';
+      thinkingEl.className = 'kpb-msg bot kpb-waiting';
+      thinkingEl.textContent = label || 'Пару секунд.....';
       msgs.appendChild(thinkingEl);
       scrollMsgsToBottom();
     }
 
-    function removeThinkingBubble() {
+    function removeWaitingBubble() {
       if (thinkingEl && thinkingEl.parentNode) {
         thinkingEl.parentNode.removeChild(thinkingEl);
       }
@@ -965,9 +983,7 @@
       messages.push({ role: 'user', content: text });
       sending = true;
       sendBtn.disabled = true;
-      if (historyHasCalcDimensions(messages)) {
-        showThinkingBubble();
-      }
+      showWaitingBubble(waitingStatusLabel(messages));
 
       fetch(API_BASE + '/api/chat', {
         method: 'POST',
@@ -996,12 +1012,12 @@
             sendBtn.disabled = false;
           }, {
             onRevealStart: function () {
-              removeThinkingBubble();
+              removeWaitingBubble();
             },
           });
         })
         .catch(function () {
-          removeThinkingBubble();
+          removeWaitingBubble();
           addBubble(unavailableReply, 'bot');
           sending = false;
           sendBtn.disabled = false;
