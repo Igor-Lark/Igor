@@ -225,11 +225,7 @@ function formatDayLine(daily, index, waterDaily, waterFallback, relLabel) {
 
 /**
  * Прогноз по цели: один день (завтра/послезавтра) или диапазон ближайших дней.
- * Сегодня в daily[0] не включаем. Каждый день — новая строка, дата «день месяц», обязательно вода.
- * @param {object} daily
- * @param {{ mode: string, offset?: number, label?: string, days?: number }} target
- * @param {{ waterDaily?: number[]|null, waterC?: number|null }} [opts]
- * @returns {string|null}
+ * Каждый день — новая строка, дата «день месяц», обязательно температура воды.
  */
 function formatForecastDays(daily, target, opts) {
   if (!daily || !Array.isArray(daily.time) || !Array.isArray(daily.weather_code)) return null;
