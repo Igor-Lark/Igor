@@ -1,5 +1,6 @@
 'use strict';
 
+const FACADE_CALC_VERSION = 3;
 const A_PANEL = 0.54;
 const PANEL_PRICE = 1460;
 const FOAM_M2_PER_CAN = 6;
@@ -352,9 +353,41 @@ function buildCalcClientNarrative(est) {
   return lines.join('\n');
 }
 
-/** Если в сообщении есть двери/окна с размерами — ответ только с сервера (модель часто игнорирует вычет). */
-function shouldUseServerCalcNarrative(est) {
-  return Boolean(est && est.S_openings > 0 && est.openingItems && est.openingItems.length);
+/** В сообщении есть размеры дверей/окон (для дожима парсера). */
+function userMessageHasOpeningSpecs(text) {
+  const t = String(text).toLowerCase();
+  if (!/двер|окн/.test(t)) return false;
+  return /(полтора|\d+(?:[.,]\d+)?).*(?:на|[x×х\*])/.test(t);
+}
+
+function userRequestsFacadeCalc(text) {
+  return /расч[её]т|посчит|прикидк|смет|площад|термопанел|размер.*дом|дом\s+\d/i.test(String(text));
+}
+
+/**
+ * Пересчёт с проёмами из последнего сообщения, если в history merge не сработал.
+ * @param {{ role: string, content: string }[]} history
+ * @param {string} [lastUserText]
+ */
+function resolveEstimateForChat(history, lastUserText) {
+  let est = estimateFromHistory(history);
+  if (!est || !lastUserText || est.S_openings > 0) return est;
+  if (!userMessageHasOpeningSpecs(lastUserText)) return est;
+  const openings = parseOpeningsFromText(lastUserText);
+  if (!openings.totalArea) return est;
+  const dims =
+    extractDimensionsFromHistory(history) || parseDimensionsFromText(lastUserText);
+  if (!dims) return est;
+  return computeEstimate(dims.L, dims.W, dims.H, openings);
+}
+
+/** Если проёмы распознаны — ответ только с сервера (модель часто игнорирует вычет). */
+function shouldUseServerCalcNarrative(est, lastUserText) {
+  if (!est || !(est.S_openings > 0 && est.openingItems && est.openingItems.length)) {
+    return false;
+  }
+  if (lastUserText && userRequestsFacadeCalc(lastUserText)) return true;
+  return est.S_openings > 0;
 }
 
 function formatOpeningLines(items) {
@@ -496,12 +529,15 @@ function appendCalcDisclaimer(reply, opts) {
 }
 
 module.exports = {
+  FACADE_CALC_VERSION,
   parseDimensionsFromText,
   parseOpeningsFromText,
   extractOpeningsFromHistory,
   extractDimensionsFromHistory,
   computeEstimate,
   estimateFromHistory,
+  resolveEstimateForChat,
+  userRequestsFacadeCalc,
   buildCalcSystemBlock,
   buildCalcClientNarrative,
   shouldUseServerCalcNarrative,

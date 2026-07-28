@@ -9,7 +9,7 @@ const { logChatTurn } = require('./chat-log');
 const { touchSession, markContact } = require('./no-contact');
 const { formatBotReply } = require('./format-reply');
 const {
-  estimateFromHistory,
+  resolveEstimateForChat,
   buildCalcSystemBlock,
   fixWallAreaInReply,
   injectServerItogo,
@@ -17,6 +17,48 @@ const {
   buildCalcClientNarrative,
   shouldUseServerCalcNarrative,
 } = require('./facade-calc');
+
+function calcDisclaimerOpts(hasCalc) {
+  return {
+    hasCalc,
+    managerPhone: managerPhoneLink(),
+    contactsUrl: SITE_MAIN + '#contacts',
+  };
+}
+
+async function finishChatTurn(input, cleaned, lastUser, reply, provider) {
+  let lead = null;
+  if (lastUser && shouldNotifyLead({ text: lastUser.content })) {
+    const leadPayload = {
+      text: lastUser.content,
+      source: input.source || 'web',
+      sessionId: input.sessionId,
+      username: input.username,
+      history: cleaned,
+      reply,
+    };
+    lead = await notifyManager(leadPayload);
+    if (
+      extractPhone(leadPayload.text) ||
+      extractPhone((leadPayload.history || []).map((m) => m.content).join('\n'))
+    ) {
+      markContact(input.sessionId, input.source || 'web');
+    }
+  }
+
+  logChatTurn({
+    sessionId: input.sessionId,
+    source: input.source || 'web',
+    username: input.username,
+    userText: lastUser ? lastUser.content : '',
+    reply,
+    provider,
+    leadSent: Boolean(lead?.sent),
+    history: cleaned,
+  });
+
+  return { reply, provider, lead };
+}
 
 /**
  * @param {{
@@ -55,8 +97,18 @@ async function handleChat(input) {
     });
   }
 
+  const lastUserText = lastUser ? lastUser.content : '';
+  const estimate = resolveEstimateForChat(cleaned, lastUserText);
+
+  if (estimate && shouldUseServerCalcNarrative(estimate, lastUserText)) {
+    const reply = appendCalcDisclaimer(
+      buildCalcClientNarrative(estimate),
+      calcDisclaimerOpts(true)
+    );
+    return finishChatTurn(input, cleaned, lastUser, reply, 'server-calc');
+  }
+
   const system = buildSystemPrompt();
-  const estimate = estimateFromHistory(cleaned);
   const systemWithCalc = estimate
     ? system + '\n\n' + buildCalcSystemBlock(estimate)
     : system;
@@ -70,17 +122,11 @@ async function handleChat(input) {
     ]);
     reply = formatBotReply(out.reply);
     if (estimate) {
-      if (shouldUseServerCalcNarrative(estimate)) {
-        reply = buildCalcClientNarrative(estimate);
-      } else {
-        reply = fixWallAreaInReply(reply, estimate);
-        reply = injectServerItogo(reply, estimate);
-      }
+      reply = fixWallAreaInReply(reply, estimate);
+      reply = injectServerItogo(reply, estimate);
     }
     reply = appendCalcDisclaimer(reply, {
-      hasCalc: Boolean(estimate) || /Итого\s*\(ориентир\)/i.test(reply),
-      managerPhone: managerPhoneLink(),
-      contactsUrl: SITE_MAIN + '#contacts',
+      ...calcDisclaimerOpts(Boolean(estimate) || /Итого\s*\(ориентир\)/i.test(reply)),
     });
     provider = out.provider;
   } catch (err) {
@@ -89,37 +135,7 @@ async function handleChat(input) {
     throw err;
   }
 
-  let lead = null;
-  if (lastUser && shouldNotifyLead({ text: lastUser.content })) {
-    const leadPayload = {
-      text: lastUser.content,
-      source: input.source || 'web',
-      sessionId: input.sessionId,
-      username: input.username,
-      history: cleaned,
-      reply,
-    };
-    lead = await notifyManager(leadPayload);
-    if (
-      extractPhone(leadPayload.text) ||
-      extractPhone((leadPayload.history || []).map((m) => m.content).join('\n'))
-    ) {
-      markContact(input.sessionId, input.source || 'web');
-    }
-  }
-
-  logChatTurn({
-    sessionId: input.sessionId,
-    source: input.source || 'web',
-    username: input.username,
-    userText: lastUser ? lastUser.content : '',
-    reply,
-    provider,
-    leadSent: Boolean(lead?.sent),
-    history: cleaned,
-  });
-
-  return { reply, provider, lead };
+  return finishChatTurn(input, cleaned, lastUser, reply, provider);
 }
 
 module.exports = { handleChat };

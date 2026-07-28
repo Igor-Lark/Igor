@@ -7,7 +7,7 @@ const config = require('./config');
 const { handleChat } = require('./chat');
 const { loadKnowledge, buildGreeting, buildWidgetGreeting } = require('./knowledge');
 const { startNoContactWatcher } = require('./no-contact');
-const { UNAVAILABLE_REPLY } = require('./contacts');
+const { FACADE_CALC_VERSION } = require('./facade-calc');
 
 const app = express();
 
@@ -25,6 +25,7 @@ app.get('/health', (_req, res) => {
     maxNotify: config.hasMaxNotify,
     maxNotifyEnabled: config.maxNotifyEnabled,
     knowledgeChars: kb.combined.length,
+    facadeCalcVersion: FACADE_CALC_VERSION,
     publicUrl: config.publicUrl || null,
   });
 });

@@ -20,6 +20,8 @@ echo ""
 echo "Knowledge files:"
 ls -la "$BOT_DIR/knowledge/site-home.md" "$BOT_DIR/knowledge/site-termo.md" "$BOT_DIR/knowledge/site-termo-catalog.md" "$BOT_DIR/knowledge/faq.md" 2>/dev/null || ls -la "$BOT_DIR/knowledge/"
 
+echo "Git: $(git rev-parse --short HEAD) ($(git branch --show-current))"
+
 if command -v pm2 >/dev/null 2>&1; then
   pm2 restart klinkerpro
   echo "pm2: klinkerpro restarted"
@@ -27,6 +29,13 @@ else
   echo "pm2 not found — перезапустите процесс бота вручную"
 fi
 
-curl -sf "http://127.0.0.1:${PORT:-3001}/health" | head -c 200 || true
+sleep 2
+HEALTH=$(curl -sf "http://127.0.0.1:${PORT:-3001}/health" || true)
+echo "$HEALTH" | head -c 400 || true
 echo ""
+if echo "$HEALTH" | grep -q '"facadeCalcVersion":3'; then
+  echo "OK: facadeCalcVersion=3 (расчёт с проёмами на сервере)"
+else
+  echo "WARN: facadeCalcVersion не 3 — проверьте ветку и перезапуск pm2"
+fi
 echo "Done. Виджет embed.js обновляется отдельно (Tilda / CDN), не через этот скрипт."
