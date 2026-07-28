@@ -46,11 +46,13 @@ HEALTH=$(curl -sf "http://127.0.0.1:${PORT:-3001}/health" || true)
 echo ""
 echo "$HEALTH"
 echo ""
-if echo "$HEALTH" | grep -q '"facadeCalcVersion":3'; then
-  echo "OK: facadeCalcVersion=3"
+if echo "$HEALTH" | grep -qE '"facadeCalcVersion":(3|4)'; then
+  echo "OK: facadeCalcVersion в health"
 else
-  echo "WARN: facadeCalcVersion не 3 — запустите: bash bots/klinkerpro-bot/scripts/verify-klinker-deploy.sh"
+  echo "WARN: нет facadeCalcVersion 3/4 — проверьте pull и pm2"
   exit 1
 fi
+
+bash "$BOT_DIR/scripts/verify-facade-calc.sh" "http://127.0.0.1:${PORT:-3001}" || exit 1
 
 echo "Done. Виджет embed.js на Tilda — отдельно (https://klinker.webtaxi2.ru/embed.js)."
