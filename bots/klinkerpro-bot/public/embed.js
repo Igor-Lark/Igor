@@ -298,7 +298,7 @@
     var botName = 'КлинкерПрофи';
     var greeting =
       'Здравствуйте! Я помощник КлинкерПрофи.\n' +
-      'Расскажу про фасадные термопанели, клинкер и клинкерный кирпич на фасаде — как у нас в Выборге изготавливается термопанель и на что обратить внимание в Ленобласти.\n' +
+      'Расскажу про термопанели с клинкером, клинкер и клинкерный кирпич.\n' +
       'Могу провести расчёт: площадь фасада, количество термопанелей, клей и затирку.\n' +
       'Задайте вопрос или напишите размеры дома.';
     var unavailableReply = [
@@ -350,12 +350,14 @@
         (mascotSrc || resolveMascotUrl('')) +
         '" alt="" aria-hidden="true" decoding="async" />' +
         '</span>' +
+        '<div class="kpb-head-assist-main">' +
         ASSIST_LABEL_COPY +
         '<a class="kpb-head-phone kpb-tel" href="tel:' +
         MANAGER_PHONE_TEL +
         '">' +
         MANAGER_PHONE_LABEL +
         '</a>' +
+        '</div>' +
         '</div>'
       );
     }
@@ -445,8 +447,10 @@
       '#kpb-panel.kpb-intro #kpb-head .kpb-logo-wide{display:none}',
       '#kpb-panel.kpb-intro #kpb-head .kpb-logo-square{display:block}',
       '#kpb-head .kpb-head-assist{display:flex;align-items:center;gap:18px;margin-left:50px;min-width:0;flex:1}',
-      '#kpb-head .kpb-head-phone{display:none;flex-shrink:0;pointer-events:auto}',
-      '#kpb-head a.kpb-head-phone{color:#fff !important;text-decoration:underline !important;text-underline-offset:2px}',
+      '#kpb-head .kpb-head-assist-main{display:flex;align-items:center;flex:1;min-width:0}',
+      '#kpb-head .kpb-head-assist-main .kpb-btn-copy{flex:0 1 auto}',
+      '#kpb-head .kpb-head-phone{display:none;flex-shrink:0;pointer-events:auto;margin-left:60px}',
+      '#kpb-head a.kpb-head-phone{color:#fff !important;text-decoration:none !important}',
       '#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:20px}',
       '#kpb-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}',
       '#kpb-close{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px;display:flex;align-items:center;justify-content:center;z-index:2}',
@@ -468,11 +472,11 @@
       '#kpb-send:disabled{opacity:.6;cursor:default}',
       '#kpb-send .kpb-ico{width:20px;height:20px}',
       '#kpb-panel.kpb-intro #kpb-send{flex:0 0 auto;min-width:48px !important;max-width:48px;padding:0 7px !important}',
-      '@media (min-width:1025px){#kpb-panel.kpb-desk-modal{position:fixed;left:20vw;top:20vh;right:auto;bottom:auto;width:60vw;height:60vh;max-width:60vw;max-height:60vh;border-radius:5px;box-shadow:0 24px 60px rgba(15,23,42,.25);transform:translateX(100vw)}#kpb-panel.kpb-desk-modal.open{transform:translateX(0)}#kpb-send{min-width:96px;padding:0 28px;flex-shrink:0}#kpb-panel.kpb-intro #kpb-send{min-width:48px !important;max-width:48px;padding:0 7px !important}.kpb-msg.bot.kpb-msg-greeting{display:flex;flex-direction:row;align-items:flex-start;gap:10px;max-width:92%}.kpb-greeting-mascot-wrap{flex-shrink:0;position:relative;display:inline-block;line-height:0}.kpb-greeting-logo{position:absolute;left:0;top:0;width:60px;height:60px;object-fit:contain;opacity:0;transition:opacity 0.5s ease;pointer-events:none;z-index:0}.kpb-greeting-mascot-wrap:hover .kpb-greeting-logo{opacity:1}.kpb-greeting-mascot{display:block;height:110px;width:auto;object-fit:contain;object-position:left top;transform-origin:left top;transition:transform 0.5s ease;position:relative;z-index:1}.kpb-greeting-mascot-wrap:hover .kpb-greeting-mascot{transform:scale(2.5);z-index:10}.kpb-greeting-text{flex:1;min-width:0;line-height:1.5}#kpb-head .kpb-head-phone{display:inline-flex !important;align-items:center;margin-left:60px;font-size:16px;font-weight:700;letter-spacing:.01em;line-height:1.12;white-space:nowrap}}',
+      '@media (min-width:1025px){#kpb-panel.kpb-desk-modal{position:fixed;left:20vw;top:20vh;right:auto;bottom:auto;width:60vw;height:60vh;max-width:60vw;max-height:60vh;border-radius:5px;box-shadow:0 24px 60px rgba(15,23,42,.25);transform:translateX(100vw)}#kpb-panel.kpb-desk-modal.open{transform:translateX(0)}#kpb-send{min-width:96px;padding:0 28px;flex-shrink:0}#kpb-panel.kpb-intro #kpb-send{min-width:48px !important;max-width:48px;padding:0 7px !important}.kpb-msg.bot.kpb-msg-greeting{display:flex;flex-direction:row;align-items:flex-start;gap:10px;max-width:92%}.kpb-greeting-mascot-wrap{flex-shrink:0;position:relative;display:inline-block;line-height:0}.kpb-greeting-logo{position:absolute;left:0;top:0;width:60px;height:60px;object-fit:contain;opacity:0;transition:opacity 0.5s ease;pointer-events:none;z-index:0}.kpb-greeting-mascot-wrap:hover .kpb-greeting-logo{opacity:1}.kpb-greeting-mascot{display:block;height:110px;width:auto;object-fit:contain;object-position:left top;transform-origin:left top;transition:transform 0.5s ease;position:relative;z-index:1}.kpb-greeting-mascot-wrap:hover .kpb-greeting-mascot{transform:scale(2.5);z-index:10}.kpb-greeting-text{flex:1;min-width:0;line-height:1.5}#kpb-head .kpb-head-phone{display:inline-flex !important;align-items:center;font-size:16px;font-weight:700;letter-spacing:.01em;line-height:1.12;white-space:nowrap;text-decoration:none !important}}',
       '@media (max-width:1024px){#kpb-mascot{display:none !important}.kpb-greeting-mascot-wrap{display:none !important}}',
       /* планшет/мобила — кнопка как до fab-stack (2ade874) */
       '@media (max-width:1024px){#kpb-panel{width:90vw;max-width:90vw;height:86.25vh;max-height:86.25vh;top:auto;bottom:0;border-radius:5px 0 0 0}#kpb-panel.kpb-compact{height:43.125vh;max-height:43.125vh}#kpb-panel.kpb-compact.kpb-intro{width:100vw !important;max-width:100vw !important;height:60.375vh;max-height:60.375vh;bottom:80px}#kpb-head{height:88px;min-height:88px;max-height:88px;padding:0 40px 0 10px;gap:12px}#kpb-head .kpb-logo-wide,#kpb-head .kpb-logo-square,#kpb-panel.kpb-intro #kpb-head .kpb-logo-square{display:none !important}#kpb-head .kpb-head-assist{margin-left:0;gap:14px;flex:1 1 auto;width:100%;min-width:280px;max-width:100%}#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:0}#kpb-head .kpb-head-assist .kpb-btn-icon{width:80px;height:80px;flex-shrink:0;margin-left:0 !important}#kpb-head .kpb-head-mascot{width:80px;height:80px}#kpb-head .kpb-head-phone{display:none !important}#kpb-head .kpb-head-assist .kpb-btn-icon{margin-left:0}#kpb-btn .kpb-btn-icon{margin-left:5px}#kpb-head .kpb-btn-line1{font-size:15px}#kpb-head .kpb-btn-line2{font-size:10.5px}#kpb-close .kpb-ico{width:22px;height:22px}#kpb-btn{position:fixed !important;z-index:99990 !important;left:20px !important;right:auto !important;bottom:40px !important;width:220px !important;min-width:220px !important;max-width:220px !important;justify-content:flex-start !important;background:rgba(213,77,0,.8) !important;border:1px solid rgba(255,255,255,.8) !important}#kpb-btn:hover{background:rgba(192,69,0,.8) !important}}',
-      '@media (max-width:480px){#kpb-panel{height:80.5vh;max-height:80.5vh}#kpb-panel.kpb-compact{height:40.25vh;max-height:40.25vh}#kpb-panel.kpb-compact.kpb-intro{width:54vw !important;max-width:54vw !important;height:56.35vh;max-height:56.35vh;bottom:80px}#kpb-head{height:88px;min-height:88px;max-height:88px;padding:0 36px 0 8px;gap:12px}#kpb-head .kpb-logo-square{display:none !important}#kpb-head .kpb-head-assist{margin-left:0;min-width:260px}#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:0}#kpb-head .kpb-head-assist .kpb-btn-icon{width:80px;height:80px;margin-left:0 !important}#kpb-head .kpb-head-mascot{width:80px;height:80px}#kpb-btn .kpb-btn-icon{margin-left:5px}#kpb-head .kpb-btn-line1{font-size:14px}#kpb-head .kpb-btn-line2{font-size:10px}#kpb-close{right:6px}#kpb-close .kpb-ico{width:22px;height:22px}#kpb-btn .kpb-btn-line2{font-size:10.5px}#kpb-btn{bottom:40px !important}}',
+      '@media (max-width:480px){#kpb-panel{height:80.5vh;max-height:80.5vh}#kpb-panel.kpb-compact{height:40.25vh;max-height:40.25vh}#kpb-panel.kpb-compact.kpb-intro{width:100vw !important;max-width:100vw !important;height:56.35vh;max-height:56.35vh;bottom:80px}#kpb-head{height:88px;min-height:88px;max-height:88px;padding:0 36px 0 8px;gap:12px}#kpb-head .kpb-logo-square{display:none !important}#kpb-head .kpb-head-assist{margin-left:0;min-width:260px}#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:0}#kpb-head .kpb-head-assist .kpb-btn-icon{width:80px;height:80px;margin-left:0 !important}#kpb-head .kpb-head-mascot{width:80px;height:80px}#kpb-btn .kpb-btn-icon{margin-left:5px}#kpb-head .kpb-btn-line1{font-size:14px}#kpb-head .kpb-btn-line2{font-size:10px}#kpb-close{right:6px}#kpb-close .kpb-ico{width:22px;height:22px}#kpb-btn .kpb-btn-line2{font-size:10.5px}#kpb-btn{bottom:40px !important}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
