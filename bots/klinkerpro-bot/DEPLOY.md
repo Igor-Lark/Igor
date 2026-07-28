@@ -2,7 +2,7 @@
 
 **Быстрые ссылки**
 
-- [Скрипт деплоя базы знаний (GitHub)](https://github.com/Igor-Lark/Igor/blob/cursor/termopaneli-bot-bfbc/bots/klinkerpro-bot/scripts/deploy-knowledge.sh)
+- [Скрипт деплоя базы знаний (GitHub)](https://github.com/Igor-Lark/Igor/blob/cursor/facade-openings-calc-bfbc/bots/klinkerpro-bot/scripts/deploy-knowledge.sh)
 - [Раздел «Обновление инструкций бота» в этом файле](#10-обновление-инструкций-бота-база-знаний)
 - [Проверка после деплоя — health](https://klinker.webtaxi2.ru/health)
 - [Виджет на сайте — embed.js](https://klinker.webtaxi2.ru/embed.js)
@@ -11,8 +11,18 @@
 **На VPS одной командой** (из корня репозитория, путь замените на свой):
 
 ```bash
+cd /var/www/igor-klinker
 bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
 ```
+
+После деплоя в [health](https://klinker.webtaxi2.ru/health) должно быть **`"facadeCalcVersion":3`**. Если поля нет — pm2 смотрит **не ту папку** или **старая ветка**:
+
+```bash
+bash bots/klinkerpro-bot/scripts/verify-klinker-deploy.sh
+pm2 describe klinkerpro | egrep 'exec cwd|script path'
+```
+
+Скрипт деплоя пересоздаёт `klinkerpro` из `bots/klinkerpro-bot/ecosystem.config.cjs` (ветка **`cursor/facade-openings-calc-bfbc`**).
 
 Бот: виджет на **marmara-pro.ru** + заявки в **MAX**.  
 URL: **https://klinker.webtaxi2.ru** · порт процесса: **3001** (boat-sochi обычно **3000**).
@@ -57,8 +67,8 @@ dig +short klinker.webtaxi2.ru
 ```bash
 cd ~/igor   # или /var/www/igor — как у вас лежит boat
 git fetch origin
-git checkout cursor/termopaneli-bot-bfbc
-git pull origin cursor/termopaneli-bot-bfbc
+git checkout cursor/facade-openings-calc-bfbc
+git pull origin cursor/facade-openings-calc-bfbc
 cd bots/klinkerpro-bot
 ```
 
@@ -67,7 +77,7 @@ cd bots/klinkerpro-bot
 ```bash
 git clone https://github.com/Igor-Lark/Igor.git ~/igor
 cd ~/igor
-git checkout cursor/termopaneli-bot-bfbc
+git checkout cursor/facade-openings-calc-bfbc
 cd bots/klinkerpro-bot
 ```
 
@@ -292,15 +302,15 @@ cd /var/www/igor-klinker          # или ~/igor — ваш путь к реп�
 bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
 ```
 
-Скрипт делает `git pull` ветки `cursor/termopaneli-bot-bfbc` и **`pm2 restart klinkerpro`**.
+Скрипт делает `git pull` ветки `cursor/facade-openings-calc-bfbc` и **`pm2 restart klinkerpro`**.
 
 Вручную:
 
 ```bash
 cd /var/www/igor-klinker
 git fetch origin
-git checkout cursor/termopaneli-bot-bfbc
-git pull origin cursor/termopaneli-bot-bfbc
+git checkout cursor/facade-openings-calc-bfbc
+git pull origin cursor/facade-openings-calc-bfbc
 pm2 restart klinkerpro
 curl -s http://127.0.0.1:3001/health
 ```

@@ -2,7 +2,7 @@
 # Обновление базы знаний и промпта бота на VPS (без микроразметки сайта).
 # Запускать **на VPS** в каталоге репозитория.
 #
-#   cd /var/www/igor-klinker   # ваш путь
+#   cd /var/www/igor-klinker
 #   bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
 #
 set -euo pipefail
@@ -12,30 +12,45 @@ REPO_ROOT="$(cd "$BOT_DIR/../.." && pwd)"
 
 cd "$REPO_ROOT"
 echo "Repo: $REPO_ROOT"
+
 git fetch origin "$BRANCH"
 git checkout "$BRANCH"
 git pull origin "$BRANCH"
 
+echo "Git: $(git rev-parse --short HEAD) (branch: $(git branch --show-current))"
+
+if ! grep -q 'FACADE_CALC_VERSION' "$BOT_DIR/src/facade-calc.js"; then
+  echo "ERROR: в $BOT_DIR нет FACADE_CALC_VERSION — ветка не та или pull не прошёл"
+  exit 1
+fi
+
 echo ""
 echo "Knowledge files:"
-ls -la "$BOT_DIR/knowledge/site-home.md" "$BOT_DIR/knowledge/site-termo.md" "$BOT_DIR/knowledge/site-termo-catalog.md" "$BOT_DIR/knowledge/faq.md" 2>/dev/null || ls -la "$BOT_DIR/knowledge/"
+ls -la "$BOT_DIR/knowledge/site-home.md" "$BOT_DIR/knowledge/faq.md" 2>/dev/null | tail -5 || ls -la "$BOT_DIR/knowledge/"
 
-echo "Git: $(git rev-parse --short HEAD) ($(git branch --show-current))"
-
+cd "$BOT_DIR"
 if command -v pm2 >/dev/null 2>&1; then
-  pm2 restart klinkerpro
-  echo "pm2: klinkerpro restarted"
+  if pm2 describe klinkerpro >/dev/null 2>&1; then
+    pm2 delete klinkerpro || true
+  fi
+  pm2 start ecosystem.config.cjs --update-env
+  pm2 save 2>/dev/null || true
+  echo "pm2: klinkerpro started from $BOT_DIR"
+  pm2 describe klinkerpro | egrep 'exec cwd|script path|status' || true
 else
-  echo "pm2 not found — перезапустите процесс бота вручную"
+  echo "pm2 not found — вручную: cd $BOT_DIR && node src/index.js"
 fi
 
 sleep 2
 HEALTH=$(curl -sf "http://127.0.0.1:${PORT:-3001}/health" || true)
-echo "$HEALTH" | head -c 400 || true
+echo ""
+echo "$HEALTH"
 echo ""
 if echo "$HEALTH" | grep -q '"facadeCalcVersion":3'; then
-  echo "OK: facadeCalcVersion=3 (расчёт с проёмами на сервере)"
+  echo "OK: facadeCalcVersion=3"
 else
-  echo "WARN: facadeCalcVersion не 3 — проверьте ветку и перезапуск pm2"
+  echo "WARN: facadeCalcVersion не 3 — запустите: bash bots/klinkerpro-bot/scripts/verify-klinker-deploy.sh"
+  exit 1
 fi
-echo "Done. Виджет embed.js обновляется отдельно (Tilda / CDN), не через этот скрипт."
+
+echo "Done. Виджет embed.js на Tilda — отдельно (https://klinker.webtaxi2.ru/embed.js)."
