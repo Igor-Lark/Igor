@@ -6,7 +6,7 @@
 #   bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
 #
 set -euo pipefail
-BRANCH="${BRANCH:-cursor/termopaneli-bot-bfbc}"
+BRANCH="${BRANCH:-cursor/facade-openings-calc-bfbc}"
 BOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 REPO_ROOT="$(cd "$BOT_DIR/../.." && pwd)"
 

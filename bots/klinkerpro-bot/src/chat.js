@@ -14,6 +14,8 @@ const {
   fixWallAreaInReply,
   injectServerItogo,
   appendCalcDisclaimer,
+  buildCalcClientNarrative,
+  shouldUseServerCalcNarrative,
 } = require('./facade-calc');
 
 /**
@@ -68,8 +70,12 @@ async function handleChat(input) {
     ]);
     reply = formatBotReply(out.reply);
     if (estimate) {
-      reply = fixWallAreaInReply(reply, estimate);
-      reply = injectServerItogo(reply, estimate);
+      if (shouldUseServerCalcNarrative(estimate)) {
+        reply = buildCalcClientNarrative(estimate);
+      } else {
+        reply = fixWallAreaInReply(reply, estimate);
+        reply = injectServerItogo(reply, estimate);
+      }
     }
     reply = appendCalcDisclaimer(reply, {
       hasCalc: Boolean(estimate) || /Итого\s*\(ориентир\)/i.test(reply),

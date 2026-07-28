@@ -15,7 +15,8 @@ function parseNum(s) {
 }
 
 function parseDimToken(tok) {
-  const t = String(tok).toLowerCase().trim();
+  let t = String(tok).toLowerCase().trim();
+  t = t.replace(/\s*(?:м\.?|метр(?:а|ов)?)\s*$/i, '').trim();
   if (t === 'полтора' || t === 'полторы') return 1.5;
   if (t === 'два' || t === 'две') return 2;
   if (t === 'три') return 3;
@@ -60,7 +61,7 @@ const SIZE_PAIR_RE = new RegExp(
   'i'
 );
 const SIZE_NA_RE = new RegExp(
-  `${DIM_TOK}\\s*(?:м|см|mm|мм)?\\s+на\\s+${DIM_TOK}\\s*(?:м|см|mm|мм)?`,
+  `${DIM_TOK}\\s*(?:м|см|mm|мм)?\\s+на\\s+${DIM_TOK}(?:\\s*(?:м|см|mm|мм|метр(?:а|ов)?))?`,
   'i'
 );
 
@@ -333,6 +334,29 @@ function buildClientItogo(est) {
   ].join('\n');
 }
 
+/**
+ * Готовый текст расчёта для клиента (сервер), когда проёмы уже распознаны.
+ * @param {ReturnType<typeof computeEstimate>} est
+ */
+function buildCalcClientNarrative(est) {
+  const lines = [
+    `Приблизительный расчёт **с вычетом проёмов** для дома ${est.L}×${est.W}×${est.H} м (4 стены):`,
+    '',
+    `Площадь стен: 2×(${est.L}+${est.W})×${est.H} = ${fmtArea(est.S_gross)} кв.м.`,
+    `Проёмы (двери и окна — вычитаем из стены): ${formatOpeningLines(est.openingItems)}.`,
+    `Сумма проёмов: ${fmtArea(est.S_openings)} кв.м.`,
+    `Под термопанели, клей и затирку: ${fmtArea(est.S_gross)} − ${fmtArea(est.S_openings)} = **${fmtArea(est.S)} кв.м**.`,
+    '',
+    buildClientItogo(est),
+  ];
+  return lines.join('\n');
+}
+
+/** Если в сообщении есть двери/окна с размерами — ответ только с сервера (модель часто игнорирует вычет). */
+function shouldUseServerCalcNarrative(est) {
+  return Boolean(est && est.S_openings > 0 && est.openingItems && est.openingItems.length);
+}
+
 function formatOpeningLines(items) {
   if (!items || !items.length) return '';
   return items
@@ -479,6 +503,8 @@ module.exports = {
   computeEstimate,
   estimateFromHistory,
   buildCalcSystemBlock,
+  buildCalcClientNarrative,
+  shouldUseServerCalcNarrative,
   buildClientItogo,
   fixWallAreaInReply,
   injectServerItogo,
