@@ -14,6 +14,155 @@ function parseNum(s) {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+function parseDimToken(tok) {
+  const t = String(tok).toLowerCase().trim();
+  if (t === 'полтора' || t === 'полторы') return 1.5;
+  if (t === 'два' || t === 'две') return 2;
+  if (t === 'три') return 3;
+  return parseNum(t);
+}
+
+function parseCountToken(s) {
+  if (s == null || s === '') return 1;
+  const t = String(s).toLowerCase().trim();
+  if (/^\d+$/.test(t)) return Math.max(1, parseInt(t, 10));
+  if (/^(два|две|двое)$/.test(t)) return 2;
+  if (/^три$/.test(t)) return 3;
+  if (/^четыре$/.test(t)) return 4;
+  if (/^пять$/.test(t)) return 5;
+  return 1;
+}
+
+/**
+ * Размер проёма в метрах. Без «м» значения ≥10 считаем сантиметрами (120×80 окно).
+ * @returns {{ w: number, h: number, area: number } | null}
+ */
+function parseOpeningSizeMeters(aStr, bStr, unitHint) {
+  let w = parseDimToken(aStr);
+  let h = parseDimToken(bStr);
+  if (!w || !h) return null;
+  const u = String(unitHint || '').toLowerCase();
+  if (/см|^cm$/i.test(u)) {
+    w /= 100;
+    h /= 100;
+  } else if (/^м|m$/i.test(u)) {
+    /* уже метры */
+  } else if (w >= 10 || h >= 10) {
+    w /= 100;
+    h /= 100;
+  }
+  return { w, h, area: w * h };
+}
+
+const DIM_TOK = '(?:полтора|полторы|два|две|три|четыре|пять|\\d+(?:[.,]\\d+)?)';
+const SIZE_PAIR_RE = new RegExp(
+  `${DIM_TOK}\\s*(?:м|см|mm|мм)?\\s*[x×х\\*]\\s*${DIM_TOK}\\s*(?:м|см|mm|мм)?`,
+  'i'
+);
+const SIZE_NA_RE = new RegExp(
+  `${DIM_TOK}\\s*(?:м|см|mm|мм)?\\s+на\\s+${DIM_TOK}\\s*(?:м|см|mm|мм)?`,
+  'i'
+);
+
+function findOpeningSizeInPart(part) {
+  let m = part.match(SIZE_PAIR_RE);
+  if (m) {
+    const bits = m[0].split(/[x×х\*]/i);
+    if (bits.length >= 2) {
+      return parseOpeningSizeMeters(bits[0], bits[1], '');
+    }
+  }
+  m = part.match(SIZE_NA_RE);
+  if (m) {
+    const inner = m[0].split(/\s+на\s+/i);
+    if (inner.length >= 2) {
+      return parseOpeningSizeMeters(inner[0], inner[1], '');
+    }
+  }
+  return null;
+}
+
+function countFromOpeningPart(part, kind) {
+  const p = part.toLowerCase();
+  const word = kind === 'door' ? 'двер' : 'окн';
+  if (!p.includes(word)) return null;
+
+  const m1 = p.match(
+    new RegExp(
+      '(\\d+|два|две|двое|три|четыре|пять)\\s*(?:шт\\.?\\s*)?(?:' + (kind === 'door' ? 'двер' : 'окн') + ')',
+      'i'
+    )
+  );
+  if (m1) return parseCountToken(m1[1]);
+
+  if (kind === 'door' && /\b(двое|две|два)\b/.test(p) && /двер/.test(p)) return 2;
+  if (kind === 'window' && /\b(три)\b/.test(p) && /окн/.test(p)) return 3;
+
+  return 1;
+}
+
+/**
+ * @param {string} text
+ * @returns {{ items: { kind: string, count: number, w: number, h: number, areaEach: number, areaTotal: number }[], totalArea: number }}
+ */
+function parseOpeningsFromText(text) {
+  const items = [];
+  const raw = String(text);
+  const parts = raw.split(/[,;\n]+/);
+
+  for (const part of parts) {
+    const pLow = part.toLowerCase();
+    const isDoor = /двер/.test(pLow);
+    const isWindow = /окн/.test(pLow);
+    if (!isDoor && !isWindow) continue;
+
+    const size = findOpeningSizeInPart(part);
+    if (!size) continue;
+
+    if (isDoor) {
+      const count = countFromOpeningPart(part, 'door');
+      items.push({
+        kind: 'door',
+        count,
+        w: size.w,
+        h: size.h,
+        areaEach: size.area,
+        areaTotal: count * size.area,
+      });
+    }
+    if (isWindow) {
+      const count = countFromOpeningPart(part, 'window');
+      items.push({
+        kind: 'window',
+        count,
+        w: size.w,
+        h: size.h,
+        areaEach: size.area,
+        areaTotal: count * size.area,
+      });
+    }
+  }
+
+  const totalArea = items.reduce((s, it) => s + it.areaTotal, 0);
+  return { items, totalArea };
+}
+
+/**
+ * @param {{ role: string, content: string }[]} history
+ */
+function extractOpeningsFromHistory(history) {
+  const merged = { items: [], totalArea: 0 };
+  for (const msg of history) {
+    if (msg.role !== 'user') continue;
+    const block = parseOpeningsFromText(msg.content);
+    if (block.items.length) {
+      merged.items = merged.items.concat(block.items);
+      merged.totalArea += block.totalArea;
+    }
+  }
+  return merged.items.length ? merged : null;
+}
+
 /**
  * @param {string} text
  * @returns {{ L: number, W: number, H: number } | null}
@@ -119,8 +268,16 @@ function fmtInt(n) {
     .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
-function computeEstimate(L, W, H) {
-  const S = wallAreaGross(L, W, H);
+/**
+ * @param {number} L
+ * @param {number} W
+ * @param {number} H
+ * @param {ReturnType<typeof parseOpeningsFromText> | null} [openings]
+ */
+function computeEstimate(L, W, H, openings) {
+  const S_gross = wallAreaGross(L, W, H);
+  const S_openings = openings && openings.totalArea > 0 ? openings.totalArea : 0;
+  const S = Math.max(0, S_gross - S_openings);
   const N = Math.ceil(S / A_PANEL);
   const S_order = N * A_PANEL;
   const N_foam = Math.ceil(S_order / FOAM_M2_PER_CAN);
@@ -132,6 +289,9 @@ function computeEstimate(L, W, H) {
     L,
     W,
     H,
+    S_gross,
+    S_openings,
+    openingItems: openings ? openings.items : [],
     S,
     N,
     S_order,
@@ -151,7 +311,8 @@ function computeEstimate(L, W, H) {
 function estimateFromHistory(history) {
   const dims = extractDimensionsFromHistory(history);
   if (!dims) return null;
-  return computeEstimate(dims.L, dims.W, dims.H);
+  const openings = extractOpeningsFromHistory(history);
+  return computeEstimate(dims.L, dims.W, dims.H, openings);
 }
 
 function fmtArea(n) {
@@ -172,32 +333,61 @@ function buildClientItogo(est) {
   ].join('\n');
 }
 
+function formatOpeningLines(items) {
+  if (!items || !items.length) return '';
+  return items
+    .map((it) => {
+      const label = it.kind === 'door' ? 'двери' : 'окна';
+      return `${it.count} ${label} ${fmtArea(it.w)}×${fmtArea(it.h)} м → ${fmtArea(it.areaTotal)} кв.м`;
+    })
+    .join('; ');
+}
+
 /**
  * @param {ReturnType<typeof computeEstimate>} est
  * @returns {string}
  */
 function buildCalcSystemBlock(est) {
-  const { L, W, H, S, N, N_foam, N_grout, N_anchors, S_order } = est;
+  const { L, W, H, S_gross, S_openings, S, N, N_foam, N_grout, N_anchors, S_order } = est;
   const sum = L + W;
-  return [
+  const lines = [
     '=== РАСЧЁТ СЕРВЕРА (только для модели, клиенту не цитировать этот блок и не приводить чужие «контрольные» размеры) ===',
-    `Размеры клиента: длина ${L} м, ширина ${W} м, высота стен ${H} м (4 стены, без вычета проёмов).`,
-    `Площадь стен: S = 2×(${L}+${W})×${H} = 2×${sum}×${H} = ${S} кв.м — только этот итог площади.`,
-    `Термопанели: N = ceil(${S}/0,54) = ${N} шт.; S_order = N×0,54 = ${S_order} кв.м (для клея и затирки).`,
+    `Размеры клиента: длина ${L} м, ширина ${W} м, высота стен ${H} м (4 стены).`,
+    `Площадь стен (брутто): S_gross = 2×(${L}+${W})×${H} = 2×${sum}×${H} = ${fmtArea(S_gross)} кв.м.`,
+  ];
+
+  if (S_openings > 0) {
+    lines.push(
+      'Проёмы (двери и окна — это вычитаемые проёмы в стене, не «декоративные элементы»):',
+      formatOpeningLines(est.openingItems),
+      `S_proemov = ${fmtArea(S_openings)} кв.м.`,
+      `Площадь под термопанели: S = S_gross − S_proemov = ${fmtArea(S)} кв.м — только эту площадь использовать для N панелей, клея и затирки.`
+    );
+  } else {
+    lines.push(
+      `Площадь под термопанели: S = ${fmtArea(S)} кв.м (проёмы клиент не указал — расчёт **без вычета проёмов**; в ответе так и сказать и спросить окна/двери).`
+    );
+  }
+
+  lines.push(
+    `Термопанели: N = ceil(${fmtArea(S)}/0,54) = ${N} шт.; S_order = N×0,54 = ${fmtArea(S_order)} кв.м (для клея и затирки — от S_order после вычета проёмов).`,
     `Клей-пена: ceil(S_order/6) = ${N_foam} балл. × 800 ₽ = ${fmtInt(est.costFoam)} ₽.`,
     `Затирка: ${N_grout} меш. × 1 450 ₽ = ${fmtInt(est.costGrout)} ₽.`,
     `Термопанели ₽: ${N} × 1 460 = ${fmtInt(est.costPanels)} ₽.`,
     `Дюбели: ${N_anchors} шт. (6×${N}).`,
-    'Клиенту: без учебных примеров и без чужих размеров. Обязательно блок «Итого (ориентир)» — каждая позиция с количеством и **₽** (дюбели — только шт.). Клей и затирка **всегда** вместе с термопанелями, от расчётного N.',
+    'Клиенту: без учебных примеров и без чужих размеров. Обязательно блок «Итого (ориентир)» — каждая позиция с количеством и **₽** (дюбели — только шт.). Клей и затирка **всегда** вместе с термопанелями, от расчётного N после вычета проёмов (если проёмы были).',
     'Текст для клиента (можно дословно):',
-    buildClientItogo(est),
-  ].join('\n');
+    buildClientItogo(est)
+  );
+
+  return lines.join('\n');
 }
 
 /** Исправляет неверный итог в строке с формулой площади. */
 function fixWallAreaInReply(reply, est) {
   if (!est || !reply) return reply;
-  const { L, W, H, S } = est;
+  const { L, W, H, S, S_gross } = est;
+  const areaTarget = est.S_openings > 0 ? S : S_gross;
   let s = String(reply);
 
   const wrongAfterEquals = new RegExp(
@@ -205,7 +395,7 @@ function fixWallAreaInReply(reply, est) {
     'gi'
   );
   s = s.replace(wrongAfterEquals, (line) =>
-    line.replace(/=\s*\d+(?:[.,]\d+)?\s*(?=кв\.|м²|м2|$)/i, `= ${S} `)
+    line.replace(/=\s*\d+(?:[.,]\d+)?\s*(?=кв\.|м²|м2|$)/i, `= ${areaTarget} `)
   );
 
   s = s.replace(
@@ -213,7 +403,7 @@ function fixWallAreaInReply(reply, est) {
       `(2\\s*[×x\\*]\\s*\\(\\s*${L}\\s*\\+\\s*${W}\\s*\\)\\s*[×x\\*]\\s*${H}\\s*=\\s*)\\d+(?:[.,]\\d+)?`,
       'gi'
     ),
-    `$1${S}`
+    `$1${areaTarget}`
   );
 
   return s;
@@ -283,6 +473,8 @@ function appendCalcDisclaimer(reply, opts) {
 
 module.exports = {
   parseDimensionsFromText,
+  parseOpeningsFromText,
+  extractOpeningsFromHistory,
   extractDimensionsFromHistory,
   computeEstimate,
   estimateFromHistory,
