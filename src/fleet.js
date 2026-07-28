@@ -62,7 +62,7 @@ const FLEET = [
     id: 'lilu',
     name: 'Лилу',
     kind: 'yacht',
-    label: 'парусная яхта «Лилу»',
+    label: '«Лилу» (парусная яхта)',
     maxGuests: 10,
     port: 'sirius',
     portLabel: 'Сириус',
