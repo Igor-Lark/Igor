@@ -296,12 +296,32 @@
     var open = false;
     var sending = false;
     var botName = 'КлинкерПрофи';
-    var greeting =
+    var GREETING_VARIANTS = [
       'Здравствуйте! Я помощник КлинкерПрофи.\n' +
-      'Расскажу про термопанели с клинкером, клинкер и клинкерный кирпич.\n' +
-      'Знаю условия монтажа по Ленобласти.\n' +
-      'Могу провести расчёт: площадь фасада, количество термопанелей, клей и затирку.\n' +
-      'Задайте вопрос или напишите размеры дома.';
+        'Расскажу про термопанели с клинкером, клинкер и клинкерный кирпич.\n' +
+        'Знаю условия монтажа по Ленобласти.\n' +
+        'Могу провести расчёт: площадь фасада, количество термопанелей, клей и затирку.\n' +
+        'Задайте вопрос или напишите размеры дома.',
+      'Добрый день! Я помощник КлинкерПрофи.\n' +
+        'Расскажу про термопанели с клинкером, клинкерную плитку и клинкерный кирпич.\n' +
+        'Знаю условия монтажа по Ленобласти.\n' +
+        'Помогу с прикидкой: площадь фасада, термопанели, клей и затирка.\n' +
+        'Напишите размеры дома или задайте вопрос.',
+      'Здравствуйте! На связи консультант КлинкерПрофи.\n' +
+        'Термопанели с клинкером, клинкер и кирпич — подскажу по делу.\n' +
+        'Знаю условия монтажа по Ленобласти.\n' +
+        'Сделаю ориентировочный расчёт по длине, ширине и высоте стен.\n' +
+        'Задайте вопрос или напишите размеры.',
+      'Здравствуйте! Помощник КлинкерПрофи, своё производство в Выборге.\n' +
+        'Про термопанели с клинкером, клинкер и кирпич — расскажу и посчитаю материалы.\n' +
+        'Знаю условия монтажа по Ленобласти.\n' +
+        'Расчёт: фасад, панели, клей-пена, затирка.\n' +
+        'Жду ваш вопрос или размеры дома.',
+    ];
+    function pickWidgetGreeting() {
+      return GREETING_VARIANTS[Math.floor(Math.random() * GREETING_VARIANTS.length)];
+    }
+    var greeting = pickWidgetGreeting();
     var unavailableReply = [
       'Сейчас помощник временно недоступен. Свяжитесь с КлинкерПрофи:',
       '',
@@ -470,6 +490,8 @@
       '.kpb-msg{max-width:88%;padding:10px 12px;border-radius:5px;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}',
       '.kpb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#2d2d2d}',
       '.kpb-msg.bot strong{font-weight:700;color:#2d2d2d}',
+      '.kpb-msg.bot.kpb-msg-greeting,.kpb-msg.bot.kpb-msg-greeting .kpb-greeting-text{font-weight:400}',
+      '.kpb-msg.bot.kpb-msg-greeting strong{font-weight:400;color:inherit}',
       '.kpb-msg.user{align-self:flex-end;background:#8B7355;color:#fff;border-radius:20px}',
       '.kpb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:13px}',
       '#kpb-root a.kpb-tel,#kpb-root a.kpb-link{color:#6B5344 !important;font-weight:600 !important;text-decoration:underline !important;text-underline-offset:2px;cursor:pointer !important;pointer-events:auto !important}',
@@ -781,7 +803,11 @@
 
     function addGreetingBubble(text) {
       if (!isDesktopUi()) {
-        addBubble(text, 'bot');
+        var mob = document.createElement('div');
+        mob.className = 'kpb-msg bot kpb-msg-greeting';
+        mob.innerHTML = linkifyText(text);
+        msgs.appendChild(mob);
+        msgs.scrollTop = msgs.scrollHeight;
         return;
       }
       var el = document.createElement('div');

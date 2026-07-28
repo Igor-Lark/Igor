@@ -1,6 +1,6 @@
 # Варианты приветствия виджета (4 шт.)
 
-Используется в `src/knowledge.js` → `GREETING_VARIANTS`. Виджет на сайте по умолчанию — **вариант 1** (`buildWidgetGreeting`).
+Используется в `src/knowledge.js` → `GREETING_VARIANTS`. Виджет и `/api/widget-config` выбирают **случайный** вариант (`buildWidgetGreeting` → `buildGreeting`).
 
 ## Вариант 1 (основной, в embed и API)
 

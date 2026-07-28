@@ -85,9 +85,9 @@ function buildGreeting() {
   return GREETING_VARIANTS[i];
 }
 
-/** Приветствие виджета на сайте — всегда с акцентом на расчёты (первый вариант). */
+/** Приветствие виджета на сайте — случайный вариант из списка. */
 function buildWidgetGreeting() {
-  return GREETING_VARIANTS[0];
+  return buildGreeting();
 }
 
 function buildSystemPrompt() {
