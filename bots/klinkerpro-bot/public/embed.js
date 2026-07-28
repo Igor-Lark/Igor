@@ -299,6 +299,7 @@
     var greeting =
       'Здравствуйте! Я помощник КлинкерПрофи.\n' +
       'Расскажу про термопанели с клинкером, клинкер и клинкерный кирпич.\n' +
+      'Знаю условия монтажа по Ленобласти.\n' +
       'Могу провести расчёт: площадь фасада, количество термопанелей, клей и затирку.\n' +
       'Задайте вопрос или напишите размеры дома.';
     var unavailableReply = [
@@ -450,7 +451,8 @@
       '#kpb-head .kpb-head-assist-main{display:flex;align-items:center;flex:1;min-width:0}',
       '#kpb-head .kpb-head-assist-main .kpb-btn-copy{flex:0 1 auto}',
       '#kpb-head .kpb-head-phone{display:none;flex-shrink:0;pointer-events:auto;margin-left:60px}',
-      '#kpb-head a.kpb-head-phone{color:#fff !important;text-decoration:none !important}',
+      '#kpb-root #kpb-head a.kpb-head-phone.kpb-tel{text-decoration:none !important;color:#fff !important;font-weight:700;background:#d54d00;border-radius:5px;padding:10px 16px;line-height:1.2;box-shadow:0 2px 8px rgba(0,0,0,.15)}',
+      '#kpb-root #kpb-head a.kpb-head-phone.kpb-tel:hover{background:#c04500;color:#fff !important}',
       '#kpb-panel.kpb-intro #kpb-head .kpb-head-assist{margin-left:20px}',
       '#kpb-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}',
       '#kpb-close{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px;display:flex;align-items:center;justify-content:center;z-index:2}',
