@@ -84,6 +84,37 @@ const WMO_RU = {
   99: 'гроза с сильным градом',
 };
 
+/** Месяцы в родительном падеже: «28 июля». */
+const MONTHS_RU_GEN = [
+  'января',
+  'февраля',
+  'марта',
+  'апреля',
+  'мая',
+  'июня',
+  'июля',
+  'августа',
+  'сентября',
+  'октября',
+  'ноября',
+  'декабря',
+];
+
+/**
+ * ISO-дата → «28 июля».
+ * @param {string|null|undefined} iso
+ * @returns {string|null}
+ */
+function formatDateRu(iso) {
+  const d = String(iso || '').slice(0, 10);
+  const m = d.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  const day = Number(m[3]);
+  const month = Number(m[2]);
+  if (!day || month < 1 || month > 12) return null;
+  return `${day} ${MONTHS_RU_GEN[month - 1]}`;
+}
+
 function isWeatherIntent(text) {
   const t = String(text || '');
   return (
@@ -165,41 +196,63 @@ function parseForecastTarget(text) {
   return { mode: 'range', days: 3 };
 }
 
-function formatDayLine(daily, index, label) {
+/**
+ * Одна строка прогноза: «29 июля: переменная облачность, воздух до 26 °C, вода в открытом море около 26 °C».
+ * @param {object} daily — air daily
+ * @param {number} index
+ * @param {number[]|null} waterDaily — daily sea_surface_temperature_mean
+ * @param {number|null} waterFallback — текущая t° воды, если нет дневной
+ * @param {string|null} relLabel — «завтра» / «послезавтра» (опционально в скобках)
+ */
+function formatDayLine(daily, index, waterDaily, waterFallback, relLabel) {
   if (!daily || !Array.isArray(daily.time) || index >= daily.time.length) return null;
-  const date = String(daily.time[index] || '').slice(5); // MM-DD
+  const dateRu = formatDateRu(daily.time[index]);
+  if (!dateRu) return null;
   const cond = weatherCodeRu(daily.weather_code[index]);
   const tMax = daily.temperature_2m_max ? round1(daily.temperature_2m_max[index]) : null;
-  const title = label ? `${label} (${date})` : date;
-  return tMax != null ? `• ${title}: ${cond}, до ${tMax} °C` : `• ${title}: ${cond}`;
+  let waterC = null;
+  if (Array.isArray(waterDaily) && waterDaily[index] != null) {
+    waterC = round1(waterDaily[index]);
+  } else if (waterFallback != null) {
+    waterC = waterFallback;
+  }
+  const title = relLabel ? `${dateRu} (${relLabel})` : dateRu;
+  const parts = [cond];
+  if (tMax != null) parts.push(`воздух до ${tMax} °C`);
+  if (waterC != null) parts.push(`вода в открытом море около ${waterC} °C`);
+  return `${title}: ${parts.join(', ')}`;
 }
 
 /**
  * Прогноз по цели: один день (завтра/послезавтра) или диапазон ближайших дней.
- * Сегодня в daily[0] не включаем.
+ * Сегодня в daily[0] не включаем. Каждый день — новая строка, дата «день месяц», обязательно вода.
+ * @param {object} daily
+ * @param {{ mode: string, offset?: number, label?: string, days?: number }} target
+ * @param {{ waterDaily?: number[]|null, waterC?: number|null }} [opts]
  * @returns {string|null}
  */
-function formatForecastDays(daily, target) {
+function formatForecastDays(daily, target, opts) {
   if (!daily || !Array.isArray(daily.time) || !Array.isArray(daily.weather_code)) return null;
   const tgt = target || { mode: 'range', days: 3 };
+  const waterDaily = opts && opts.waterDaily;
+  const waterFallback = opts && opts.waterC != null ? opts.waterC : null;
 
   if (tgt.mode === 'single') {
-    const line = formatDayLine(daily, tgt.offset, tgt.label);
+    const line = formatDayLine(daily, tgt.offset, waterDaily, waterFallback, tgt.label);
     if (!line) return null;
-    return [`Погода ${tgt.label}:`, line].join('\n');
+    return line;
   }
 
   const lines = [];
-  const n = Math.min(1 + tgt.days, daily.time.length);
-  const labels = { 1: 'завтра', 2: 'послезавтра' };
-  for (let i = 1; i < n; i++) {
-    const line = formatDayLine(daily, i, labels[i] || null);
+  // Ближайшие N дней: начиная с сегодня (каждый день — новая строка)
+  const n = Math.min(tgt.days, daily.time.length);
+  const labels = { 0: null, 1: 'завтра', 2: 'послезавтра' };
+  for (let i = 0; i < n; i++) {
+    const line = formatDayLine(daily, i, waterDaily, waterFallback, labels[i] || null);
     if (line) lines.push(line);
   }
   if (!lines.length) return null;
-  const title =
-    tgt.days === 2 ? 'Прогноз на 2 дня:' : 'Прогноз на 3 дня:';
-  return [title, ...lines].join('\n');
+  return lines.join('\n');
 }
 
 const LONG_FORECAST_REPLY =
@@ -222,7 +275,8 @@ async function fetchPlaceWeather(place) {
     `&daily=weather_code,precipitation_sum,wind_speed_10m_max,temperature_2m_max&forecast_days=4`;
   const waterUrl =
     `https://marine-api.open-meteo.com/v1/marine?${common}` +
-    `&current=sea_surface_temperature`;
+    `&current=sea_surface_temperature` +
+    `&daily=sea_surface_temperature_mean&forecast_days=4`;
 
   const [air, water] = await Promise.all([fetchJson(airUrl), fetchJson(waterUrl)]);
 
@@ -235,6 +289,9 @@ async function fetchPlaceWeather(place) {
     windKmh: round1(air?.current?.wind_speed_10m),
     condition: weatherCodeRu(air?.current?.weather_code),
     daily: air?.daily || null,
+    waterDaily: Array.isArray(water?.daily?.sea_surface_temperature_mean)
+      ? water.daily.sea_surface_temperature_mean.map((v) => round1(v))
+      : null,
     fromCache: false,
   };
 
@@ -267,29 +324,35 @@ async function weatherPromptBlock(text) {
     const place = pickPlace(t);
     const w = await fetchPlaceWeather(place);
     const target = parseForecastTarget(t);
+    const fcOpts = { waterDaily: w.waterDaily, waterC: w.waterC };
     const parts = [];
+    const dateFmt =
+      'Даты только в формате «день месяц прописью» (например 28 июля). При прогнозе на несколько дней — каждый день с новой строки: дата, погода, обязательно температура воды.';
 
     if (target && target.mode === 'single') {
-      const fc = formatForecastDays(w.daily, target);
+      const fc = formatForecastDays(w.daily, target, fcOpts);
       if (fc) parts.push(fc);
       parts.push(
-        `Ответь ТОЛЬКО про ${target.label} (воздух/условия на этот день). Не добавляй «сейчас», другие дни и не говори про ухудшение погоды.`
+        `Ответь ТОЛЬКО про ${target.label}. Обязательно укажи температуру воды. Не добавляй «сейчас», другие дни и не говори про ухудшение погоды. ${dateFmt}`
       );
     } else {
-      parts.push(`Актуальная погода (${w.placeLabel}, Open-Meteo, МСК):`);
+      const todayRu = formatDateRu(w.daily?.time?.[0] || w.observedAt);
+      parts.push(
+        `Актуальная погода (${w.placeLabel}, Open-Meteo, МСК${todayRu ? `, ${todayRu}` : ''}):`
+      );
       if (w.airC != null) parts.push(`воздух ${w.airC} °C (${w.condition})`);
       if (w.waterC != null) parts.push(`вода в открытом море ${w.waterC} °C`);
       if (isWindIntent(t) && w.windKmh != null) parts.push(`ветер ${w.windKmh} км/ч`);
       if (isLongForecastIntent(t)) {
         parts.push(LONG_FORECAST_REPLY);
-        const fc = formatForecastDays(w.daily, { mode: 'range', days: 3 });
+        const fc = formatForecastDays(w.daily, { mode: 'range', days: 3 }, fcOpts);
         if (fc) parts.push(fc);
       } else if (target) {
-        const fc = formatForecastDays(w.daily, target);
+        const fc = formatForecastDays(w.daily, target, fcOpts);
         if (fc) parts.push(fc);
       }
       parts.push(
-        'По умолчанию НЕ говори про ветер. НИКОГДА не говори про ухудшение погоды / «может ухудшиться». Прогноз дальше 3 дней не давай — скажи, что таких данных нет и долгосрочный прогноз неточен. Не выдумывай цифры.'
+        `На любой вопрос про погоду ОБЯЗАТЕЛЬНО называй температуру воды в открытом море. ${dateFmt} По умолчанию НЕ говори про ветер. НИКОГДА не говори про ухудшение погоды / «может ухудшиться». Прогноз дальше 3 дней не давай — скажи, что таких данных нет и долгосрочный прогноз неточен. Не выдумывай цифры.`
       );
     }
     if (isSwimIntent(t)) {
@@ -318,20 +381,28 @@ async function buildWeatherReply(text) {
     const wantWind = isWindIntent(t);
     const target = parseForecastTarget(t);
     const wantLong = isLongForecastIntent(t);
+    const fcOpts = { waterDaily: w.waterDaily, waterC: w.waterC };
     const lines = [];
 
     if (wantLong) {
       lines.push(LONG_FORECAST_REPLY);
-      const fc = formatForecastDays(w.daily, { mode: 'range', days: 3 });
+      const fc = formatForecastDays(w.daily, { mode: 'range', days: 3 }, fcOpts);
       if (fc) lines.push(fc);
       return lines.join('\n');
     }
 
     // «Погода на завтра/послезавтра» — только этот день, без «сейчас»
     if (target && target.mode === 'single') {
-      const fc = formatForecastDays(w.daily, target);
+      const fc = formatForecastDays(w.daily, target, fcOpts);
       if (fc) return fc;
       return `Пока нет данных по погоде ${target.label} в районе «${w.placeLabel}».`;
+    }
+
+    // «Ближайшие дни» / на 2–3 дня — только строки по дням (дата + погода + вода)
+    if (target && target.mode === 'range') {
+      const fc = formatForecastDays(w.daily, target, fcOpts);
+      if (fc) return fc;
+      return `Пока нет прогноза на ближайшие дни в районе «${w.placeLabel}».`;
     }
 
     if (wantWind && !WEATHER_INTENT_RE.test(t) && !target) {
@@ -340,17 +411,26 @@ async function buildWeatherReply(text) {
           ? `Сейчас в районе «${w.placeLabel}» ветер — около ${w.windKmh} км/ч.`
           : `Сейчас данные по ветру в районе «${w.placeLabel}» недоступны.`
       );
+      // Даже в ответе про ветер — температура воды, если есть
+      if (w.waterC != null) {
+        lines.push(`Вода в открытом море — около ${w.waterC} °C.`);
+      }
       return lines.join('\n');
     }
 
-    lines.push(`Сейчас в районе «${w.placeLabel}»:`);
+    const todayRu = formatDateRu(w.daily?.time?.[0] || w.observedAt);
+    lines.push(
+      todayRu
+        ? `${todayRu}, сейчас в районе «${w.placeLabel}»:`
+        : `Сейчас в районе «${w.placeLabel}»:`
+    );
     if (w.airC != null) lines.push(`• воздух — около ${w.airC} °C, ${w.condition}`);
-    if (w.waterC != null) lines.push(`• вода в открытом море — около ${w.waterC} °C`);
-    if (wantWind && w.windKmh != null) lines.push(`• ветер — около ${w.windKmh} км/ч`);
-    if (target) {
-      const fc = formatForecastDays(w.daily, target);
-      if (fc) lines.push(fc);
+    if (w.waterC != null) {
+      lines.push(`• вода в открытом море — около ${w.waterC} °C`);
+    } else {
+      lines.push('• температура воды сейчас недоступна');
     }
+    if (wantWind && w.windKmh != null) lines.push(`• ветер — около ${w.windKmh} км/ч`);
     return lines.join('\n');
   } catch (err) {
     console.error('[weather] reply failed:', err.message);
@@ -385,6 +465,8 @@ module.exports = {
   alreadyMentionedOpenSeaWater,
   pickPlace,
   parseForecastTarget,
+  formatDateRu,
+  formatDayLine,
   formatForecastDays,
   fetchPlaceWeather,
   prefetchWeather,
