@@ -1,6 +1,6 @@
 'use strict';
 
-const FACADE_CALC_VERSION = 3;
+const FACADE_CALC_VERSION = 4;
 const A_PANEL = 0.54;
 const PANEL_PRICE = 1460;
 const FOAM_M2_PER_CAN = 6;
@@ -66,15 +66,20 @@ const SIZE_NA_RE = new RegExp(
   'i'
 );
 
-function findOpeningSizeInPart(part) {
-  let m = part.match(SIZE_PAIR_RE);
+function findOpeningSizeInPart(part, kind) {
+  const pLow = part.toLowerCase();
+  const key = kind === 'door' ? 'двер' : 'окн';
+  const idx = pLow.indexOf(key);
+  if (idx < 0) return null;
+  const after = part.slice(idx);
+  let m = after.match(SIZE_PAIR_RE);
   if (m) {
     const bits = m[0].split(/[x×х\*]/i);
     if (bits.length >= 2) {
       return parseOpeningSizeMeters(bits[0], bits[1], '');
     }
   }
-  m = part.match(SIZE_NA_RE);
+  m = after.match(SIZE_NA_RE);
   if (m) {
     const inner = m[0].split(/\s+на\s+/i);
     if (inner.length >= 2) {
@@ -110,7 +115,7 @@ function countFromOpeningPart(part, kind) {
 function parseOpeningsFromText(text) {
   const items = [];
   const raw = String(text);
-  const parts = raw.split(/[,;\n]+/);
+  const parts = raw.split(/[,;\n]+|(?=\s+\d+\s+окн)|(?=\s+(?:двое|две|два|три|\d+)\s+двер)/i);
 
   for (const part of parts) {
     const pLow = part.toLowerCase();
@@ -118,10 +123,9 @@ function parseOpeningsFromText(text) {
     const isWindow = /окн/.test(pLow);
     if (!isDoor && !isWindow) continue;
 
-    const size = findOpeningSizeInPart(part);
-    if (!size) continue;
-
     if (isDoor) {
+      const size = findOpeningSizeInPart(part, 'door');
+      if (!size) continue;
       const count = countFromOpeningPart(part, 'door');
       items.push({
         kind: 'door',
@@ -133,6 +137,8 @@ function parseOpeningsFromText(text) {
       });
     }
     if (isWindow) {
+      const size = findOpeningSizeInPart(part, 'window');
+      if (!size) continue;
       const count = countFromOpeningPart(part, 'window');
       items.push({
         kind: 'window',
