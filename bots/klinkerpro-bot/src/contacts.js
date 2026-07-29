@@ -13,6 +13,26 @@ function managerPhoneLink() {
   return phoneToken(MANAGER_PHONE_TEL, MANAGER_PHONE);
 }
 
+function replyHasClickablePhone(text) {
+  const s = String(text);
+  if (/\{\{tel:/.test(s)) return true;
+  return /(?:\+7|8)[ \t\-()]*(?:\d[ \t\-()]*){10}/.test(s);
+}
+
+function replyMentionsManagerContact(text) {
+  return /менеджер|свяжитесь|связаться|перезвон|позвоните|звоните|обратитесь\s+к\s+нам|для\s+(?:более\s+)?точн/i.test(
+    String(text)
+  );
+}
+
+/** Если в ответе зовут к менеджеру, но нет телефона — добавить {{tel:…}} для виджета. */
+function ensureManagerPhoneLink(text) {
+  if (!text) return text;
+  if (replyHasClickablePhone(text)) return text;
+  if (!replyMentionsManagerContact(text)) return text;
+  return `${String(text).trimEnd()}\n\n${managerPhoneLink()}`;
+}
+
 function stripPhoneTokens(text) {
   return String(text).replace(/\{\{tel:\+?\d+\|([^}]+)\}\}/g, '$1');
 }
@@ -20,7 +40,7 @@ function stripPhoneTokens(text) {
 const UNAVAILABLE_REPLY = [
   'Сейчас помощник временно недоступен. Свяжитесь с КлинкерПрофи:',
   '',
-  MANAGER_PHONE,
+  managerPhoneLink(),
   `Сайт: ${SITE_TERMO}`,
   `Контакты: ${SITE_MAIN}#contacts`,
 ].join('\n');
@@ -32,6 +52,8 @@ module.exports = {
   SITE_MAIN,
   phoneToken,
   managerPhoneLink,
+  ensureManagerPhoneLink,
+  replyHasClickablePhone,
   stripPhoneTokens,
   UNAVAILABLE_REPLY,
 };

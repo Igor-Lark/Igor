@@ -3,7 +3,7 @@
 const { buildSystemPrompt } = require('./knowledge');
 const { completeChat } = require('./ai');
 const { alertAiFailure } = require('./ai-alert');
-const { managerPhoneLink, SITE_MAIN } = require('./contacts');
+const { managerPhoneLink, SITE_MAIN, ensureManagerPhoneLink } = require('./contacts');
 const { shouldNotifyLead, notifyManager, extractPhone } = require('./leads');
 const { logChatTurn } = require('./chat-log');
 const { touchSession, markContact } = require('./no-contact');
@@ -24,6 +24,12 @@ function calcDisclaimerOpts(hasCalc) {
     managerPhone: managerPhoneLink(),
     contactsUrl: SITE_MAIN + '#contacts',
   };
+}
+
+function finalizeBotReply(reply, disclaimerOpts) {
+  let s = appendCalcDisclaimer(reply, disclaimerOpts);
+  s = ensureManagerPhoneLink(s);
+  return s;
 }
 
 async function finishChatTurn(input, cleaned, lastUser, reply, provider) {
@@ -101,10 +107,7 @@ async function handleChat(input) {
   const estimate = resolveEstimateForChat(cleaned, lastUserText);
 
   if (estimate && shouldUseServerCalcNarrative(estimate, lastUserText)) {
-    const reply = appendCalcDisclaimer(
-      buildCalcClientNarrative(estimate),
-      calcDisclaimerOpts(true)
-    );
+    const reply = finalizeBotReply(buildCalcClientNarrative(estimate), calcDisclaimerOpts(true));
     return finishChatTurn(input, cleaned, lastUser, reply, 'server-calc');
   }
 
@@ -125,7 +128,7 @@ async function handleChat(input) {
       reply = fixWallAreaInReply(reply, estimate);
       reply = injectServerItogo(reply, estimate);
     }
-    reply = appendCalcDisclaimer(reply, {
+    reply = finalizeBotReply(reply, {
       ...calcDisclaimerOpts(Boolean(estimate) || /Итого\s*\(ориентир\)/i.test(reply)),
     });
     provider = out.provider;
