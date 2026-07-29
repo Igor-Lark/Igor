@@ -25,8 +25,8 @@ const FLEET = [
     port: 'sirius',
     portLabel: 'Сириус',
     price: '7 000 ₽/час',
-    speed: '10–25 узлов (≈ 19–46 км/ч)',
-    offWebsite: true,
+    length: '7,5 м',
+    speed: '12 / 25 узлов (≈ 22–46 км/ч)',
   },
   {
     id: 'sirius',
@@ -202,6 +202,7 @@ function capacityLabel(v) {
 
 function vesselLine(v) {
   const parts = [`• ${v.label} — ${capacityLabel(v)}`, v.portLabel, v.price];
+  if (v.length) parts.push(v.length);
   if (v.speed) parts.push(v.speed);
   let line = parts.join(', ');
   if (v.offWebsite) line += ' (подробности — у Олега или Натальи)';
@@ -260,6 +261,7 @@ function capacityPromptBlock(text) {
   const matches = filterFleet(guests, { kind, port });
   const lines = matches.map((v) => {
     const parts = [`- ${v.label}: ${capacityLabel(v)}`, v.portLabel, v.price];
+    if (v.length) parts.push(v.length);
     if (v.speed) parts.push(v.speed);
     let line = parts.join(', ');
     if (v.offWebsite) line += ' (подробности — у Олега или Натальи)';
