@@ -8,14 +8,33 @@
 - [Виджет на сайте — embed.js](https://klinker.webtaxi2.ru/embed.js)
 - [Каталог термопанелей на Tilda](https://marmara-pro.ru/termo)
 
-**На VPS одной командой** (из корня репозитория, путь замените на свой):
+**На VPS одной командой** (не из `/root` — там нет репозитория):
 
 ```bash
-cd /var/www/igor-klinker
-bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
+cd /var/www/igor-klinker    # или ~/igor — где у вас клон GitHub Igor
+bash deploy-klinker-bot.sh
+# то же самое:
+# bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
 ```
 
-После деплоя в [health](https://klinker.webtaxi2.ru/health) должно быть **`"facadeCalcVersion":3`**. Если поля нет — pm2 смотрит **не ту папку** или **старая ветка**:
+Из **любой** папки, если клон лежит в `/var/www/igor-klinker`:
+
+```bash
+bash /var/www/igor-klinker/deploy-klinker-bot.sh
+```
+
+Если `No such file or directory` — найдите скрипт и перейдите в каталог репозитория:
+
+```bash
+find /var/www /root /home -maxdepth 5 -path '*/klinkerpro-bot/scripts/deploy-knowledge.sh' 2>/dev/null
+cd /var/www/igor-klinker   # подставьте каталог **на два уровня выше** найденного scripts/
+git fetch origin cursor/facade-openings-calc-bfbc
+git checkout cursor/facade-openings-calc-bfbc
+git pull
+bash deploy-klinker-bot.sh
+```
+
+После деплоя в [health](https://klinker.webtaxi2.ru/health) должно быть **`"facadeCalcVersion":6`** (или актуальная версия из `facade-calc.js`). Если поля нет — pm2 смотрит **не ту папку** или **старая ветка**:
 
 ```bash
 bash bots/klinkerpro-bot/scripts/verify-klinker-deploy.sh
@@ -335,6 +354,7 @@ curl -s http://127.0.0.1:3001/health
 
 | Симптом | Что проверить |
 |---------|----------------|
+| `bash: bots/.../deploy-knowledge.sh: No such file` | Вы в `/root`, а не в клоне репозитория — см. блок **«На VPS одной командой»** выше |
 | `ai: "none"` в health | `YANDEX_API_KEY`, `YANDEX_FOLDER_ID` в `.env` |
 | 502 Bad Gateway | `systemctl status klinkerpro-bot`, порт 3001 не занят другим процессом |
 | Виджет не появляется | Скрипт в Tilda опубликован; в консоли браузера (F12) нет блокировки `embed.js` |
