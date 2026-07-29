@@ -10,10 +10,10 @@ payload='{"messages":[{"role":"user","content":"сделай расчет дом
 resp=$(curl -sf "$BASE/api/chat" -H 'Content-Type: application/json' -d "$payload")
 echo "$resp" | python3 -m json.tool 2>/dev/null | head -40 || echo "$resp" | head -c 1200
 echo ""
-if echo "$resp" | grep -q '114 шт'; then
-  echo "OK: 114 термопанелей (с вычетом проёмов)"
+if echo "$resp" | grep -q '104 шт'; then
+  echo "OK: 104 термопанелей (0,62 м², 5% подрезка, с вычетом проёмов)"
 else
-  echo "FAIL: ожидалось 114 шт. и provider server-calc — проверьте git pull и pm2 restart"
+  echo "FAIL: ожидалось 104 шт. — проверьте git pull и pm2 restart"
   exit 1
 fi
 if echo "$resp" | grep -q 'server-calc'; then

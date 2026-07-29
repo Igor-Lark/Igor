@@ -1,11 +1,14 @@
 'use strict';
 
-const FACADE_CALC_VERSION = 4;
-const A_PANEL = 0.54;
-const PANEL_PRICE = 1460;
+const FACADE_CALC_VERSION = 5;
+const A_PANEL = 0.62;
+const PANEL_PRICE = 1550;
+const PANEL_PRICE_M2 = 2500;
+/** Запас на подрезку — не больше 5 % */
+const WASTE_FACTOR = 1.05;
 const FOAM_M2_PER_CAN = 6;
 const FOAM_PRICE = 800;
-const GROUT_KG_PER_M2 = 2.8 * 1.15;
+const GROUT_KG_PER_M2 = 2.8 * 1.05;
 const GROUT_BAG_KG = 25;
 const GROUT_PRICE = 1450;
 const ANCHORS_PER_PANEL = 6;
@@ -286,7 +289,8 @@ function computeEstimate(L, W, H, openings) {
   const S_gross = wallAreaGross(L, W, H);
   const S_openings = openings && openings.totalArea > 0 ? openings.totalArea : 0;
   const S = Math.max(0, S_gross - S_openings);
-  const N = Math.ceil(S / A_PANEL);
+  const S_for_panels = S * WASTE_FACTOR;
+  const N = Math.ceil(S_for_panels / A_PANEL);
   const S_order = N * A_PANEL;
   const N_foam = Math.ceil(S_order / FOAM_M2_PER_CAN);
   const M_grout = S_order * GROUT_KG_PER_M2;
@@ -301,6 +305,7 @@ function computeEstimate(L, W, H, openings) {
     S_openings,
     openingItems: openings ? openings.items : [],
     S,
+    S_for_panels,
     N,
     S_order,
     costPanels: N * PANEL_PRICE,
@@ -352,7 +357,7 @@ function buildCalcClientNarrative(est) {
     `Площадь стен: 2×(${est.L}+${est.W})×${est.H} = ${fmtArea(est.S_gross)} кв.м.`,
     `Проёмы (двери и окна — вычитаем из стены): ${formatOpeningLines(est.openingItems)}.`,
     `Сумма проёмов: ${fmtArea(est.S_openings)} кв.м.`,
-    `Под термопанели, клей и затирку: ${fmtArea(est.S_gross)} − ${fmtArea(est.S_openings)} = **${fmtArea(est.S)} кв.м**.`,
+    `Под термопанели, клей и затирку: ${fmtArea(est.S_gross)} − ${fmtArea(est.S_openings)} = ${fmtArea(est.S)} кв.м; **+5 % на подрезку** → ${fmtArea(est.S_for_panels)} кв.м.`,
     '',
     buildClientItogo(est),
   ];
@@ -433,10 +438,10 @@ function buildCalcSystemBlock(est) {
   }
 
   lines.push(
-    `Термопанели: N = ceil(${fmtArea(S)}/0,54) = ${N} шт.; S_order = N×0,54 = ${fmtArea(S_order)} кв.м (для клея и затирки — от S_order после вычета проёмов).`,
+    `Термопанели: N = ceil(${fmtArea(est.S_for_panels || S * WASTE_FACTOR)}/${String(A_PANEL).replace('.', ',')}) = ${N} шт.; S_order = N×${String(A_PANEL).replace('.', ',')} = ${fmtArea(S_order)} кв.м (для клея и затирки — от S_order после вычета проёмов и 5 % подрезки).`,
     `Клей-пена: ceil(S_order/6) = ${N_foam} балл. × 800 ₽ = ${fmtInt(est.costFoam)} ₽.`,
     `Затирка: ${N_grout} меш. × 1 450 ₽ = ${fmtInt(est.costGrout)} ₽.`,
-    `Термопанели ₽: ${N} × 1 460 = ${fmtInt(est.costPanels)} ₽.`,
+    `Термопанели ₽: ${N} × 1 550 = ${fmtInt(est.costPanels)} ₽.`,
     `Дюбели: ${N_anchors} шт. (6×${N}).`,
     'Клиенту: без учебных примеров и без чужих размеров. Обязательно блок «Итого (ориентир)» — каждая позиция с количеством и **₽** (дюбели — только шт.). Клей и затирка **всегда** вместе с термопанелями, от расчётного N после вычета проёмов (если проёмы были).',
     'Текст для клиента (можно дословно):',
