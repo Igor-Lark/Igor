@@ -19,6 +19,15 @@ git pull origin "$BRANCH"
 
 echo "Git: $(git rev-parse --short HEAD) (branch: $(git branch --show-current))"
 
+cd "$BOT_DIR"
+if [[ -f package.json ]] && grep -q '"prices:sync"' package.json; then
+  echo ""
+  echo "Sync prices from marmara-pro.ru/termo..."
+  npm run prices:sync || { echo "WARN: prices:sync failed (offline?) — deploy continues with committed pricing"; }
+fi
+
+cd "$REPO_ROOT"
+
 if ! grep -q 'FACADE_CALC_VERSION' "$BOT_DIR/src/facade-calc.js"; then
   echo "ERROR: в $BOT_DIR нет FACADE_CALC_VERSION — ветка не та или pull не прошёл"
   exit 1

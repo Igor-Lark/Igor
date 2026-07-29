@@ -321,7 +321,7 @@ cd /var/www/igor-klinker          # или ~/igor — ваш путь к реп�
 bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
 ```
 
-Скрипт делает `git pull` ветки `cursor/facade-openings-calc-bfbc` и **`pm2 restart klinkerpro`**.
+Скрипт делает `git pull` ветки `cursor/facade-openings-calc-bfbc`, **`npm run prices:sync`** (цены с [marmara-pro.ru/termo](https://marmara-pro.ru/termo)) и перезапуск **pm2** `klinkerpro`.
 
 Вручную:
 

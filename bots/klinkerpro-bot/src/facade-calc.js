@@ -1,14 +1,17 @@
 'use strict';
 
+const { getCalcPricing } = require('./pricing');
+
 const FACADE_CALC_VERSION = 6;
-const A_PANEL = 0.62;
-const PANEL_PRICE = 1550;
-const PANEL_PRICE_M2 = 2500;
-const FOAM_M2_PER_CAN = 6;
-const FOAM_PRICE = 800;
+const pricing = getCalcPricing();
+const A_PANEL = pricing.aPanelM2;
+const PANEL_PRICE = pricing.panelPriceRub;
+const PANEL_PRICE_M2 = pricing.panelPriceM2Rub;
+const FOAM_M2_PER_CAN = pricing.foamM2PerCan;
+const FOAM_PRICE = pricing.foamPriceRub;
 const GROUT_KG_PER_M2 = 2.8 * 1.15;
-const GROUT_BAG_KG = 25;
-const GROUT_PRICE = 1450;
+const GROUT_BAG_KG = pricing.groutBagKg;
+const GROUT_PRICE = pricing.groutPriceRub;
 const ANCHORS_PER_PANEL = 6;
 
 function parseNum(s) {
@@ -435,9 +438,9 @@ function buildCalcSystemBlock(est) {
 
   lines.push(
     `Термопанели: N = ceil(${fmtArea(S)}/${String(A_PANEL).replace('.', ',')}) = ${N} шт.; S_order = N×${String(A_PANEL).replace('.', ',')} = ${fmtArea(S_order)} кв.м (для клея и затирки — от S_order после вычета проёмов; **запас на подрезку в расчёт не закладывать**).`,
-    `Клей-пена: ceil(S_order/6) = ${N_foam} балл. × 800 ₽ = ${fmtInt(est.costFoam)} ₽.`,
-    `Затирка: ${N_grout} меш. × 1 450 ₽ = ${fmtInt(est.costGrout)} ₽.`,
-    `Термопанели ₽: ${N} × 1 550 = ${fmtInt(est.costPanels)} ₽.`,
+    `Клей-пена: ceil(S_order/${FOAM_M2_PER_CAN}) = ${N_foam} балл. × ${FOAM_PRICE} ₽ = ${fmtInt(est.costFoam)} ₽.`,
+    `Затирка: ${N_grout} меш. × ${GROUT_PRICE} ₽ = ${fmtInt(est.costGrout)} ₽.`,
+    `Термопанели ₽: ${N} × ${PANEL_PRICE} = ${fmtInt(est.costPanels)} ₽.`,
     `Дюбели: ${N_anchors} шт. (6×${N}).`,
     'Клиенту: без учебных примеров и без чужих размеров. Обязательно блок «Итого (ориентир)» — каждая позиция с количеством и **₽** (дюбели — только шт.). Клей и затирка **всегда** вместе с термопанелями, от расчётного N после вычета проёмов (если проёмы были).',
     'Текст для клиента (можно дословно):',

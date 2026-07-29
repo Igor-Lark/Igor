@@ -8,6 +8,8 @@ const { handleChat } = require('./chat');
 const { loadKnowledge, buildGreeting, buildWidgetGreeting } = require('./knowledge');
 const { startNoContactWatcher } = require('./no-contact');
 const { FACADE_CALC_VERSION } = require('./facade-calc');
+const { getCalcPricing } = require('./pricing');
+const { UNAVAILABLE_REPLY } = require('./contacts');
 
 const app = express();
 
@@ -17,6 +19,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/health', (_req, res) => {
   const kb = loadKnowledge();
+  const prices = getCalcPricing();
   res.json({
     ok: true,
     bot: config.botName,
@@ -26,6 +29,9 @@ app.get('/health', (_req, res) => {
     maxNotifyEnabled: config.maxNotifyEnabled,
     knowledgeChars: kb.combined.length,
     facadeCalcVersion: FACADE_CALC_VERSION,
+    pricingSource: prices.source,
+    pricingSyncedAt: prices.syncedAt,
+    panelPriceRub: prices.panelPriceRub,
     publicUrl: config.publicUrl || null,
   });
 });
