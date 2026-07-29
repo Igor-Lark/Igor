@@ -22,7 +22,7 @@
   }
 
   var DEFAULT_MASCOT_URL =
-    'https://static.tildacdn.com/tild6439-3535-4431-b439-336333313030/klinker-PNG.png';
+    'https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png';
   var GREETING_HOVER_LOGO_URL =
     'https://static.tildacdn.com/tild6166-3239-4138-b330-336638313666/icon_white_svg.svg';
 

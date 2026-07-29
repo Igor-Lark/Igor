@@ -296,7 +296,7 @@ curl -sI https://klinker.webtaxi2.ru/embed.js | head -5
 <script src="https://klinker.webtaxi2.ru/embed.js"></script>
 ```
 
-Маскот `klinker-PNG.png` (Tilda): **100 px над кнопкой** (desktop) и **в приветствии диалога** (desktop). URL по умолчанию в embed; переопределение: `data-mascot-src` или `WIDGET_MASCOT_URL`.
+Маскот `klinker_red_PNG.png` (Tilda): **100 px над кнопкой** (desktop) и **в приветствии диалога** (desktop). URL по умолчанию в embed; переопределение: `data-mascot-src` или `WIDGET_MASCOT_URL`.
 
 4. Опубликуйте сайт.
 5. Откройте https://marmara-pro.ru/termo — в углу должна появиться кнопка чата.

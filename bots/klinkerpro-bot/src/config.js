@@ -15,7 +15,7 @@ const config = {
   /** PNG/WebP маскота над кнопкой виджета (desktop), отдаётся в /api/widget-config */
   widgetMascotUrl:
     (process.env.WIDGET_MASCOT_URL || '').trim() ||
-    'https://static.tildacdn.com/tild6439-3535-4431-b439-336333313030/klinker-PNG.png',
+    'https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png',
 
   yandex: {
     apiKey: process.env.YANDEX_API_KEY || '',
