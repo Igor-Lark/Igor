@@ -328,9 +328,9 @@
     }
 
     function fabBaseBottom() {
-      // десктоп: 100px от низа; мобилка: 20px
+      // десктоп: 130px от низа; мобилка: 20px
       if (window.matchMedia('(max-width:1024px)').matches) return 20;
-      return 100;
+      return 130;
     }
 
     /** Держим кнопку у нижнего края visual viewport — без прыжка при скролле на мобиле. */
@@ -339,7 +339,7 @@
       var vv = window.visualViewport;
       var mobile = window.matchMedia('(max-width:1024px)').matches;
       var h = btn.offsetHeight || 61;
-      // мобилка: 20px слева, 20px снизу; десктоп: справа 16px, снизу 100px
+      // мобилка: 20px слева, 20px снизу; десктоп: справа 16px, снизу 130px
       if (mobile) {
         btn.style.left = '20px';
         btn.style.right = 'auto';
