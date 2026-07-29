@@ -2,7 +2,7 @@
 
 const { getCalcPricing } = require('./pricing');
 
-const FACADE_CALC_VERSION = 6;
+const FACADE_CALC_VERSION = 7;
 const pricing = getCalcPricing();
 const A_PANEL = pricing.aPanelM2;
 const PANEL_PRICE = pricing.panelPriceRub;
@@ -89,6 +89,10 @@ function findOpeningSizeInPart(part, kind) {
     if (inner.length >= 2) {
       return parseOpeningSizeMeters(inner[0], inner[1], '');
     }
+  }
+  m = after.match(/(\d{2,3})\s*[-–—]\s*(\d{2,3})/);
+  if (m) {
+    return parseOpeningSizeMeters(m[1], m[2], 'см');
   }
   return null;
 }
@@ -223,6 +227,17 @@ function parseDimensionsFromText(text) {
     if (L && W && H) return { L, W, H };
   }
 
+  m = t.match(/(?:дом\s*)?(\d+(?:[.,]\d+)?)\s*[-–—]\s*(\d+(?:[.,]\d+)?)/);
+  if (m) {
+    const L = parseNum(m[1]);
+    const W = parseNum(m[2]);
+    const hm = t.match(
+      /(?:высот[аы](?:\s*стен)?|height)\s*(?:[:=]\s*)?(\d+(?:[.,]\d+)?)\s*(?:м\.?)?/
+    );
+    const H = hm ? parseNum(hm[1]) : null;
+    if (L && W && H) return { L, W, H };
+  }
+
   return null;
 }
 
@@ -350,16 +365,25 @@ function buildClientItogo(est) {
  * @param {ReturnType<typeof computeEstimate>} est
  */
 function buildCalcClientNarrative(est) {
+  const head =
+    est.S_openings > 0
+      ? `Приблизительный расчёт **с вычетом проёмов** для дома ${est.L}×${est.W}×${est.H} м (4 стены):`
+      : `Приблизительный расчёт **без вычета проёмов** для дома ${est.L}×${est.W}×${est.H} м (4 стены):`;
   const lines = [
-    `Приблизительный расчёт **с вычетом проёмов** для дома ${est.L}×${est.W}×${est.H} м (4 стены):`,
+    head,
     '',
     `Площадь стен: 2×(${est.L}+${est.W})×${est.H} = ${fmtArea(est.S_gross)} кв.м.`,
-    `Проёмы (двери и окна — вычитаем из стены): ${formatOpeningLines(est.openingItems)}.`,
-    `Сумма проёмов: ${fmtArea(est.S_openings)} кв.м.`,
-    `Под термопанели, клей и затирку: ${fmtArea(est.S_gross)} − ${fmtArea(est.S_openings)} = **${fmtArea(est.S)} кв.м**.`,
-    '',
-    buildClientItogo(est),
   ];
+  if (est.S_openings > 0) {
+    lines.push(
+      `Проёмы (двери и окна — вычитаем из стены): ${formatOpeningLines(est.openingItems)}.`,
+      `Сумма проёмов: ${fmtArea(est.S_openings)} кв.м.`,
+      `Под термопанели, клей и затирку: ${fmtArea(est.S_gross)} − ${fmtArea(est.S_openings)} = **${fmtArea(est.S)} кв.м**.`
+    );
+  } else {
+    lines.push(`Под термопанели, клей и затирку: **${fmtArea(est.S)} кв.м** (уточните число и размеры окон и дверей, если нужен вычет проёмов).`);
+  }
+  lines.push('', buildClientItogo(est));
   return lines.join('\n');
 }
 
@@ -367,11 +391,14 @@ function buildCalcClientNarrative(est) {
 function userMessageHasOpeningSpecs(text) {
   const t = String(text).toLowerCase();
   if (!/двер|окн/.test(t)) return false;
-  return /(полтора|\d+(?:[.,]\d+)?).*(?:на|[x×х\*])/.test(t);
+  if (/(полтора|\d+(?:[.,]\d+)?).*(?:на|[x×х\*])/.test(t)) return true;
+  return /\d{2,3}\s*[-–—]\s*\d{2,3}/.test(t);
 }
 
 function userRequestsFacadeCalc(text) {
-  return /расч[её]т|посчит|прикидк|смет|площад|термопанел|размер.*дом|дом\s+\d/i.test(String(text));
+  return /расч[её]т|посчит|прикидк|смет|площад|термопанел|размер.*дом|дом\s+\d|сколько|стоим|стоит|отдел/i.test(
+    String(text)
+  );
 }
 
 /**
@@ -391,13 +418,14 @@ function resolveEstimateForChat(history, lastUserText) {
   return computeEstimate(dims.L, dims.W, dims.H, openings);
 }
 
-/** Если проёмы распознаны — ответ только с сервера (модель часто игнорирует вычет). */
+/** Серверный текст расчёта — модель часто ошибается в площади (например 66 вместо 120 м²). */
 function shouldUseServerCalcNarrative(est, lastUserText) {
-  if (!est || !(est.S_openings > 0 && est.openingItems && est.openingItems.length)) {
-    return false;
+  if (!est || !est.L || !est.W || !est.H) return false;
+  const asks = lastUserText && userRequestsFacadeCalc(lastUserText);
+  if (est.S_openings > 0 && est.openingItems && est.openingItems.length) {
+    return asks || true;
   }
-  if (lastUserText && userRequestsFacadeCalc(lastUserText)) return true;
-  return est.S_openings > 0;
+  return Boolean(asks);
 }
 
 function formatOpeningLines(items) {
