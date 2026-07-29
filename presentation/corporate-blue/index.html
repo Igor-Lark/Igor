@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI помощник — corporate blue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #071527;
+      --navy-2: #0c2240;
+      --blue: #2f6fed;
+      --blue-soft: #6ea2ff;
+      --foam: #dce7f8;
+      --muted: rgba(220, 231, 248, 0.68);
+      --yellow: #f5c518;
+      --white: #f7f9fc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Manrope", sans-serif;
+      background: #040b16;
+      color: var(--white);
+      min-height: 100vh;
+      padding: 2rem 1rem 3rem;
+    }
+
+    .page-title {
+      max-width: 1180px;
+      margin: 0 auto 1.25rem;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .deck {
+      display: grid;
+      gap: 2rem;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .slide {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 78% 28%, rgba(47, 111, 237, 0.28), transparent 28%),
+        radial-gradient(circle at 18% 80%, rgba(110, 162, 255, 0.12), transparent 30%),
+        linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 55%, #091a31 100%);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+      padding: clamp(1.4rem, 4.2vw, 3.2rem);
+      isolation: isolate;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background:
+        repeating-radial-gradient(
+          circle at 70% 35%,
+          rgba(255,255,255,0.075) 0 1px,
+          transparent 1px 72px
+        );
+      opacity: 0.55;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slide::after {
+      content: "";
+      position: absolute;
+      width: 42%;
+      height: 58%;
+      right: 4%;
+      top: 18%;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(220,231,248,0.16), rgba(47,111,237,0.08));
+      filter: blur(18px);
+      opacity: 0.55;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .slide > * { position: relative; z-index: 1; }
+
+    .slide-num {
+      position: absolute;
+      left: clamp(1.4rem, 4.2vw, 3.2rem);
+      bottom: clamp(1rem, 2.4vw, 1.6rem);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .brand {
+      position: absolute;
+      top: clamp(1.2rem, 3vw, 2rem);
+      right: clamp(1.4rem, 4.2vw, 3.2rem);
+      font-family: "Nunito", sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.85rem, 1.4vw, 1rem);
+      letter-spacing: 0.02em;
+    }
+
+    .brand span { color: var(--yellow); }
+
+    .eyebrow {
+      font-size: clamp(0.75rem, 1.2vw, 0.88rem);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--blue-soft);
+      font-weight: 600;
+      margin-bottom: 0.85rem;
+    }
+
+    h1, h2 {
+      font-family: "Nunito", sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.02;
+    }
+
+    .support {
+      color: var(--muted);
+      font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+      line-height: 1.45;
+      max-width: 34ch;
+    }
+
+    /* Hero */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 1.5rem;
+      height: 100%;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5.2vw, 4rem);
+      max-width: 11ch;
+      margin-bottom: 0.85rem;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--yellow);
+    }
+
+    .hero .support { margin-bottom: 1.4rem; }
+
+    .hero-visual {
+      display: grid;
+      place-items: center;
+      position: relative;
+      height: 100%;
+    }
+
+    .hero-visual .glow {
+      position: absolute;
+      width: 72%;
+      height: 72%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,197,24,0.18), transparent 65%);
+      filter: blur(10px);
+    }
+
+    .hero-visual img {
+      width: min(100%, 390px);
+      max-height: 88%;
+      object-fit: contain;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 28px 40px rgba(0,0,0,0.35));
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 0.55rem 1.05rem;
+      font-size: clamp(0.75rem, 1.15vw, 0.9rem);
+      font-weight: 600;
+      border: 1px solid rgba(220,231,248,0.28);
+      color: var(--foam);
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(8px);
+    }
+
+    .pill.solid {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+    }
+
+    /* Content */
+    .content-head {
+      margin-bottom: clamp(1rem, 2.4vw, 1.7rem);
+      max-width: 36rem;
+    }
+
+    .content-head h2 {
+      font-size: clamp(1.55rem, 3.6vw, 2.7rem);
+      margin-bottom: 0.5rem;
+    }
+
+    .cards-2x2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      height: calc(100% - 5.2rem);
+    }
+
+    .card {
+      border-radius: 1.15rem;
+      padding: clamp(1rem, 1.8vw, 1.35rem);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,231,248,0.12);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 0;
+    }
+
+    .card.accent {
+      background: linear-gradient(160deg, rgba(47,111,237,0.42), rgba(7,21,39,0.2));
+      border-color: rgba(110,162,255,0.35);
+    }
+
+    .card .num {
+      color: var(--yellow);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.7rem;
+    }
+
+    .card h3 {
+      font-family: "Nunito", sans-serif;
+      font-size: clamp(1rem, 1.7vw, 1.25rem);
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+    }
+
+    .feature {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.85rem;
+      align-items: start;
+      padding: 1rem 1.1rem;
+      border-radius: 1.05rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,231,248,0.12);
+    }
+
+    .feature .num {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--yellow);
+      color: #1a1400;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .feature h3 {
+      font-family: "Nunito", sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+      margin-bottom: 0.25rem;
+    }
+
+    .feature p {
+      color: var(--muted);
+      font-size: clamp(0.8rem, 1.2vw, 0.92rem);
+      line-height: 1.35;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+    }
+
+    .metric {
+      border-radius: 1.2rem;
+      padding: clamp(1.1rem, 2vw, 1.6rem);
+      min-height: 10rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,231,248,0.12);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metric .value {
+      font-family: "Nunito", sans-serif;
+      font-size: clamp(2rem, 4.2vw, 3.2rem);
+      font-weight: 800;
+      color: var(--yellow);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .metric p {
+      color: var(--muted);
+      font-size: clamp(0.85rem, 1.25vw, 1rem);
+      line-height: 1.35;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    .step {
+      border-radius: 1.15rem;
+      padding: 1.15rem;
+      min-height: 9rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(220,231,248,0.12);
+    }
+
+    .step:nth-child(even) {
+      background: linear-gradient(160deg, rgba(47,111,237,0.45), rgba(7,21,39,0.15));
+      border-color: rgba(110,162,255,0.35);
+    }
+
+    .step .num {
+      color: var(--yellow);
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      letter-spacing: 0.08em;
+      font-size: 0.85rem;
+    }
+
+    .step h3 {
+      font-family: "Nunito", sans-serif;
+      font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+      font-weight: 700;
+    }
+
+    .cta {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 1.4rem;
+      height: 100%;
+      align-items: center;
+    }
+
+    .cta img {
+      width: min(100%, 360px);
+      margin: 0 auto;
+      display: block;
+      filter: drop-shadow(0 24px 36px rgba(0,0,0,0.35));
+    }
+
+    .cta h2 {
+      font-size: clamp(1.8rem, 4.4vw, 3.3rem);
+      max-width: 11ch;
+      margin: 0.35rem 0 0.85rem;
+    }
+
+    .cta .support { margin-bottom: 1.35rem; }
+
+    @media (max-width: 800px) {
+      .hero, .cta, .cards-2x2, .feature-grid, .metrics, .steps {
+        grid-template-columns: 1fr;
+      }
+      .hero-visual { display: none; }
+      .steps { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <p class="page-title">AI помощник · corporate blue · полная колода</p>
+
+  <div class="deck">
+    <section class="slide" aria-label="Слайд 1">
+      <p class="brand"><span>AI</span> помощник</p>
+      <div class="hero">
+        <div>
+          <p class="eyebrow">AI помощник</p>
+          <h1>Умный ИИ для общения с <em>клиентами</em></h1>
+          <p class="support">Диалоги, заявки и поддержка без перегрузки команды</p>
+          <div class="pills">
+            <span class="pill solid">Ответ 24/7</span>
+            <span class="pill">Больше лидов</span>
+            <span class="pill">Меньше рутины</span>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="glow" aria-hidden="true"></div>
+          <img src="robot-assistant.png" alt="AI помощник" />
+        </div>
+      </div>
+      <span class="slide-num">01</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 2">
+      <p class="brand"><span>AI</span> помощник</p>
+      <div class="content-head">
+        <h2>Команды сталкиваются с одними и теми же проблемами</h2>
+        <p class="support">Пока люди закрывают типовые вопросы, важные заявки ждут</p>
+      </div>
+      <div class="cards-2x2">
+        <article class="card"><p class="num">01</p><h3>Клиенты ждут ответа вне рабочих часов</h3></article>
+        <article class="card accent"><p class="num">02</p><h3>Менеджеры тонут в повторяющихся вопросах</h3></article>
+        <article class="card accent"><p class="num">03</p><h3>Заявки теряются между чатами и CRM</h3></article>
+        <article class="card"><p class="num">04</p><h3>Скорость ответа напрямую бьёт по продажам</h3></article>
+      </div>
+      <span class="slide-num">02</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 3">
+      <p class="brand"><span>AI</span> помощник</p>
+      <div class="content-head">
+        <h2>Что умеет AI помощник</h2>
+        <p class="support">Ключевые возможности без лишней сложности</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature"><span class="num">01</span><div><h3>Ведёт диалог</h3><p>Отвечает по сценарию и держит тон бренда</p></div></article>
+        <article class="feature"><span class="num">02</span><div><h3>Работает 24/7</h3><p>Не теряет обращения ночью и в пики</p></div></article>
+        <article class="feature"><span class="num">03</span><div><h3>Собирает заявки</h3><p>Квалифицирует интерес и передаёт в работу</p></div></article>
+        <article class="feature"><span class="num">04</span><div><h3>Эскалирует сложное</h3><p>Отдаёт человеку спорные и тонкие кейсы</p></div></article>
+      </div>
+      <span class="slide-num">03</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 4">
+      <p class="brand"><span>AI</span> помощник</p>
+      <div class="content-head">
+        <h2>Сценарии, где помощник полезен сразу</h2>
+        <p class="support">Один фокус — один канал запуска</p>
+      </div>
+      <div class="cards-2x2">
+        <article class="card"><p class="num">01</p><h3>Поддержка клиентов</h3></article>
+        <article class="card accent"><p class="num">02</p><h3>Продажи и квалификация</h3></article>
+        <article class="card accent"><p class="num">03</p><h3>Запись и напоминания</h3></article>
+        <article class="card"><p class="num">04</p><h3>FAQ и онбординг</h3></article>
+      </div>
+      <span class="slide-num">04</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 5">
+      <p class="brand"><span>AI</span> помощник</p>
+      <div class="content-head">
+        <h2>Интеграции с вашими каналами</h2>
+        <p class="support">Подключается туда, где уже есть клиенты</p>
+      </div>
+      <div class="pills" style="margin-bottom: 1.3rem;">
+        <span class="pill solid">Сайт</span>
+        <span class="pill">Мессенджеры</span>
+        <span class="pill">CRM</span>
+        <span class="pill">Телефония</span>
+      </div>
+      <div class="feature-grid">
+        <article class="feature"><span class="num">01</span><div><h3>Виджет на сайте</h3><p>Первый контакт без ожидания менеджера</p></div></article>
+        <article class="feature"><span class="num">02</span><div><h3>Чаты и CRM</h3><p>Заявка сразу попадает в нужный пайплайн</p></div></article>
+      </div>
+      <span class="slide-num">05</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 6">
+      <p class="brand"><span>AI</span> помощник</p>
+      <div class="content-head">
+        <h2>Что даёт внедрение AI помощника</h2>
+        <p class="support">Эффект, который видно уже в первые недели</p>
+      </div>
+      <div class="metrics">
+        <article class="metric"><div class="value">+XX%</div><p>Скорость первого ответа клиенту</p></article>
+        <article class="metric"><div class="value">−XX%</div><p>Нагрузка поддержки на типовых вопросах</p></article>
+        <article class="metric"><div class="value">+XX%</div><p>Доля обработанных лидов без потерь</p></article>
+      </div>
+      <span class="slide-num">06</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 7">
+      <p class="brand"><span>AI</span> помощник</p>
+      <div class="content-head">
+        <h2>Где помощник не заменяет человека</h2>
+        <p class="support">Честные границы, чтобы система работала устойчиво</p>
+      </div>
+      <div class="cards-2x2" style="grid-template-columns: 1fr 1fr 1fr;">
+        <article class="card"><p class="num">01</p><h3>Сложные и конфликтные кейсы</h3></article>
+        <article class="card accent"><p class="num">02</p><h3>Риски неточных ответов</h3></article>
+        <article class="card"><p class="num">03</p><h3>Нужен контроль качества</h3></article>
+      </div>
+      <span class="slide-num">07</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 8">
+      <p class="brand"><span>AI</span> помощник</p>
+      <div class="content-head">
+        <h2>Как внедрить</h2>
+        <p class="support">Короткий путь от идеи до рабочего сценария</p>
+      </div>
+      <div class="steps">
+        <article class="step"><p class="num">01</p><h3>Цель</h3></article>
+        <article class="step"><p class="num">02</p><h3>Сценарии</h3></article>
+        <article class="step"><p class="num">03</p><h3>Запуск</h3></article>
+        <article class="step"><p class="num">04</p><h3>Доработка</h3></article>
+      </div>
+      <span class="slide-num">08</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 9">
+      <p class="brand"><span>AI</span> помощник</p>
+      <div class="cta">
+        <img src="robot-assistant.png" alt="AI помощник" />
+        <div>
+          <p class="eyebrow">Следующий шаг</p>
+          <h2>Запустим один сценарий</h2>
+          <p class="support">Выберем канал, соберём пилот и проверим результат на реальных диалогах</p>
+          <div class="pills">
+            <span class="pill solid">Назначить созвон</span>
+            <span class="pill">Обсудить пилот</span>
+          </div>
+        </div>
+      </div>
+      <span class="slide-num">09</span>
+    </section>
+  </div>
+</body>
+</html>

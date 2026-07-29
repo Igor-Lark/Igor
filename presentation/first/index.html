@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI помощник — первый вариант презентации</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Nunito:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0b1f2a;
+      --ink-deep: #07151c;
+      --teal: #1a6b6b;
+      --teal-soft: #2a8f8a;
+      --foam: #d8f0ea;
+      --amber: #e8a838;
+      --text: #f4f7f6;
+      --muted: rgba(244, 247, 246, 0.72);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Manrope", sans-serif;
+      background: #101820;
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem 3rem;
+    }
+
+    h1, h2, .brand {
+      font-family: "Nunito", sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      line-height: 1.05;
+    }
+
+    .page-title {
+      max-width: 1120px;
+      margin: 0 auto 1.5rem;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.55);
+      font-weight: 500;
+    }
+
+    .deck {
+      display: grid;
+      gap: 2rem;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .slide {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      border-radius: 4px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 80% 60% at 15% 85%, rgba(42, 143, 138, 0.35), transparent 55%),
+        radial-gradient(ellipse 70% 50% at 90% 10%, rgba(26, 107, 107, 0.28), transparent 50%),
+        linear-gradient(145deg, var(--ink-deep) 0%, var(--ink) 45%, #12343a 100%);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      padding: clamp(1.5rem, 5vw, 4rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      isolation: isolate;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, transparent 60%, rgba(7, 21, 28, 0.35)),
+        repeating-linear-gradient(
+          -18deg,
+          transparent,
+          transparent 48px,
+          rgba(216, 240, 234, 0.015) 48px,
+          rgba(216, 240, 234, 0.015) 49px
+        );
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .slide-num {
+      position: absolute;
+      left: clamp(1.5rem, 5vw, 4rem);
+      bottom: clamp(1.2rem, 3.5vw, 2.5rem);
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .brand-mark {
+      position: absolute;
+      top: clamp(1.2rem, 3.5vw, 2.5rem);
+      right: clamp(1.5rem, 5vw, 4rem);
+      font-family: "Nunito", sans-serif;
+      font-weight: 600;
+      font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+      letter-spacing: 0.02em;
+      color: var(--muted);
+    }
+
+    .brand {
+      font-size: clamp(2.6rem, 9vw, 5.6rem);
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.4em;
+      letter-spacing: 0.015em;
+    }
+
+    .brand .accent {
+      color: var(--amber);
+      font-weight: 500;
+    }
+
+    .headline {
+      font-family: "Nunito", sans-serif;
+      font-size: clamp(1.15rem, 2.6vw, 1.85rem);
+      font-weight: 500;
+      color: var(--foam);
+      max-width: 24ch;
+      margin-bottom: 0.65rem;
+      letter-spacing: 0.01em;
+    }
+
+    .support {
+      font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+      color: var(--muted);
+      max-width: 36ch;
+      font-weight: 400;
+    }
+
+    .accent-line {
+      width: 3.5rem;
+      height: 3px;
+      background: var(--amber);
+      margin: 1.25rem 0 1.5rem;
+      border-radius: 999px;
+    }
+
+    .slide-title {
+      font-size: clamp(2.2rem, 6.5vw, 4.2rem);
+      font-weight: 600;
+      margin-bottom: 0.45em;
+      letter-spacing: 0.01em;
+    }
+
+    .points {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 0.5rem;
+      max-width: 30rem;
+    }
+
+    .points.two-col {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem 2rem;
+      max-width: 40rem;
+    }
+
+    .points li {
+      display: grid;
+      grid-template-columns: 3px 1fr;
+      gap: 0.9rem;
+      align-items: center;
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .points li::before {
+      content: "";
+      width: 3px;
+      height: 1.1em;
+      background: var(--amber);
+      border-radius: 999px;
+    }
+
+    .steps {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+      max-width: 48rem;
+    }
+
+    .steps li {
+      font-family: "Nunito", sans-serif;
+      font-weight: 600;
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .steps li span {
+      display: block;
+      font-family: "Manrope", sans-serif;
+      font-size: 0.75em;
+      font-weight: 500;
+      color: var(--amber);
+      margin-bottom: 0.35rem;
+      letter-spacing: 0.08em;
+    }
+
+    .cta {
+      font-family: "Nunito", sans-serif;
+      font-size: clamp(1.15rem, 2.4vw, 1.7rem);
+      font-weight: 600;
+      color: var(--amber);
+      letter-spacing: 0.01em;
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 1rem 0.75rem 2rem; }
+      .points { gap: 0.65rem; }
+      .points.two-col,
+      .steps { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <p class="page-title">Первый вариант · слайды 01–09 · AI помощник</p>
+
+  <div class="deck">
+    <section class="slide" aria-label="Слайд 1 — Титул">
+      <p class="brand">AI <span class="accent">помощник</span></p>
+      <p class="headline">Возможности интеллектуальных ботов</p>
+      <div class="accent-line" aria-hidden="true"></div>
+      <p class="support">для бизнеса и команд</p>
+      <span class="slide-num">01</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 2 — Зачем боты">
+      <p class="brand-mark">AI помощник</p>
+      <h2 class="slide-title">Зачем боты</h2>
+      <p class="support">Снимают рутину с команды и ускоряют ответ клиенту</p>
+      <div class="accent-line" aria-hidden="true"></div>
+      <ul class="points">
+        <li>Отвечать 24/7</li>
+        <li>Собирать заявки</li>
+        <li>Снимать нагрузку с поддержки</li>
+      </ul>
+      <span class="slide-num">02</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 3 — Что умеют">
+      <p class="brand-mark">AI помощник</p>
+      <h2 class="slide-title">Что умеют</h2>
+      <p class="support">Ключевые возможности помощника без лишней сложности</p>
+      <div class="accent-line" aria-hidden="true"></div>
+      <ul class="points two-col">
+        <li>Ведёт диалог</li>
+        <li>Отвечает 24/7</li>
+        <li>Собирает заявки</li>
+        <li>Передаёт сложное человеку</li>
+      </ul>
+      <span class="slide-num">03</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 4 — Сценарии">
+      <p class="brand-mark">AI помощник</p>
+      <h2 class="slide-title">Сценарии</h2>
+      <p class="support">Где помощник уже полезен с первого дня</p>
+      <div class="accent-line" aria-hidden="true"></div>
+      <ul class="points two-col">
+        <li>Поддержка клиентов</li>
+        <li>Продажи и квалификация</li>
+        <li>Запись и напоминания</li>
+        <li>FAQ и онбординг</li>
+      </ul>
+      <span class="slide-num">04</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 5 — Интеграции">
+      <p class="brand-mark">AI помощник</p>
+      <h2 class="slide-title">Интеграции</h2>
+      <p class="support">Подключается к каналам, где уже есть клиенты</p>
+      <div class="accent-line" aria-hidden="true"></div>
+      <ul class="points two-col">
+        <li>Сайт и виджет</li>
+        <li>Мессенджеры</li>
+        <li>CRM</li>
+        <li>Телефония</li>
+      </ul>
+      <span class="slide-num">05</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 6 — Результат">
+      <p class="brand-mark">AI помощник</p>
+      <h2 class="slide-title">Что даёт результат</h2>
+      <p class="support">Эффект, который видно уже в первые недели</p>
+      <div class="accent-line" aria-hidden="true"></div>
+      <ul class="points">
+        <li>Скорость ответа</li>
+        <li>Меньше нагрузки на команду</li>
+        <li>Больше обработанных лидов</li>
+      </ul>
+      <span class="slide-num">06</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 7 — Ограничения">
+      <p class="brand-mark">AI помощник</p>
+      <h2 class="slide-title">Ограничения</h2>
+      <p class="support">Где помощник не заменяет человека</p>
+      <div class="accent-line" aria-hidden="true"></div>
+      <ul class="points">
+        <li>Сложные и конфликтные кейсы</li>
+        <li>Риски неточных ответов</li>
+        <li>Нужен контроль качества</li>
+      </ul>
+      <span class="slide-num">07</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 8 — Как внедрить">
+      <p class="brand-mark">AI помощник</p>
+      <h2 class="slide-title">Как внедрить</h2>
+      <p class="support">Короткий путь от идеи до рабочего сценария</p>
+      <div class="accent-line" aria-hidden="true"></div>
+      <ol class="steps">
+        <li><span>01</span>Цель</li>
+        <li><span>02</span>Сценарии</li>
+        <li><span>03</span>Запуск</li>
+        <li><span>04</span>Доработка</li>
+      </ol>
+      <span class="slide-num">08</span>
+    </section>
+
+    <section class="slide" aria-label="Слайд 9 — Итог">
+      <p class="brand">AI <span class="accent">помощник</span></p>
+      <h2 class="slide-title">Следующий шаг</h2>
+      <p class="support">Выберем один сценарий и запустим пилот</p>
+      <div class="accent-line" aria-hidden="true"></div>
+      <p class="cta">Назначить короткий созвон</p>
+      <span class="slide-num">09</span>
+    </section>
+  </div>
+</body>
+</html>
