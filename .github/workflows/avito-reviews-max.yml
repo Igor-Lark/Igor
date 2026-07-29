@@ -1,0 +1,54 @@
+name: Avito reviews → MAX
+
+on:
+  schedule:
+    # Каждый день в 06:00 UTC (09:00 МСК)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      notify_always:
+        description: 'Отправить отчёт даже без новых отзывов'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install
+        run: npm ci --omit=dev
+
+      - name: Restore review state
+        uses: actions/cache@v4
+        with:
+          path: data/avito-reviews-state.json
+          key: avito-reviews-state-${{ github.run_id }}
+          restore-keys: |
+            avito-reviews-state-
+
+      - name: Check Avito & notify MAX
+        env:
+          AVITO_ITEM_URL: ${{ secrets.AVITO_ITEM_URL }}
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          MAX_USER_ID: ${{ secrets.MAX_USER_ID }}
+          MAX_CHAT_ID: ${{ secrets.MAX_CHAT_ID }}
+          AVITO_NOTIFY_ALWAYS: ${{ github.event_name == 'workflow_dispatch' && inputs.notify_always || 'false' }}
+        run: |
+          mkdir -p data
+          node scripts/check-avito-reviews.js
