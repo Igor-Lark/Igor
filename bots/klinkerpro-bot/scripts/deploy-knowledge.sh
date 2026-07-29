@@ -49,7 +49,7 @@ echo ""
 if echo "$HEALTH" | grep -qE '"facadeCalcVersion":(5|6)'; then
   echo "OK: facadeCalcVersion в health"
 else
-  echo "WARN: нет facadeCalcVersion 3/4 — проверьте pull и pm2"
+  echo "WARN: нет facadeCalcVersion 5/6 — проверьте pull и pm2"
   exit 1
 fi
 
