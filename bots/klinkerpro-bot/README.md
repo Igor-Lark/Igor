@@ -15,6 +15,7 @@
 ## База знаний
 
 - `knowledge/faq.md` — FAQ по термопанелям (копия из `agents/termopaneli/faq.md` в репозитории).
+- **Цены с сайта:** [PRICES.md](PRICES.md) · `npm run prices:sync` (каталог [marmara-pro.ru/termo](https://marmara-pro.ru/termo)).
 - При обновлении FAQ синхронизируйте оба файла или перегенерируйте копию.
 
 ## Быстрый старт
