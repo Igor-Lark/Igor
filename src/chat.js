@@ -60,6 +60,38 @@ async function handleChat(input) {
     });
   }
 
+  // Контакт + «перезвоните» / «напишите мне» — жёсткий ответ, не LLM
+  if (lastUser && isContactCallbackIntent(lastUser.content, cleaned)) {
+    const reply = buildCallbackFormReply(input.source || 'web');
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'callback-form',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'callback-form', lead: null };
+  }
+
+  // Маршрут прогулки по морю (не «как пройти» к причалу) — до схемы причала
+  if (lastUser && isSeaRouteIntent(lastUser.content)) {
+    const reply = buildSeaRouteReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'route',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'route', lead: null };
+  }
+
   // «Как пройти к Алексуму» — Морпорт Сочи, без схемы Сириуса
   if (lastUser && isAleksumDirectionsIntent(lastUser.content)) {
     const reply = aleksumDirectionsReply();
@@ -74,22 +106,6 @@ async function handleChat(input) {
       history: cleaned,
     });
     return { reply, provider: 'map', lead: null };
-  }
-
-  // Маршрут прогулки по морю (не «как пройти» к причалу)
-  if (lastUser && isSeaRouteIntent(lastUser.content)) {
-    const reply = buildSeaRouteReply();
-    logChatTurn({
-      sessionId: input.sessionId,
-      source: input.source || 'web',
-      username: input.username,
-      userText: lastUser.content,
-      reply,
-      provider: 'route',
-      leadSent: false,
-      history: cleaned,
-    });
-    return { reply, provider: 'route', lead: null };
   }
 
   // «Как пройти / как вас найти» — схема Имеретинского порта (Сириус)
@@ -143,22 +159,6 @@ async function handleChat(input) {
       });
       return { reply, provider: 'fleet', lead: null };
     }
-  }
-
-  // Контакт + «свяжитесь» / «напишите мне» — нет обратной связи из чата
-  if (lastUser && isContactCallbackIntent(lastUser.content, cleaned)) {
-    const reply = buildCallbackFormReply(input.source || 'web');
-    logChatTurn({
-      sessionId: input.sessionId,
-      source: input.source || 'web',
-      username: input.username,
-      userText: lastUser.content,
-      reply,
-      provider: 'callback-form',
-      leadSent: false,
-      history: cleaned,
-    });
-    return { reply, provider: 'callback-form', lead: null };
   }
 
   let system = buildSystemPrompt();

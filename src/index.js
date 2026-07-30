@@ -27,6 +27,7 @@ app.get('/health', (_req, res) => {
     telegramNotify: Boolean(config.hasTelegramNotify),
     maxNotify: config.hasMaxNotify,
     knowledgeChars: kb.combined.length,
+    handlers: { seaRoute: true, contactCallback: true },
   });
 });
 

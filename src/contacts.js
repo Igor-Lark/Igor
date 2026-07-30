@@ -65,6 +65,7 @@ function isWriteToClientIntent(text) {
 function hasContactInText(text) {
   const t = String(text || '');
   if (extractPhone(t)) return true;
+  if (/\b\d{7,15}\b/.test(t)) return true;
   if (/[\w.-]+@[\w.-]+\.\w{2,}/.test(t)) return true;
   if (/@[\w_]{3,}/.test(t)) return true;
   if (/t\.me\/|wa\.me\/|max\.ru\/u\//i.test(t)) return true;
@@ -75,6 +76,7 @@ function hasContactInText(text) {
 function isContactCallbackIntent(text, history) {
   const t = String(text || '');
   if (isWriteToClientIntent(t)) return true;
+  if (/мой\s+контакт/i.test(t) && hasContactInText(t)) return true;
   const hasContact = hasContactInText(t);
   const histContact =
     Array.isArray(history) &&
@@ -104,8 +106,7 @@ function buildCallbackFormReply(source) {
     'https://t.me/Oleg_700',
     'https://max.ru/u/f9LHodD0cOLfwfVnOTd4z8W-cQP1Wvx427sjPPALmFsnT4at-1pMe4Y5NF4',
     '',
-    'Или заполните форму на сайте:',
-    link,
+    'Или оставьте заявку на обратный звонок на сайте: ' + link,
   ].join('\n');
 }
 
