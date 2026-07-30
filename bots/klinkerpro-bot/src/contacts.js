@@ -40,11 +40,16 @@ function managerPhoneLink() {
   return directorPhoneLink();
 }
 
-/** Блок контактов для клиента (кликабельные tel: через виджет + MAX). */
+/** MAX в тексте: виджет превращает URL max.ru в кликабельную подпись «MAX». */
+function maxMessengerLink() {
+  return MAX_MESSENGER_URL;
+}
+
+/** Блок контактов для клиента (только Дмитрий + Надежда). */
 function buildClientContactsBlock() {
   return [
-    `Управляющий ${DIRECTOR.name}: ${directorPhoneLink()}, MAX: ${MAX_MESSENGER_URL}`,
-    `Менеджер ${MANAGER_NADEZHDA.name}: ${managerNadezhdaPhoneLink()}`,
+    `Управляющий ${DIRECTOR.name}: ${directorPhoneLink()}, MAX: ${maxMessengerLink()}`,
+    `Менеджер ${MANAGER_NADEZHDA.name}: ${managerNadezhdaPhoneLink()}.`,
   ].join('\n');
 }
 
@@ -76,7 +81,6 @@ const UNAVAILABLE_REPLY = [
   'Сейчас помощник временно недоступен. Свяжитесь с КлинкерПрофи:',
   '',
   buildClientContactsBlock(),
-  `Каталог: ${SITE_TERMO}`,
 ].join('\n');
 
 module.exports = {
