@@ -3,7 +3,7 @@
 const { buildSystemPrompt } = require('./knowledge');
 const { completeChat } = require('./ai');
 const { alertAiFailure } = require('./ai-alert');
-const { managerPhoneLink, SITE_MAIN, ensureManagerPhoneLink } = require('./contacts');
+const { managerPhoneLink, SITE_MAIN, ensureManagerPhoneLink, buildClientContactsBlock } = require('./contacts');
 const { shouldNotifyLead, notifyManager, extractPhone } = require('./leads');
 const { logChatTurn } = require('./chat-log');
 const { touchSession, markContact } = require('./no-contact');
@@ -23,6 +23,7 @@ function calcDisclaimerOpts(hasCalc) {
     hasCalc,
     managerPhone: managerPhoneLink(),
     contactsUrl: SITE_MAIN + '#contacts',
+    contactsBlock: buildClientContactsBlock(),
   };
 }
 

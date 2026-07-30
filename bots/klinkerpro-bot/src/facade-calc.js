@@ -546,11 +546,14 @@ function stripCalcFooterTail(text) {
 }
 
 function buildCalcFooter(opts) {
+  const contacts =
+    opts.contactsBlock ||
+    `Управляющий Дмитрий: ${opts.managerPhone || ''}\nМенеджер Надежда: (см. контакты на сайте)`;
   return [
     '**Данный расчёт является ориентировочным.**',
     '',
-    `Для получения более точной сметы и подбора фактуры свяжитесь с менеджером КлинкерПрофи: ${opts.managerPhone}`,
-    `Контакты и мессенджеры: ${opts.contactsUrl}`,
+    'Для получения более точной сметы и подбора фактуры свяжитесь с КлинкерПрофи:',
+    contacts,
   ].join('\n');
 }
 

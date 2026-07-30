@@ -1,16 +1,51 @@
 'use strict';
 
-const MANAGER_PHONE = '+7 (921) 745-77-55';
-const MANAGER_PHONE_TEL = '+79217457755';
 const SITE_TERMO = 'https://marmara-pro.ru/termo';
 const SITE_MAIN = 'https://marmara-pro.ru/main';
+/** MAX в шапке сайта marmara-pro.ru */
+const MAX_MESSENGER_URL =
+  'https://max.ru/u/f9LHodD0cOIpC25EaD4tYfNKs2IixN6hR4GPJ7lLCZmLWlK0NXznAW7oYyM';
+
+const DIRECTOR = {
+  name: 'Дмитрий',
+  role: 'управляющий',
+  phone: '+7 (921) 745-77-55',
+  tel: '+79217457755',
+};
+
+const MANAGER_NADEZHDA = {
+  name: 'Надежда',
+  role: 'менеджер',
+  phone: '+7 (996) 760-23-23',
+  tel: '+79967602323',
+};
+
+/** @deprecated используйте directorPhoneLink */
+const MANAGER_PHONE = DIRECTOR.phone;
+const MANAGER_PHONE_TEL = DIRECTOR.tel;
 
 function phoneToken(tel, label) {
   return `{{tel:${tel}|${label}}}`;
 }
 
+function directorPhoneLink() {
+  return phoneToken(DIRECTOR.tel, DIRECTOR.phone);
+}
+
+function managerNadezhdaPhoneLink() {
+  return phoneToken(MANAGER_NADEZHDA.tel, MANAGER_NADEZHDA.phone);
+}
+
 function managerPhoneLink() {
-  return phoneToken(MANAGER_PHONE_TEL, MANAGER_PHONE);
+  return directorPhoneLink();
+}
+
+/** Блок контактов для клиента (кликабельные tel: через виджет + MAX). */
+function buildClientContactsBlock() {
+  return [
+    `Управляющий ${DIRECTOR.name}: ${directorPhoneLink()}, MAX: ${MAX_MESSENGER_URL}`,
+    `Менеджер ${MANAGER_NADEZHDA.name}: ${managerNadezhdaPhoneLink()}`,
+  ].join('\n');
 }
 
 function replyHasClickablePhone(text) {
@@ -20,17 +55,17 @@ function replyHasClickablePhone(text) {
 }
 
 function replyMentionsManagerContact(text) {
-  return /менеджер|свяжитесь|связаться|перезвон|позвоните|звоните|обратитесь\s+к\s+нам|для\s+(?:более\s+)?точн/i.test(
+  return /менеджер|управляющ|свяжитесь|связаться|перезвон|позвоните|звоните|обратитесь\s+к\s+нам|для\s+(?:более\s+)?точн/i.test(
     String(text)
   );
 }
 
-/** Если в ответе зовут к менеджеру, но нет телефона — добавить {{tel:…}} для виджета. */
+/** Если зовут к менеджеру, но нет телефонов — добавить блок контактов. */
 function ensureManagerPhoneLink(text) {
   if (!text) return text;
   if (replyHasClickablePhone(text)) return text;
   if (!replyMentionsManagerContact(text)) return text;
-  return `${String(text).trimEnd()}\n\n${managerPhoneLink()}`;
+  return `${String(text).trimEnd()}\n\n${buildClientContactsBlock()}`;
 }
 
 function stripPhoneTokens(text) {
@@ -40,18 +75,23 @@ function stripPhoneTokens(text) {
 const UNAVAILABLE_REPLY = [
   'Сейчас помощник временно недоступен. Свяжитесь с КлинкерПрофи:',
   '',
-  managerPhoneLink(),
-  `Сайт: ${SITE_TERMO}`,
-  `Контакты: ${SITE_MAIN}#contacts`,
+  buildClientContactsBlock(),
+  `Каталог: ${SITE_TERMO}`,
 ].join('\n');
 
 module.exports = {
+  DIRECTOR,
+  MANAGER_NADEZHDA,
   MANAGER_PHONE,
   MANAGER_PHONE_TEL,
+  MAX_MESSENGER_URL,
   SITE_TERMO,
   SITE_MAIN,
   phoneToken,
+  directorPhoneLink,
+  managerNadezhdaPhoneLink,
   managerPhoneLink,
+  buildClientContactsBlock,
   ensureManagerPhoneLink,
   replyHasClickablePhone,
   stripPhoneTokens,
