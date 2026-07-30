@@ -8,7 +8,6 @@ const {
   managerNadezhdaPhoneLink,
   MAX_MESSENGER_URL,
   SITE_TERMO,
-  SITE_MAIN,
 } = require('./contacts');
 const { getCalcPricing, fmtRub } = require('./pricing');
 
