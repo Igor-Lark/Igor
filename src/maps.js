@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('./config');
+const { isSeaRouteIntent } = require('./routes');
 
 /** Схема прохода к причалу «Сириус», линия 1 (Имеретинский порт) */
 const SIRIUS_MAP_FILE = path.join(__dirname, '..', 'public', 'maps', 'sirius-line1.jpg');
@@ -43,6 +44,7 @@ function isMapIntent(text) {
   const t = String(text || '');
   if (SAIL_FLEET_RE.test(t)) return false;
   if (isAleksumDirectionsIntent(t)) return false;
+  if (isSeaRouteIntent(t)) return false;
   return MAP_INTENT_RE.test(t);
 }
 

@@ -23,7 +23,8 @@ const {
   buildSwimWaterNote,
 } = require('./weather');
 const { isCapacityIntent, buildCapacityReply, capacityPromptBlock } = require('./fleet');
-const { isWriteToClientIntent, buildCallbackFormReply } = require('./contacts');
+const { isWriteToClientIntent, isContactCallbackIntent, buildCallbackFormReply } = require('./contacts');
+const { isSeaRouteIntent, buildSeaRouteReply } = require('./routes');
 
 /**
  * @param {{
@@ -73,6 +74,22 @@ async function handleChat(input) {
       history: cleaned,
     });
     return { reply, provider: 'map', lead: null };
+  }
+
+  // Маршрут прогулки по морю (не «как пройти» к причалу)
+  if (lastUser && isSeaRouteIntent(lastUser.content)) {
+    const reply = buildSeaRouteReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'route',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'route', lead: null };
   }
 
   // «Как пройти / как вас найти» — схема Имеретинского порта (Сириус)
@@ -128,8 +145,8 @@ async function handleChat(input) {
     }
   }
 
-  // «Напишите мне» — форма обратной связи (#bot), как обратный звонок
-  if (lastUser && isWriteToClientIntent(lastUser.content)) {
+  // Контакт + «свяжитесь» / «напишите мне» — нет обратной связи из чата
+  if (lastUser && isContactCallbackIntent(lastUser.content)) {
     const reply = buildCallbackFormReply(input.source || 'web');
     logChatTurn({
       sessionId: input.sessionId,

@@ -1,5 +1,7 @@
 'use strict';
 
+const { extractPhone } = require('./leads');
+
 const NATALIA_PHONE = '+7 918 304-40-00';
 const NATALIA_PHONE_TEL = '+79183044000';
 const OLEG_PHONE = '+7 917 675 0555';
@@ -47,14 +49,33 @@ const UNAVAILABLE_REPLY = [
 const CALLBACK_FORM_URL = 'https://boat-sochi.ru/#bot';
 
 /**
- * Клиент просит, чтобы ему написали / связались письменно —
- * направляем на форму обратной связи (#bot), как при обратном звонке.
+ * Клиент просит, чтобы ему написали / связались письменно.
  */
 const WRITE_TO_CLIENT_RE =
   /напиш(?:и|ите)\s+мне|напишите\s+пожалуйста\s+мне|напишите\s+мне\s+в|напиш(?:и|ите)\s+в\s+(?:whats?app|ватсап|вацап|телеграм|telegram|max|макс)|напишите\s+на\s+(?:мой\s+)?(?:телефон|номер)|свяжитесь\s+со\s+мной|отправьте\s+мне(?:\s+(?:сообщение|смс))?|хочу\s+чтобы\s+мне\s+написали|пусть\s+мне\s+напишут|напишите\s+клиенту/i;
 
+/** Оставил контакт и просит перезвонить / связаться. */
+const CONTACT_CALLBACK_RE =
+  /перезвон|позвоните|наберите|отзвонитесь|жду\s+(?:звонка|связи|звонок)|свяжитесь|связаться|хочу\s+(?:чтобы\s+)?(?:мне\s+)?(?:перезвонили|позвонили|набрали)/i;
+
 function isWriteToClientIntent(text) {
   return WRITE_TO_CLIENT_RE.test(String(text || ''));
+}
+
+function hasContactInText(text) {
+  const t = String(text || '');
+  if (extractPhone(t)) return true;
+  if (/[\w.-]+@[\w.-]+\.\w{2,}/.test(t)) return true;
+  if (/@[\w_]{3,}/.test(t)) return true;
+  if (/t\.me\/|wa\.me\/|max\.ru\/u\//i.test(t)) return true;
+  return false;
+}
+
+/** Контакт + просьба связаться, или явная просьба «напишите мне». */
+function isContactCallbackIntent(text) {
+  const t = String(text || '');
+  if (isWriteToClientIntent(t)) return true;
+  return hasContactInText(t) && CONTACT_CALLBACK_RE.test(t);
 }
 
 /**
@@ -63,7 +84,22 @@ function isWriteToClientIntent(text) {
 function buildCallbackFormReply(source) {
   const link = source === 'web' || source === 'widget' ? '#bot' : CALLBACK_FORM_URL;
   return [
-    'Хорошо — оставьте, пожалуйста, заявку на обратный звонок на сайте, и мы с вами свяжемся (напишем или перезвоним):',
+    'Из этого чата мы не можем принять контакт и связаться с вами — такой возможности нет.',
+    'Свяжитесь с нами сами, пожалуйста:',
+    '',
+    'Наталья',
+    NATALIA_PHONE,
+    'https://wa.me/79183044000',
+    'https://t.me/nata_rybiy',
+    'https://max.ru/u/f9LHodD0cOI8OH4kIB7PsiV6jWNHRWg_O33iJTe5q_TJs73hHe1YBcSMwKk',
+    '',
+    'Капитан Олег',
+    OLEG_PHONE,
+    'https://wa.me/79176750555',
+    'https://t.me/Oleg_700',
+    'https://max.ru/u/f9LHodD0cOLfwfVnOTd4z8W-cQP1Wvx427sjPPALmFsnT4at-1pMe4Y5NF4',
+    '',
+    'Или оставьте заявку на обратный звонок на сайте:',
     link,
   ].join('\n');
 }
@@ -80,5 +116,7 @@ module.exports = {
   stripPhoneTokens,
   UNAVAILABLE_REPLY,
   isWriteToClientIntent,
+  isContactCallbackIntent,
+  hasContactInText,
   buildCallbackFormReply,
 };
