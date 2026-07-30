@@ -56,7 +56,7 @@ const WRITE_TO_CLIENT_RE =
 
 /** Оставил контакт и просит перезвонить / связаться. */
 const CONTACT_CALLBACK_RE =
-  /перезвон|позвоните|наберите|отзвонитесь|жду\s+(?:звонка|связи|звонок)|свяжитесь|связаться|хочу\s+(?:чтобы\s+)?(?:мне\s+)?(?:перезвонили|позвонили|набрали)/i;
+  /перезвон|позвоните|наберите|отзвонитесь|жду\s+(?:звонка|связи|звонок)|свяжитесь|связаться|связаться\s+по\s+телефон|по\s+телефон(?:у|е)|хочу\s+(?:чтобы\s+)?(?:мне\s+)?(?:перезвонили|позвонили|набрали)/i;
 
 function isWriteToClientIntent(text) {
   return WRITE_TO_CLIENT_RE.test(String(text || ''));
@@ -72,10 +72,15 @@ function hasContactInText(text) {
 }
 
 /** Контакт + просьба связаться, или явная просьба «напишите мне». */
-function isContactCallbackIntent(text) {
+function isContactCallbackIntent(text, history) {
   const t = String(text || '');
   if (isWriteToClientIntent(t)) return true;
-  return hasContactInText(t) && CONTACT_CALLBACK_RE.test(t);
+  const hasContact = hasContactInText(t);
+  const histContact =
+    Array.isArray(history) &&
+    history.some((m) => m && m.role === 'user' && hasContactInText(m.content));
+  if ((hasContact || histContact) && CONTACT_CALLBACK_RE.test(t)) return true;
+  return false;
 }
 
 /**
@@ -99,7 +104,7 @@ function buildCallbackFormReply(source) {
     'https://t.me/Oleg_700',
     'https://max.ru/u/f9LHodD0cOLfwfVnOTd4z8W-cQP1Wvx427sjPPALmFsnT4at-1pMe4Y5NF4',
     '',
-    'Или оставьте заявку на обратный звонок на сайте:',
+    'Или заполните форму на сайте:',
     link,
   ].join('\n');
 }

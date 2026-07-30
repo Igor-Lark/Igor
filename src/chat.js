@@ -146,7 +146,7 @@ async function handleChat(input) {
   }
 
   // Контакт + «свяжитесь» / «напишите мне» — нет обратной связи из чата
-  if (lastUser && isContactCallbackIntent(lastUser.content)) {
+  if (lastUser && isContactCallbackIntent(lastUser.content, cleaned)) {
     const reply = buildCallbackFormReply(input.source || 'web');
     logChatTurn({
       sessionId: input.sessionId,
