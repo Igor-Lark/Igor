@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="ad.size" content="width=728,height=90">
+<meta name="viewport" content="width=728, height=90">
+<title>boat-sochi · Морские прогулки в Сириусе · 728x90</title>
+<style>
+html,body{margin:0;padding:0;width:728px;height:90px;overflow:hidden;background:#063452}
+*{box-sizing:border-box}
+a.banner{
+  display:block;width:728px;height:90px;text-decoration:none;color:#fff;
+  font-family:"Trebuchet MS","Segoe UI",Geneva,Verdana,sans-serif;
+  position:relative;cursor:pointer;overflow:hidden;
+}
+.bg{
+  position:absolute;inset:0;background:#063452 center/cover no-repeat;
+  background-image:url('bg_728x90.jpg');
+  transform:scale(1.04);
+  animation:ken 8s ease-in-out infinite alternate;
+}
+@keyframes ken{
+  from{transform:scale(1.04) translate(0,0)}
+  to{transform:scale(1.1) translate(-1.5%,-1%)}
+}
+.panel{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  
+}
+.brand{
+  position:absolute;top:8px;left:10px;z-index:3;
+  font-size:11px;font-weight:700;letter-spacing:.04em;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.28);padding:3px 7px;border-radius:3px;
+}
+.loc{font-weight:700;color:#FFE08A}
+.h1{font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.35)}
+.h2{font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+.cta{
+  display:inline-block;background:#FF6A3D;color:#ffffff;font-weight:800;
+  border-radius:6px;text-transform:uppercase;letter-spacing:.03em;
+  box-shadow:0 4px 14px rgba(0,0,0,.35);
+  animation:pulse 1.4s ease-in-out infinite;
+  border:2px solid rgba(255,255,255,.35);
+}
+@keyframes pulse{
+  0%,100%{transform:scale(1);filter:brightness(1)}
+  50%{transform:scale(1.06);filter:brightness(1.08)}
+}
+.shine{
+  position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.14) 48%,transparent 56%);
+  background-size:200% 100%;
+  animation:shine 3.2s linear infinite;
+}
+@keyframes shine{
+  0%{background-position:120% 0}
+  100%{background-position:-40% 0}
+}
+
+.wrap{flex-direction:row;align-items:center}
+.panel{padding:10px 18px;justify-content:center;width:100%;flex-direction:row;align-items:center;gap:18px;background:linear-gradient(90deg,rgba(4, 42, 74, 0.55),rgba(0,0,0,.25) 70%,transparent)}
+.text{flex:1;min-width:0}
+.loc{font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+.h1{font-size:22px;line-height:1.1;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h2{font-size:13px;line-height:1.2;margin:0;opacity:.95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cta{font-size:14px;padding:10px 18px;flex-shrink:0}
+
+</style>
+</head>
+<body>
+<a class="banner" id="clickArea" href="https://boat-sochi.ru" target="_blank" rel="noopener">
+  <div class="bg"></div>
+  <div class="shine"></div>
+  <div class="brand">boat-sochi.ru</div>
+  <div class="panel wrap">
+    <div class="text">
+      <div class="loc">Сириус · Имеретинский порт</div>
+      <div class="h1">Морские прогулки в Сириусе</div>
+      <div class="h2">Аренда каютного катера с капитаном</div>
+    </div>
+    <div><span class="cta">Забронировать</span></div>
+  </div>
+</a>
+<script>
+(function(){
+  var a=document.getElementById('clickArea');
+  function getUrl(){
+    try{
+      if(typeof clickTAG!=='undefined' && clickTAG) return clickTAG;
+      if(window.clickTAG) return window.clickTAG;
+    }catch(e){}
+    return a.getAttribute('href');
+  }
+  a.addEventListener('click',function(e){
+    var u=getUrl();
+    if(u){ a.href=u; }
+  });
+})();
+</script>
+</body>
+</html>
