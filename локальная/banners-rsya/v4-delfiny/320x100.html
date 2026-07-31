@@ -3,86 +3,155 @@
 <head>
 <meta charset="utf-8">
 <meta name="ad.size" content="width=320,height=100">
-<title>boat-sochi · Утром к дельфинам · 320x100</title>
+<title>Сириус · Дельфины · 320x100</title>
 <style>
-html,body{margin:0;padding:0;width:320px;height:100px;overflow:hidden;background:#063452}
+html,body{margin:0;padding:0;width:320px;height:100px;overflow:hidden;background:#fff}
 *{box-sizing:border-box}
+
 a.banner{
-  display:block;width:320px;height:100px;text-decoration:none;color:#fff;
-  font-family:"Trebuchet MS","Segoe UI",Geneva,Verdana,sans-serif;
+  display:block;width:320px;height:100px;text-decoration:none;color:#5c6f8a;
+  font-family:Arial,Helvetica,"Segoe UI",sans-serif;
   position:relative;cursor:pointer;overflow:hidden;
 }
-.bg{
+
+.photo{
   position:absolute;inset:0;
-  background:#063452 center/cover no-repeat url('bg_320x100.jpg');
-  transform:scale(1.03);
-  animation:ken 9s ease-in-out infinite alternate;
-}
-@keyframes ken{
-  from{transform:scale(1.03) translate(0,0)}
-  to{transform:scale(1.08) translate(-1%,0)}
-}
-.brand{
-  position:absolute;z-index:3;
-  font-size:11px;font-weight:700;letter-spacing:.04em;
-  background:rgba(255,255,255,.14);
-  border:1px solid rgba(255,255,255,.28);padding:3px 7px;border-radius:3px;
-}
-.loc{font-weight:700;color:#FFE08A}
-.h1{font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.4)}
-.h2{font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.4)}
-.cta{
-  display:inline-block;background:#2EE6A6;color:#04304a;font-weight:800;
-  border-radius:6px;text-transform:uppercase;letter-spacing:.03em;
-  box-shadow:0 4px 14px rgba(0,0,0,.35);
-  border:2px solid rgba(255,255,255,.35);
-}
-/* sequential appear from the right, 0.5s step */
-.item{
-  opacity:0;
-  transform:translateX(28px);
-  animation:inRight .45s cubic-bezier(.2,.8,.2,1) forwards;
-}
-.item.d0{animation-delay:0s}
-.item.d1{animation-delay:.5s}
-.item.d2{animation-delay:1s}
-.item.d3{animation-delay:1.5s}
-@keyframes inRight{
-  to{opacity:1; transform:translateX(0)}
-}
-.item.d3 .cta{
-  animation:pulse 1.4s ease-in-out 1.95s infinite;
-}
-@keyframes pulse{
-  0%,100%{transform:scale(1); filter:brightness(1)}
-  50%{transform:scale(1.06); filter:brightness(1.08)}
+  background:#0aa url('bg_320x100.jpg') center/cover no-repeat;
 }
 
 .panel{
-  position:absolute; inset:0; display:flex; align-items:center; justify-content:flex-end;
-  padding:6px 10px 6px 8px;
-  background:linear-gradient(90deg, transparent 0%, transparent 38%, rgba(4, 35, 60, 0.70) 68%, rgba(0,15,30,.82) 100%);
+  position:absolute;right:0;top:0;width:122px;height:100px;
+  background:#fff;
+  clip-path:ellipse(92% 118% at 100% 50%);
+  display:flex;flex-direction:column;align-items:center;
+  padding:7px 10px 8px 18px;
+  z-index:2;
 }
-.stack{display:flex; flex-direction:column; align-items:flex-end; text-align:right; max-width:58%; gap:2px}
-.loc{font-size:9px; letter-spacing:.06em; text-transform:uppercase}
-.h1{font-size:14px; line-height:1.1; margin:0}
-.h2{font-size:10px; line-height:1.15; margin:0; opacity:.95}
-.cta{font-size:11px; padding:7px 10px; margin-top:3px}
-.brand{top:6px; left:8px; font-size:10px}
 
+.logo{
+  display:flex;align-items:center;gap:5px;width:100%;
+  margin-bottom:4px;
+}
+.logo-icon{width:22px;height:18px;flex-shrink:0}
+.logo-name{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:15px;font-weight:400;color:#2f4560;line-height:1;
+  letter-spacing:.01em;
+}
+.logo-line{
+  width:100%;height:1px;background:#2f4560;margin-bottom:2px;
+}
+
+.text-stage{
+  position:relative;flex:1;width:100%;min-height:44px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+  opacity:0;pointer-events:none;
+  animation-duration:8s;animation-timing-function:linear;animation-iteration-count:infinite;
+}
+
+/* 1s hold + 1s fade, 8s total cycle */
+.slide1{animation-name:slide1}
+.slide2{animation-name:slide2}
+.slide3{animation-name:slide3}
+.slide4{animation-name:slide4}
+
+@keyframes slide1{
+  0%,12.499%{opacity:1}
+  25%,100%{opacity:0}
+}
+@keyframes slide2{
+  0%,24.999%{opacity:0}
+  25%,37.499%{opacity:1}
+  50%,100%{opacity:0}
+}
+@keyframes slide3{
+  0%,49.999%{opacity:0}
+  50%,62.499%{opacity:1}
+  75%,100%{opacity:0}
+}
+@keyframes slide4{
+  0%,74.999%{opacity:0}
+  75%,87.499%{opacity:1}
+  100%{opacity:0}
+}
+
+.t-main{
+  font-size:13px;line-height:1.08;font-weight:400;color:#5c6f8a;
+  text-transform:lowercase;letter-spacing:.01em;
+}
+
+.row-top{display:flex;align-items:center;gap:4px;flex-wrap:nowrap}
+.pill{
+  display:inline-block;background:#c41e1e;color:#fff;
+  border-radius:999px;padding:2px 8px 3px;
+  font-size:10px;font-weight:700;line-height:1.1;
+  text-transform:lowercase;white-space:nowrap;
+}
+.t-do{font-size:11px;color:#5c6f8a;line-height:1}
+.t-big{font-size:14px;line-height:1.05;color:#5c6f8a;margin-top:1px}
+.t-price{font-size:12px;line-height:1.15;color:#7289ac;margin-top:2px}
+.t-two{font-size:13px;line-height:1.1;color:#5c6f8a}
+
+.btn{
+  width:100%;max-width:96px;
+  background:#4a6082;border-radius:999px;
+  padding:6px 0;text-align:center;
+  margin-top:auto;
+}
+.btn-text{
+  display:inline-block;color:#fff;font-size:12px;
+  text-transform:lowercase;letter-spacing:.02em;
+  animation:btnPulse 1s ease-in-out infinite;
+}
+@keyframes btnPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.1)}
+}
 </style>
 </head>
 <body>
 <a class="banner" id="clickArea" href="https://boat-sochi.ru" target="_blank" rel="noopener">
-  <div class="bg"></div>
-  <div class="brand">boat-sochi.ru</div>
+  <div class="photo"></div>
   <div class="panel">
-    <div class="stack">
-      <div class="loc item d0">Адлер / Сириус</div>
-      <div class="h1 item d1">Утром к дельфинам</div>
-      <div class="h2 item d2">Скидка до 12:00 · от 15 000 ₽</div>
-      <div class="item d3"><span class="cta">Забронировать</span></div>
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 22 18" aria-hidden="true">
+        <path d="M1 14 C6 10, 10 12, 11 8 C12 4, 16 6, 21 2" fill="none" stroke="#c41e1e" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M1 11 C6 7, 10 9, 11 5 C12 1, 16 3, 21 0" fill="none" stroke="#c41e1e" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M1 17 C6 13, 10 15, 11 11 C12 7, 16 9, 21 5" fill="none" stroke="#c41e1e" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <span class="logo-name">Сириус</span>
     </div>
+    <div class="logo-line"></div>
+
+    <div class="text-stage">
+      <div class="slide slide1">
+        <div class="t-main">время</div>
+        <div class="t-main">увидеть</div>
+        <div class="t-main">дельфинов</div>
+      </div>
+      <div class="slide slide2">
+        <div class="row-top">
+          <span class="pill">скидка</span>
+          <span class="t-do">до</span>
+        </div>
+        <div class="t-big">12 часов дня</div>
+      </div>
+      <div class="slide slide3">
+        <span class="pill pill-wide">ЭКОНОМИЯ</span>
+        <div class="t-price">500 ₽ в час</div>
+      </div>
+      <div class="slide slide4">
+        <div class="t-two">Капитан</div>
+        <div class="t-two">знает места</div>
+      </div>
+    </div>
+
+    <div class="btn"><span class="btn-text">заказ</span></div>
   </div>
 </a>
 <script>
