@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Маскот в шапке диалога — marmara-pro.ru</title>
+  <style>
+    :root {
+      --orange: #d54d00;
+      --head-dark: #404040;
+      --brown: #6b5344;
+      --mascot-url: url("https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png");
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #ece8e3;
+      color: #1e293b;
+      padding: 24px 16px 48px;
+    }
+    h1 { font-size: 1.15rem; margin: 0 0 6px; text-align: center; }
+    p.lead {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.9rem;
+      max-width: 520px;
+      margin: 0 auto 28px;
+      line-height: 1.5;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+    }
+    .card h2 {
+      font-size: 0.85rem;
+      margin: 0;
+      padding: 12px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      font-weight: 600;
+    }
+    .card h2 span {
+      display: block;
+      font-weight: 400;
+      color: #64748b;
+      font-size: 0.78rem;
+      margin-top: 4px;
+    }
+    /* —— только полоска шапки с маскотом —— */
+    .head-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      min-height: 60px;
+    }
+    .head-strip.v1 { background: var(--head-dark); color: #fff; }
+    .head-strip.v2 {
+      background: linear-gradient(90deg, #faf6f1, #f0ebe4);
+      color: var(--brown);
+      border-bottom: 2px solid var(--orange);
+    }
+    .head-strip.v3 {
+      background: #fff;
+      color: #2d2d2d;
+      border-top: 4px solid var(--orange);
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .mascot-slot {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 0;
+    }
+    .mascot-slot img {
+      display: block;
+      object-fit: contain;
+      object-position: center;
+    }
+    .mascot-slot.desk { width: 40px; height: 40px; }
+    .mascot-slot.desk img { width: 40px; height: 40px; }
+    .mascot-slot.mob { width: 80px; height: 80px; }
+    .mascot-slot.mob img { width: 80px; height: 80px; }
+    .assist strong { display: block; font-size: 15px; line-height: 1.15; }
+    .assist span { display: block; font-size: 11px; opacity: 0.9; margin-top: 2px; }
+    .solo {
+      max-width: 960px;
+      margin: 32px auto 0;
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
+      text-align: center;
+    }
+    .solo h2 { font-size: 0.95rem; margin: 0 0 16px; }
+    .solo-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 32px;
+    }
+    .solo-item figcaption {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+    .solo-item img { display: block; object-fit: contain; }
+    code { font-size: 0.78rem; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h1>Маскот в шапке окна диалога</h1>
+  <p class="lead">
+    Тот же PNG, что в <code>embed.js</code> (<code>.kpb-head-mascot</code>).
+    Десктоп — 40×40 px; мобилка — 80×80 px слева, без логотипа в шапке.
+  </p>
+
+  <div class="grid">
+    <article class="card">
+      <h2>Вариант 1 — шапка «Производство»<span>Маскот 40 px, десктоп</span></h2>
+      <div class="head-strip v1">
+        <div class="mascot-slot desk">
+          <img src="https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png" width="40" height="40" alt="" />
+        </div>
+        <div class="assist">
+          <strong>AI помощник</strong>
+          <span>знаю ответы, сделаю расчёт</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2>Вариант 2 — «Клинкер и тепло»<span>Маскот 40 px в светлой шапке</span></h2>
+      <div class="head-strip v2">
+        <div class="mascot-slot desk">
+          <img src="https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png" width="40" height="40" alt="" />
+        </div>
+        <div class="assist">
+          <strong>AI помощник</strong>
+          <span>КлинкерПрофи · Выборг</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2>Вариант 3 — минимализм<span>Только маскот + текст, 40 px</span></h2>
+      <div class="head-strip v3">
+        <div class="mascot-slot desk">
+          <img src="https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png" width="40" height="40" alt="" />
+        </div>
+        <div class="assist">
+          <strong>КлинкерПрофи</strong>
+          <span>онлайн-консультант</span>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <section class="solo" aria-labelledby="solo-title">
+    <h2 id="solo-title">Маскот отдельно (для макетов и экспорта)</h2>
+    <div class="solo-row">
+      <figure class="solo-item">
+        <img src="https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png" width="40" height="40" alt="Шапка десктоп 40px" />
+        <figcaption>Десктоп · 40×40</figcaption>
+      </figure>
+      <figure class="solo-item">
+        <img src="https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png" width="80" height="80" alt="Шапка мобилка 80px" />
+        <figcaption>Мобилка · 80×80</figcaption>
+      </figure>
+      <figure class="solo-item">
+        <img src="https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png" width="160" height="160" alt="Исходник для дизайна" />
+        <figcaption>×4 для Figma</figcaption>
+      </figure>
+    </div>
+    <p style="margin:16px 0 0;font-size:0.82rem;color:#64748b">
+      URL: <code>https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png</code>
+    </p>
+  </section>
+
+  <article class="card" style="max-width:960px;margin:20px auto 0">
+    <h2>Мобилка — шапка 88 px, маскот слева 80 px (текущий виджет)</h2>
+    <div class="head-strip v1" style="min-height:88px;padding-left:10px">
+      <div class="mascot-slot mob">
+        <img src="https://static.tildacdn.com/tild3730-3866-4636-b761-393236306563/klinker_red_PNG.png" width="80" height="80" alt="" />
+      </div>
+      <div class="assist">
+        <strong>AI помощник</strong>
+        <span>знаю ответы, сделаю расчёт</span>
+      </div>
+    </div>
+  </article>
+</body>
+</html>
