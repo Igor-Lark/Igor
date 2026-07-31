@@ -27,6 +27,7 @@ a.banner{
   font-size:11px;font-weight:700;letter-spacing:.04em;
   background:rgba(255,255,255,.14);
   border:1px solid rgba(255,255,255,.28);padding:3px 7px;border-radius:3px;
+  top:8px; left:8px;
 }
 .loc{font-weight:700;color:#FFE08A}
 .h1{font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.4)}
@@ -37,21 +38,22 @@ a.banner{
   box-shadow:0 4px 14px rgba(0,0,0,.35);
   border:2px solid rgba(255,255,255,.35);
 }
-/* sequential appear from the right, 0.5s step */
+
+/* текст едет справа налево через весь слайд и останавливается у левого края */
 .item{
   opacity:0;
-  transform:translateX(28px);
-  animation:inRight .45s cubic-bezier(.2,.8,.2,1) forwards;
+  transform:translateX(260px);
+  animation:toLeft .85s cubic-bezier(.22,.75,.2,1) forwards;
 }
 .item.d0{animation-delay:0s}
 .item.d1{animation-delay:.5s}
 .item.d2{animation-delay:1s}
 .item.d3{animation-delay:1.5s}
-@keyframes inRight{
+@keyframes toLeft{
   to{opacity:1; transform:translateX(0)}
 }
 .item.d3 .cta{
-  animation:pulse 1.4s ease-in-out 1.95s infinite;
+  animation:pulse 1.4s ease-in-out 2.35s infinite;
 }
 @keyframes pulse{
   0%,100%{transform:scale(1); filter:brightness(1)}
@@ -59,17 +61,21 @@ a.banner{
 }
 
 .panel{
-  position:absolute; inset:0; display:flex; align-items:center; justify-content:flex-end;
-  padding:14px 12px;
-  background:linear-gradient(90deg, transparent 0%, transparent 28%, rgba(4, 35, 60, 0.70) 62%, rgba(0,15,30,.85) 100%);
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:flex-start;
+  padding:14px 10px 14px 12px;
+  background:linear-gradient(90deg, rgba(0,15,30,.88) 0%, rgba(4,35,60,.72) 42%, transparent 78%);
 }
-.stack{display:flex; flex-direction:column; align-items:flex-end; text-align:right; width:58%; gap:5px}
+.stack{
+  display:flex; flex-direction:column; align-items:flex-start; text-align:left;
+  max-width:96%; gap:5px; overflow:hidden;
+}
 .loc{font-size:10px; letter-spacing:.07em; text-transform:uppercase}
 .h1{font-size:20px; line-height:1.12; margin:0}
-.h2{font-size:12px; line-height:1.25; margin:0; opacity:.95}
+.h2{
+  font-size:11px; line-height:1.2; margin:0; opacity:.95;
+  white-space:nowrap;
+}
 .cta{font-size:13px; padding:9px 14px; margin-top:4px}
-.brand{top:8px; left:8px}
-
 </style>
 </head>
 <body>
