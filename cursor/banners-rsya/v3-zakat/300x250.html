@@ -73,7 +73,7 @@ a.banner{
 </style>
 </head>
 <body>
-<a class="banner" id="clickArea" href="https://boat-sochi.ru" target="_blank" rel="noopener">
+<a class="banner" id="click_area" href="#" target="_blank">
   <div class="bg"></div>
   <div class="brand">boat-sochi.ru</div>
   <div class="panel">
@@ -86,15 +86,7 @@ a.banner{
   </div>
 </a>
 <script>
-(function(){
-  var a=document.getElementById('clickArea');
-  a.addEventListener('click',function(){
-    try{
-      var u=(typeof clickTAG!=='undefined'&&clickTAG)||window.clickTAG;
-      if(u) a.href=u;
-    }catch(e){}
-  });
-})();
+document.getElementById("click_area").href = yandexHTML5BannerApi.getClickURLNum(1);
 </script>
 </body>
 </html>
