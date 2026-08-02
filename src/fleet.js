@@ -14,7 +14,9 @@ const FLEET = [
     maxGuests: 6,
     port: 'sirius',
     portLabel: 'Сириус',
-    price: 'от 6 000 ₽/час',
+    price: '8 000 ₽/час',
+    speed: 'до 70 км/ч',
+    note: 'вейкборд или водные лыжи, капитан-инструктор',
   },
   {
     id: 'rinker232',

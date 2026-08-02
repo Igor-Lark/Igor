@@ -1,21 +1,9 @@
 # Boat Sochi Bot
 
-ИИ-бот для [boat-sochi.ru](https://boat-sochi.ru/): чат на сайте (Tilda) + Telegram. Ответы через **YandexGPT** (или OpenAI), база знаний с сайта, заявки менеджеру в **MAX**.
+ИИ-бот для [boat-sochi.ru](https://boat-sochi.ru/): чат на сайте (Tilda). Ответы через **YandexGPT** (или OpenAI), база знаний с сайта, заявки менеджеру в **MAX**.
 
-> Ветка `cursor/boat-sochi-max-5814` — заявки в **MAX** (текущая).  
-> Параллельная ветка `cursor/boat-sochi-telegram-5814` — заявки в Telegram.
-
-### Общее для обеих веток (всегда синхронизируем)
-
-Эти файлы одинаковы в Telegram- и MAX-ветках — правки знаний/правил вносятся **в обе**:
-
-| Файл | Что внутри |
-|------|------------|
-| `knowledge/faq-extra.md` | FAQ, дополнительные ответы |
-| `knowledge/llms-full.txt` | флот, цены, правила сервиса |
-| `src/knowledge.js` | системные правила ассистента («капитан», тон, запреты) |
-
-Различается только канал заявок: Telegram vs MAX.
+> Рабочая ветка: `cursor/boat-contact-route-5814` (deploy на VPS).  
+> Ветка `cursor/boat-sochi-max-5814` — заявки в MAX (альтернатива, синхронизировать знания при необходимости).
 
 ## Что внутри
 
@@ -23,7 +11,6 @@
 |-----------|------------|
 | Node.js API | `POST /api/chat` — ответы через YandexGPT или OpenAI |
 | Виджет | Кнопка 💬 на сайте Tilda (`/embed.js`) |
-| Telegram-бот | Тот же ИИ в Telegram + заявки менеджеру |
 | Погода | Open-Meteo: воздух + температура воды (Сириус / Сочи) |
 | База знаний | `knowledge/llms-full.txt` + `knowledge/faq-extra.md` |
 | Заявки | При «хочу забронировать» / телефоне → уведомление в **MAX** |

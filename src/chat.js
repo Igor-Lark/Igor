@@ -23,8 +23,9 @@ const {
   buildSwimWaterNote,
 } = require('./weather');
 const { isCapacityIntent, buildCapacityReply, capacityPromptBlock } = require('./fleet');
-const { isWriteToClientIntent, isContactCallbackIntent, buildCallbackFormReply } = require('./contacts');
+const { isContactCallbackIntent, buildCallbackFormReply } = require('./contacts');
 const { isSeaRouteIntent, buildSeaRouteReply } = require('./routes');
+const { isWakeIntent, buildWakeReply } = require('./wake');
 
 /**
  * @param {{
@@ -90,6 +91,22 @@ async function handleChat(input) {
       history: cleaned,
     });
     return { reply, provider: 'route', lead: null };
+  }
+
+  // Вейкборд / водные лыжи — катер «Инфинити»
+  if (lastUser && isWakeIntent(lastUser.content)) {
+    const reply = buildWakeReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'wake',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'wake', lead: null };
   }
 
   // «Как пройти к Алексуму» — Морпорт Сочи, без схемы Сириуса

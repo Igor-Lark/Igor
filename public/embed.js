@@ -205,6 +205,7 @@
       '#bsb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
       '.bsb-msg{max-width:88%;padding:10px 12px;border-radius:5px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}',
       '.bsb-msg.bot{align-self:flex-start;background:#fff;border:1px solid #e2e8f0;color:#0f172a}',
+      '.bsb-msg.bot.bsb-wait{color:#64748b;font-style:italic}',
       '.bsb-msg.user{align-self:flex-end;background:#5a7f9c;color:#fff;border-radius:20px}',
       '.bsb-msg.sys{align-self:center;background:transparent;color:#64748b;font-size:12px}',
       '#bsb-root a.bsb-tel,#bsb-root a.bsb-link{color:#204360 !important;font-weight:600 !important;text-decoration:underline !important;text-underline-offset:2px;cursor:pointer !important;pointer-events:auto !important}',
@@ -427,12 +428,55 @@
       });
     }
 
+    function scrollMsgs() {
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
     function addBubble(text, kind) {
       var el = document.createElement('div');
       el.className = 'bsb-msg ' + kind;
       el.innerHTML = linkifyText(text);
       msgs.appendChild(el);
-      msgs.scrollTop = msgs.scrollHeight;
+      scrollMsgs();
+    }
+
+    function showWaitBubble() {
+      var el = document.createElement('div');
+      el.className = 'bsb-msg bot bsb-wait';
+      el.textContent = 'пару секунд';
+      msgs.appendChild(el);
+      scrollMsgs();
+      return el;
+    }
+
+    function removeBubble(el) {
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+    }
+
+    /** Построчный вывод ответа (как в Klinker) + автоскролл. */
+    function addBubbleStreaming(text, kind, done) {
+      var full = String(text || '');
+      var lines = full.split('\n');
+      var el = document.createElement('div');
+      el.className = 'bsb-msg ' + kind;
+      msgs.appendChild(el);
+      scrollMsgs();
+      var idx = 0;
+      var delayMs = 150;
+      function tick() {
+        if (idx >= lines.length) {
+          el.innerHTML = linkifyText(full);
+          scrollMsgs();
+          if (done) done();
+          return;
+        }
+        var chunk = lines.slice(0, idx + 1).join('\n');
+        el.innerHTML = linkifyText(chunk);
+        scrollMsgs();
+        idx += 1;
+        setTimeout(tick, delayMs);
+      }
+      tick();
     }
 
     function prefetchWeatherOnOpen() {
@@ -497,6 +541,7 @@
       messages.push({ role: 'user', content: text });
       sending = true;
       sendBtn.disabled = true;
+      var waitEl = showWaitBubble();
 
       fetch(API_BASE + '/api/chat', {
         method: 'POST',
@@ -510,20 +555,23 @@
           });
         })
         .then(function (data) {
+          removeBubble(waitEl);
           var reply = data.reply || unavailableReply;
           messages.push({ role: 'assistant', content: reply });
-          addBubble(reply, 'bot');
-          if (data.mapUrl) {
-            var img = document.createElement('img');
-            img.className = 'bsb-map';
-            img.alt = 'Схема прохода к причалу';
-            img.src = data.mapUrl.indexOf('http') === 0 ? data.mapUrl : API_BASE + data.mapUrl;
-            msgs.appendChild(img);
-            msgs.scrollTop = msgs.scrollHeight;
-          }
+          addBubbleStreaming(reply, 'bot', function () {
+            if (data.mapUrl) {
+              var img = document.createElement('img');
+              img.className = 'bsb-map';
+              img.alt = 'Схема прохода к причалу';
+              img.src = data.mapUrl.indexOf('http') === 0 ? data.mapUrl : API_BASE + data.mapUrl;
+              msgs.appendChild(img);
+              scrollMsgs();
+            }
+          });
         })
         .catch(function () {
-          addBubble(unavailableReply, 'bot');
+          removeBubble(waitEl);
+          addBubbleStreaming(unavailableReply, 'bot');
         })
         .finally(function () {
           sending = false;
