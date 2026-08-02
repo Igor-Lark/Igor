@@ -1,0 +1,102 @@
+{
+  "source": "https://marmara-pro.ru/termo",
+  "tildaStorePartUid": "840610530462",
+  "syncedAt": "2026-07-29T10:38:59.113Z",
+  "calc": {
+    "aPanelM2": 0.62,
+    "panelPriceRub": 1550,
+    "panelPriceM2Rub": 2500,
+    "tilePriceM2Rub": 1300,
+    "foamPriceRub": 800,
+    "foamM2PerCan": 6,
+    "groutPriceRub": 1450,
+    "groutBagKg": 25
+  },
+  "termopanels": [
+    {
+      "title": "Термопанель Колорадо 1 (32 шт)",
+      "panelRub": 1550,
+      "m2Rub": 2500,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-133022576952-termopanel-kolorado-1-32-sht"
+    },
+    {
+      "title": "Термопанель Колорадо 2 (32 шт)",
+      "panelRub": 1550,
+      "m2Rub": 2500,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-979993457482-termopanel-kolorado-2-32-sht"
+    },
+    {
+      "title": "Термопанель Колорадо 3 (32 шт)",
+      "panelRub": 1550,
+      "m2Rub": 2500,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-479543594102-termopanel-kolorado-3-32-sht"
+    },
+    {
+      "title": "Термопанель Колорадо 4 (32 шт)",
+      "panelRub": 1550,
+      "m2Rub": 2500,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-395566131472-termopanel-kolorado-4-32-sht"
+    },
+    {
+      "title": "Термопанель Колорадо 5 (32 шт)",
+      "panelRub": 1550,
+      "m2Rub": 2500,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-936117304142-termopanel-kolorado-5-32-sht"
+    },
+    {
+      "title": "Термопанель АМСТЕРДАМ ШЕЙД гладкая",
+      "panelRub": 1550,
+      "m2Rub": 2500,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-891182787562-termopanel-amsterdam-sheid-gladkaya"
+    },
+    {
+      "title": "Термопанель АМСТЕРДАМ 2",
+      "panelRub": 1550,
+      "m2Rub": 2500,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-484197231192-termopanel-amsterdam-2"
+    },
+    {
+      "title": "Термопанель АМСТЕРДАМ 4",
+      "panelRub": 1550,
+      "m2Rub": 2500,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-221219901802-termopanel-amsterdam-4"
+    }
+  ],
+  "tileProducts": [
+    {
+      "title": "Клинкерная плитка фасадная ALARCON",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-968229798762-klinkernaya-plitka-fasadnaya-alarcon"
+    },
+    {
+      "title": "Клинкерная плитка фасадная KAYLOS",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-699649897752-klinkernaya-plitka-fasadnaya-kaylos"
+    },
+    {
+      "title": "Клинкерная плитка фасадная SANDIA",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-939423936422-klinkernaya-plitka-fasadnaya-sandia"
+    },
+    {
+      "title": "Клинкерная плитка фасадная STONE (графитовый)",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-730709481672-klinkernaya-plitka-fasadnaya-stone-grafi"
+    },
+    {
+      "title": "Клинкерная плитка фасадная STONE (палевый)",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-400587526422-klinkernaya-plitka-fasadnaya-stone-palev"
+    },
+    {
+      "title": "Клинкерная плитка фасадная WALL GREY",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-901775970982-klinkernaya-plitka-fasadnaya-wall-grey"
+    },
+    {
+      "title": "Клинкерная плитка фасадная АКИТА",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-604719084492-klinkernaya-plitka-fasadnaya-akita"
+    }
+  ]
+}

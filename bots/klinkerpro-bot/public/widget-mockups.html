@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>КлинкерПрофи — 3 варианта виджета (макет)</title>
+  <style>
+    :root {
+      --orange: #d54d00;
+      --orange-hover: #c04500;
+      --brown: #6b5344;
+      --brick: #8b4513;
+      --bg: #e8e4df;
+      --panel-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #f5f2ee 0%, var(--bg) 40%, #d4cfc8 100%);
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    header {
+      padding: 24px 20px 12px;
+      text-align: center;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    header h1 { font-size: 1.35rem; margin: 0 0 8px; font-weight: 600; }
+    header p { margin: 0; color: #475569; font-size: 0.95rem; line-height: 1.45; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 16px 20px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .demo {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .demo-head {
+      padding: 12px 14px;
+      background: var(--brown);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .demo-head span { opacity: 0.85; font-weight: 400; display: block; font-size: 0.78rem; margin-top: 4px; }
+    .scene {
+      position: relative;
+      height: 320px;
+      background:
+        linear-gradient(rgba(255,255,255,0.75), rgba(255,255,255,0.75)),
+        repeating-linear-gradient(
+          90deg,
+          #c4a574 0,
+          #c4a574 12px,
+          #b8926a 12px,
+          #b8926a 24px
+        );
+      background-size: auto, 100% 80px;
+      background-position: center bottom;
+    }
+    .scene::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #87a8c4 0%, transparent 45%);
+      pointer-events: none;
+    }
+    .scene-label {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 11px;
+      color: #64748b;
+      background: rgba(255,255,255,0.9);
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    /* —— Variant 1: классическая кнопка (как сейчас, + иконка кирпича) —— */
+    .fab-v1 {
+      position: absolute;
+      right: 14px;
+      bottom: 18px;
+      height: 48px;
+      min-width: 56px;
+      padding: 8px 14px;
+      border: 2px solid #fff;
+      border-radius: 5px;
+      background: var(--orange);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(213, 77, 0, 0.35);
+      border: none;
+      outline: 2px solid #fff;
+      outline-offset: 0;
+    }
+    .fab-v1:hover { background: var(--orange-hover); }
+    .fab-v1 svg { flex-shrink: 0; }
+
+    /* —— Variant 2: боковая вкладка «термопанели» —— */
+    .fab-v2 {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: translateY(-50%) rotate(180deg);
+      padding: 14px 10px;
+      border: none;
+      border-radius: 8px 0 0 8px;
+      background: linear-gradient(180deg, var(--brown) 0%, #5a4338 100%);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      box-shadow: -4px 0 16px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .fab-v2 .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 0 2px #fff;
+    }
+
+    /* —— Variant 3: круглый FAB + бейдж —— */
+    .fab-v3-wrap {
+      position: absolute;
+      right: 16px;
+      bottom: 20px;
+    }
+    .fab-v3 {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      background: var(--orange);
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(213, 77, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .fab-v3:hover { background: var(--orange-hover); }
+    .fab-v3-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--brown);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 3px 5px;
+      border-radius: 4px;
+      border: 1px solid #fff;
+    }
+
+    /* —— Dialog (shared) —— */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .overlay.open { display: flex; }
+    .dialog {
+      width: min(420px, 100%);
+      max-height: 85vh;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: var(--panel-shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideUp 0.35s ease;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dialog-head {
+      background: var(--brown);
+      color: #fff;
+      padding: 12px 40px 12px 14px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dialog-head strong { font-size: 16px; }
+    .dialog-close {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      background: transparent;
+      border: 0;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .dialog-body {
+      padding: 14px;
+      background: #f8fafc;
+      flex: 1;
+      overflow: auto;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #334155;
+    }
+    .bubble {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      max-width: 92%;
+    }
+    .dialog-foot {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+    }
+    .dialog-foot input {
+      flex: 1;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 15px;
+    }
+    .dialog-foot button {
+      background: var(--brown);
+      color: #fff;
+      border: 0;
+      border-radius: 5px;
+      padding: 0 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .note {
+      padding: 0 14px 14px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Три варианта виджета «термопанели»</h1>
+    <p>Макет для выбора стиля кнопки. Нажмите на кнопку в каждой сцене — откроется окно диалога (как у бота на сайте).</p>
+  </header>
+
+  <div class="grid">
+    <article class="demo">
+      <div class="demo-head">
+        Вариант 1 — «Помощник»
+        <span>Прямоугольная кнопка 48×56 px+, оранж #d54d00, белая обводка 2 px (близко к текущему embed.js)</span>
+      </div>
+      <div class="scene" data-variant="1">
+        <span class="scene-label">Фасад /termo</span>
+        <button type="button" class="fab-v1" aria-label="Открыть помощник">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="5" width="7" height="5" rx="0.5" fill="#fff" opacity="0.95"/>
+            <rect x="3" y="11" width="7" height="5" rx="0.5" fill="#fff" opacity="0.75"/>
+            <rect x="11" y="5" width="7" height="5" rx="0.5" fill="#fff" opacity="0.85"/>
+            <rect x="11" y="11" width="7" height="5" rx="0.5" fill="#fff" opacity="0.65"/>
+          </svg>
+          помощник
+        </button>
+      </div>
+      <p class="note">Текст + мини-кладка из плитки. При клике — панель чата справа / по центру на desktop.</p>
+    </article>
+
+    <article class="demo">
+      <div class="demo-head">
+        Вариант 2 — «Вкладка сбоку»
+        <span>Вертикальная полоска: термопанели, расчёт. Коричневый #6B5344, акцент-точка оранжевая</span>
+      </div>
+      <div class="scene" data-variant="2">
+        <span class="scene-label">Длинная страница каталога</span>
+        <button type="button" class="fab-v2" aria-label="Консультант по термопанелям">
+          <span class="dot" aria-hidden="true"></span>
+          Термопанели · расчёт
+        </button>
+      </div>
+      <p class="note">Не перекрывает низ экрана (удобно на мобиле с FAB Tilda). Хорошо для акцента «фасад / термо».</p>
+    </article>
+
+    <article class="demo">
+      <div class="demo-head">
+        Вариант 3 — «Круг AI»
+        <span>Круг 56 px, иконка дом+утепление, бейдж «AI». Компактно в углу</span>
+      </div>
+      <div class="scene" data-variant="3">
+        <span class="scene-label">Главная marmara-pro.ru</span>
+        <div class="fab-v3-wrap">
+          <button type="button" class="fab-v3" aria-label="ИИ-консультант">
+            <span class="fab-v3-badge">AI</span>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 10h16v9H4z" stroke="#fff" stroke-width="1.5"/>
+              <path d="M7 14h3v3H7zM14 14h3v3h-3z" fill="#fff" opacity="0.9"/>
+              <path d="M6 10V7l6-4 6 4v3" stroke="#fff" stroke-width="1.5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <p class="note">Минимум текста на кнопке; подпись в заголовке диалога. Подходит, если внизу уже много кнопок.</p>
+    </article>
+  </div>
+
+  <div class="overlay" id="overlay" role="presentation">
+    <div class="dialog" role="dialog" aria-labelledby="dlg-title" aria-modal="true">
+      <div class="dialog-head">
+        <strong id="dlg-title">КлинкерПрофи · помощник</strong>
+        <button type="button" class="dialog-close" id="dlg-close" aria-label="Закрыть">×</button>
+      </div>
+      <div class="dialog-body">
+        <div class="bubble" id="dlg-greeting">
+          Здравствуйте! Расскажу про термопанели и помогу с расчётом. Напишите размеры дома или свой вопрос.
+        </div>
+      </div>
+      <div class="dialog-foot">
+        <input type="text" placeholder="Напишите ваш вопрос…" readonly />
+        <button type="button">→</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var overlay = document.getElementById('overlay');
+      var titles = {
+        '1': 'КлинкерПрофи · помощник',
+        '2': 'Термопанели · консультант',
+        '3': 'ИИ · термопанели',
+      };
+      document.querySelectorAll('.fab-v1, .fab-v2, .fab-v3').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var scene = btn.closest('.scene');
+          var v = scene && scene.getAttribute('data-variant');
+          document.getElementById('dlg-title').textContent = titles[v] || titles['1'];
+          overlay.classList.add('open');
+        });
+      });
+      function close() {
+        overlay.classList.remove('open');
+      }
+      document.getElementById('dlg-close').addEventListener('click', close);
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) close();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') close();
+      });
+    })();
+  </script>
+</body>
+</html>
