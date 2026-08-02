@@ -55,7 +55,7 @@ HEALTH=$(curl -sf "http://127.0.0.1:${PORT:-3001}/health" || true)
 echo ""
 echo "$HEALTH"
 echo ""
-if echo "$HEALTH" | grep -qE '"facadeCalcVersion":(6|7)'; then
+if echo "$HEALTH" | grep -qE '"facadeCalcVersion":(7|8)'; then
   echo "OK: facadeCalcVersion в health"
 else
   echo "WARN: нет facadeCalcVersion 6/7 — проверьте pull и pm2"

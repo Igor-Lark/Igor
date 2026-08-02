@@ -2,7 +2,7 @@
 
 const { getCalcPricing } = require('./pricing');
 
-const FACADE_CALC_VERSION = 7;
+const FACADE_CALC_VERSION = 8;
 const pricing = getCalcPricing();
 const A_PANEL = pricing.aPanelM2;
 const PANEL_PRICE = pricing.panelPriceRub;
@@ -21,11 +21,21 @@ function parseNum(s) {
 
 function parseDimToken(tok) {
   let t = String(tok).toLowerCase().trim();
+  if (/^метр$/i.test(t)) return 1;
   t = t.replace(/\s*(?:м\.?|метр(?:а|ов)?)\s*$/i, '').trim();
   if (t === 'полтора' || t === 'полторы') return 1.5;
   if (t === 'два' || t === 'две') return 2;
   if (t === 'три') return 3;
   return parseNum(t);
+}
+
+function tokenHasMeterUnit(tok) {
+  const s = String(tok).toLowerCase().trim();
+  return /^метр$/i.test(s) || /\d\s*м\.?(?:\s|$)/i.test(s);
+}
+
+function tokenHasCmUnit(tok) {
+  return /(?:^|\s)(?:см|mm|мм)(?:\s|$)/i.test(String(tok));
 }
 
 function parseCountToken(s) {
@@ -48,19 +58,17 @@ function parseOpeningSizeMeters(aStr, bStr, unitHint) {
   let h = parseDimToken(bStr);
   if (!w || !h) return null;
   const u = String(unitHint || '').toLowerCase();
-  if (/см|^cm$/i.test(u)) {
-    w /= 100;
-    h /= 100;
-  } else if (/^м|m$/i.test(u)) {
-    /* уже метры */
-  } else if (w >= 10 || h >= 10) {
-    w /= 100;
-    h /= 100;
-  }
+  const wM = tokenHasMeterUnit(aStr) || /^м|m$/i.test(u);
+  const hM = tokenHasMeterUnit(bStr);
+  const wCm = tokenHasCmUnit(aStr);
+  const hCm = tokenHasCmUnit(bStr) || /см|^cm$/i.test(u);
+
+  if (wCm || (!wM && w >= 10)) w /= 100;
+  if (hCm || (!hM && h >= 10)) h /= 100;
   return { w, h, area: w * h };
 }
 
-const DIM_TOK = '(?:полтора|полторы|два|две|три|четыре|пять|\\d+(?:[.,]\\d+)?)';
+const DIM_TOK = '(?:полтора|полторы|два|две|три|четыре|пять|метр|\\d+(?:[.,]\\d+)?)';
 const SIZE_PAIR_RE = new RegExp(
   `${DIM_TOK}\\s*(?:м|см|mm|мм)?\\s*[x×х\\*]\\s*${DIM_TOK}\\s*(?:м|см|mm|мм)?`,
   'i'
@@ -72,10 +80,10 @@ const SIZE_NA_RE = new RegExp(
 
 function findOpeningSizeInPart(part, kind) {
   const pLow = part.toLowerCase();
-  const key = kind === 'door' ? 'двер' : 'окн';
-  const idx = pLow.indexOf(key);
-  if (idx < 0) return null;
-  const after = part.slice(idx);
+  const keyRe = kind === 'door' ? /двер/i : /ок(?:но|на|он|не|ни|нам)/i;
+  const keyMatch = pLow.match(keyRe);
+  if (!keyMatch) return null;
+  const after = part.slice(keyMatch.index + keyMatch[0].length);
   let m = after.match(SIZE_PAIR_RE);
   if (m) {
     const bits = m[0].split(/[x×х\*]/i);
@@ -99,19 +107,21 @@ function findOpeningSizeInPart(part, kind) {
 
 function countFromOpeningPart(part, kind) {
   const p = part.toLowerCase();
-  const word = kind === 'door' ? 'двер' : 'окн';
-  if (!p.includes(word)) return null;
+  const wordRe = kind === 'door' ? /двер/ : /ок(?:но|на|он|не|ни|нам)/;
+  if (!wordRe.test(p)) return null;
 
   const m1 = p.match(
     new RegExp(
-      '(\\d+|два|две|двое|три|четыре|пять)\\s*(?:шт\\.?\\s*)?(?:' + (kind === 'door' ? 'двер' : 'окн') + ')',
+      '(\\d+|два|две|двое|три|четыре|пять)\\s*(?:шт\\.?\\s*)?(?:' +
+        (kind === 'door' ? 'двер' : 'ок(?:но|на|он|не|ни|нам)') +
+        ')',
       'i'
     )
   );
   if (m1) return parseCountToken(m1[1]);
 
   if (kind === 'door' && /\b(двое|две|два)\b/.test(p) && /двер/.test(p)) return 2;
-  if (kind === 'window' && /\b(три)\b/.test(p) && /окн/.test(p)) return 3;
+  if (kind === 'window' && /\b(три)\b/.test(p) && /ок(?:но|на|он|не|ни|нам)/.test(p)) return 3;
 
   return 1;
 }
@@ -123,15 +133,15 @@ function countFromOpeningPart(part, kind) {
 function parseOpeningsFromText(text) {
   const items = [];
   const raw = String(text);
-  const parts = raw.split(/[,;\n]+|(?=\s+\d+\s+окн)|(?=\s+(?:двое|две|два|три|\d+)\s+двер)/i);
+  const parts = raw.split(
+    /[,;\n]+|(?=\s+\d+\s+ок(?:но|на|он|не|ни|нам))|(?=\s+(?:двое|две|два|три|\d+)\s+двер)/i
+  );
 
   for (const part of parts) {
     const pLow = part.toLowerCase();
-    const isDoor = /двер/.test(pLow);
-    const isWindow = /окн/.test(pLow);
-    if (!isDoor && !isWindow) continue;
+    if (!/двер|ок(?:но|на|он|не|ни|нам)/.test(pLow)) continue;
 
-    if (isDoor) {
+    if (/двер/.test(pLow)) {
       const size = findOpeningSizeInPart(part, 'door');
       if (!size) continue;
       const count = countFromOpeningPart(part, 'door');
@@ -144,7 +154,7 @@ function parseOpeningsFromText(text) {
         areaTotal: count * size.area,
       });
     }
-    if (isWindow) {
+    if (/ок(?:но|на|он|не|ни|нам)/.test(pLow)) {
       const size = findOpeningSizeInPart(part, 'window');
       if (!size) continue;
       const count = countFromOpeningPart(part, 'window');
@@ -199,6 +209,16 @@ function parseDimensionsFromText(text) {
 
   m = t.match(
     /(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*на\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*на\s*(\d+(?:[.,]\d+)?)/
+  );
+  if (m) {
+    const L = parseNum(m[1]);
+    const W = parseNum(m[2]);
+    const H = parseNum(m[3]);
+    if (L && W && H) return { L, W, H };
+  }
+
+  m = t.match(
+    /(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*на\s*(\d+(?:[.,]\d+)?)\s*(?:м\.?)?\s*(?:и\s+|\s*,\s*)(\d+(?:[.,]\d+)?)\s*(?:м\.?)?/
   );
   if (m) {
     const L = parseNum(m[1]);
@@ -285,8 +305,9 @@ function extractDimensionsFromHistory(history) {
   return null;
 }
 
+/** Площадь 4 стен: (ширина×высота + длина×высота) × 2 = 2×(L×H + W×H). */
 function wallAreaGross(L, W, H) {
-  return 2 * (L + W) * H;
+  return 2 * (L * H + W * H);
 }
 
 function fmtInt(n) {
@@ -349,6 +370,41 @@ function fmtArea(n) {
     .replace(/,00$/, '');
 }
 
+function formatWallAreaBreakdown(L, W, H) {
+  const S = wallAreaGross(L, W, H);
+  const wh = W * H;
+  const lh = L * H;
+  return {
+    S,
+    formula: `(ширина×высота + длина×высота) × 2 = (${fmtArea(W)}×${fmtArea(H)} + ${fmtArea(L)}×${fmtArea(H)}) × 2 = (${fmtArea(wh)} + ${fmtArea(lh)}) × 2 = ${fmtArea(S)} кв.м`,
+    formulaCompact: `(${fmtArea(W)}×${fmtArea(H)} + ${fmtArea(L)}×${fmtArea(H)}) × 2 = ${fmtArea(S)} кв.м`,
+  };
+}
+
+function summarizeOpeningsForClient(items) {
+  if (!items || !items.length) return [];
+  const lines = [];
+  const windows = items.filter((it) => it.kind === 'window');
+  const doors = items.filter((it) => it.kind === 'door');
+  if (windows.length) {
+    const count = windows.reduce((s, it) => s + it.count, 0);
+    const area = windows.reduce((s, it) => s + it.areaTotal, 0);
+    const sample = windows[0];
+    lines.push(
+      `${count} окон ${fmtArea(sample.w)}×${fmtArea(sample.h)} м → ${fmtArea(area)} кв.м`
+    );
+  }
+  if (doors.length) {
+    const count = doors.reduce((s, it) => s + it.count, 0);
+    const area = doors.reduce((s, it) => s + it.areaTotal, 0);
+    const sample = doors[0];
+    lines.push(
+      `${count} ${count === 1 ? 'дверь' : count < 5 ? 'двери' : 'дверей'} ${fmtArea(sample.w)}×${fmtArea(sample.h)} м → ${fmtArea(area)} кв.м`
+    );
+  }
+  return lines;
+}
+
 function buildClientItogo(est) {
   const sOrder = fmtArea(est.S_order);
   return [
@@ -365,18 +421,20 @@ function buildClientItogo(est) {
  * @param {ReturnType<typeof computeEstimate>} est
  */
 function buildCalcClientNarrative(est) {
+  const wall = formatWallAreaBreakdown(est.L, est.W, est.H);
   const head =
     est.S_openings > 0
       ? `Приблизительный расчёт **с вычетом проёмов** для дома ${est.L}×${est.W}×${est.H} м (4 стены):`
       : `Приблизительный расчёт **без вычета проёмов** для дома ${est.L}×${est.W}×${est.H} м (4 стены):`;
-  const lines = [
-    head,
-    '',
-    `Площадь стен: 2×(${est.L}+${est.W})×${est.H} = ${fmtArea(est.S_gross)} кв.м.`,
-  ];
+  const lines = [head, '', `Площадь стен (4 стены): ${wall.formula}.`];
   if (est.S_openings > 0) {
+    const openingLines = summarizeOpeningsForClient(est.openingItems);
+    if (openingLines.length) {
+      lines.push('', 'Проёмы:', ...openingLines.map((l) => `- ${l}`));
+    } else {
+      lines.push('', `Проёмы: ${formatOpeningLines(est.openingItems)}.`);
+    }
     lines.push(
-      `Проёмы (двери и окна — вычитаем из стены): ${formatOpeningLines(est.openingItems)}.`,
       `Сумма проёмов: ${fmtArea(est.S_openings)} кв.м.`,
       `Под термопанели, клей и затирку: ${fmtArea(est.S_gross)} − ${fmtArea(est.S_openings)} = **${fmtArea(est.S)} кв.м**.`
     );
@@ -391,12 +449,12 @@ function buildCalcClientNarrative(est) {
 function userMessageHasOpeningSpecs(text) {
   const t = String(text).toLowerCase();
   if (!/двер|окн/.test(t)) return false;
-  if (/(полтора|\d+(?:[.,]\d+)?).*(?:на|[x×х\*])/.test(t)) return true;
+  if (/(полтора|\d+(?:[.,]\d+)?|метр).*(?:на|[x×х\*])/.test(t)) return true;
   return /\d{2,3}\s*[-–—]\s*\d{2,3}/.test(t);
 }
 
 function userRequestsFacadeCalc(text) {
-  return /расч[её]т|посчит|прикидк|смет|площад|термопанел|размер.*дом|дом\s+\d|сколько|стоим|стоит|отдел/i.test(
+  return /расч[её]т|расчит|посчит|прикидк|смет|площад|термопанел|размер.*дом|дом\s+\d|сколько|стоим|стоит|отдел/i.test(
     String(text)
   );
 }
@@ -444,11 +502,11 @@ function formatOpeningLines(items) {
  */
 function buildCalcSystemBlock(est) {
   const { L, W, H, S_gross, S_openings, S, N, N_foam, N_grout, N_anchors, S_order } = est;
-  const sum = L + W;
+  const wall = formatWallAreaBreakdown(L, W, H);
   const lines = [
     '=== РАСЧЁТ СЕРВЕРА (только для модели, клиенту не цитировать этот блок и не приводить чужие «контрольные» размеры) ===',
     `Размеры клиента: длина ${L} м, ширина ${W} м, высота стен ${H} м (4 стены).`,
-    `Площадь стен (брутто): S_gross = 2×(${L}+${W})×${H} = 2×${sum}×${H} = ${fmtArea(S_gross)} кв.м.`,
+    `Площадь стен (брутто): S_gross = (W×H + L×H) × 2 = ${wall.formulaCompact}. **Итог S_gross = ${fmtArea(S_gross)} кв.м.** Не путать с L×W×H и не забывать ×2 на пару стен.`,
   ];
 
   if (S_openings > 0) {
