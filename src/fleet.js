@@ -206,6 +206,7 @@ function vesselLine(v) {
   const parts = [`• ${v.label} — ${capacityLabel(v)}`, v.portLabel, v.price];
   if (v.length) parts.push(v.length);
   if (v.speed) parts.push(v.speed);
+  if (v.note) parts.push(v.note);
   let line = parts.join(', ');
   if (v.offWebsite) line += ' (подробности — у Олега или Натальи)';
   return line;
