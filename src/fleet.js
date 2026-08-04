@@ -13,7 +13,7 @@ const FLEET = [
     label: 'катер «Инфинити»',
     maxGuests: 6,
     port: 'sirius',
-    portLabel: 'Сириус',
+    portLabel: 'Имеретинский порт',
     price: '8 000 ₽/час',
     speed: 'до 70 км/ч',
     note: 'вейкборд или водные лыжи, капитан-инструктор',

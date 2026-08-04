@@ -95,7 +95,7 @@ async function handleChat(input) {
 
   // Вейкборд / водные лыжи — катер «Инфинити»
   if (lastUser && isWakeIntent(lastUser.content)) {
-    const reply = buildWakeReply();
+    const reply = buildWakeReply(lastUser.content);
     logChatTurn({
       sessionId: input.sessionId,
       source: input.source || 'web',
