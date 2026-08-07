@@ -85,11 +85,11 @@ const FLEET = [
     name: 'Tigger',
     kind: 'yacht',
     label: 'яхта «Tigger»',
-    maxGuests: 12,
-    maxGuestsLabel: 'до 10–12',
+    maxGuests: 14,
     port: 'sirius',
-    portLabel: 'Сириус',
-    price: '45 000 ₽/час',
+    portLabel: 'Имеретинский порт, линия 3',
+    price: '50 000 ₽/час',
+    note: 'премиум, private charter',
   },
   {
     id: 'aleksum',
@@ -100,6 +100,7 @@ const FLEET = [
     port: 'sochi',
     portLabel: 'Морпорт Сочи',
     price: '40 000 ₽/час',
+    note: 'премиум, private charter',
   },
 ];
 
