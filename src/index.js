@@ -27,7 +27,14 @@ app.get('/health', (_req, res) => {
     telegramNotify: Boolean(config.hasTelegramNotify),
     maxNotify: config.hasMaxNotify,
     knowledgeChars: kb.combined.length,
-    handlers: { seaRoute: true, contactCallback: true, wake: true, streamingUi: true },
+    handlers: {
+      seaRoute: true,
+      contactCallback: true,
+      wake: true,
+      groupSailing: true,
+      delfinCharter: true,
+      streamingUi: true,
+    },
   });
 });
 

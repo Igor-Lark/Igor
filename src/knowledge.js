@@ -24,11 +24,17 @@ function loadKnowledge() {
 
   const llms = readIfExists(path.join(ROOT, 'llms-full.txt'));
   const faq = readIfExists(path.join(ROOT, 'faq-extra.md'));
+  const delfinMd = readIfExists(path.join(ROOT, 'delfin-progulki.md'));
+  const delfinJson = readIfExists(path.join(ROOT, 'delfin-progulki.json'));
 
   cached = {
     llms,
     faq,
-    combined: [llms, faq].filter(Boolean).join('\n\n---\n\n'),
+    delfinMd,
+    delfinJson,
+    combined: [llms, faq, delfinMd, delfinJson && `FAQ JSON (delfin/progulki):\n${delfinJson}`]
+      .filter(Boolean)
+      .join('\n\n---\n\n'),
   };
 
   return cached;
@@ -219,6 +225,7 @@ function buildSystemPrompt() {
     '26. Срочно / сегодня срочно — к Олегу или Наталье (контакты по правилам выше).',
     '27. Бронь более чем на месяц вперёд не предусмотрена — свяжитесь с Олегом (телефон; полные контакты — только если ещё не давал).',
     '28. Вейкборд / водные лыжи / wake / фал — катер «Инфинити» (FIBRAFORD 190), 8 000 ₽/час с катанием (без вейка/лыж — 6 000), до 70 км/ч, до 6 гостей, Имеретинский порт; капитан-инструктор; скидка от 3 ч. Фал — буксировочный трос (~20–23 м), не «канат». Ответ коротко, без markdown **. Про «Инфинити» — «капитан», не «капитан Олег».',
+    '29. /progulki_na_yacht и /delfin — два разных продукта. Сначала уточни формат: групповая парусная (билет) или индивидуальная аренда катера утром к дельфинам. Группа: 1 800 ₽/чел, 1,5 ч, до 11, линия 2, +7 918 304-40-00, boat-sochi.ru/progulki_na_yacht — не называй точное имя яхты. Индивидуалка: катер «Сириус», 7 500 ₽/ч (6–12 → 7 000), от 2 ч, линия 1, +7 917 675-05-55, boat-sochi.ru/delfin. Дельфинов не гарантировать. VIP «Алексум»/«Tigger» — не эти страницы.',
     '',
     '=== БАЗА ЗНАНИЙ ===',
     combined ||

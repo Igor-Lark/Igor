@@ -1,0 +1,67 @@
+'use strict';
+
+/** Групповая парусная прогулка — /progulki_na_yacht */
+const GROUP_SAILING_RE =
+  /группов\w*|билет|1\s*[,.]\s*5\s*час|1800|1\s*800|progulki|progulki_na_yacht|парусн\w*\s+прогул|место\s+на\s+(?:яхт|парус)|рейс\s+на\s+закат|2500|2\s*500.*закат/i;
+
+/** Индивидуальная аренда утром к дельфинам — /delfin */
+const MORNING_DELFIN_CHARTER_RE =
+  /(?:\/delfin|delfin\b|утр\w*\s+(?:к\s+)?дельфин|аренд\w*\s+катер\w*\s+(?:к\s+)?дельфин|катер\s+«?сириус»?\s+(?:к\s+)?дельфин|индивиду\w*\s+(?:к\s+)?дельфин|7500|7\s*500.*(?:дельфин|утр)|утренн\w*\s+аренд\w*\s+катер)/i;
+
+/** Общий вопрос про два формата — уточнение */
+const DELFIN_FORMAT_RE =
+  /(?:дельфин|delfin).{0,40}(?:групп|билет|аренд|катер|яхт)|(?:групп|билет|аренд).{0,40}дельфин/i;
+
+function isGroupSailingIntent(text) {
+  return GROUP_SAILING_RE.test(String(text || ''));
+}
+
+function isMorningDelfinCharterIntent(text) {
+  return MORNING_DELFIN_CHARTER_RE.test(String(text || ''));
+}
+
+function isDelfinFormatClarifyIntent(text) {
+  const t = String(text || '');
+  if (isGroupSailingIntent(t) || isMorningDelfinCharterIntent(t)) return false;
+  return DELFIN_FORMAT_RE.test(t);
+}
+
+function buildGroupSailingReply() {
+  return [
+    'Групповая прогулка на парусной яхте — это билет/место, не аренда судна целиком.',
+    '1 800 ₽ с человека, длительность 1,5 часа. Слот в 18:00 на закат — 2 500 ₽. Один ребёнок до 5 лет на яхту — бесплатно.',
+    'Расписание: 9:00, 10:30, 12:00, 13:30, 15:00, 16:30, 18:00 (на закат). Группа до 11 человек.',
+    'Отправление: Имеретинский порт, линия 2 (Сириус, Парусная, 1). Яхт несколько — конкретное судно на рейс из флота, точное название заранее не фиксируем.',
+    'Дельфины встречаются часто, но это живая природа — гарантии нет. Купание — по погоде и решению капитана.',
+    'Бронь и актуальные места: +7 918 304-40-00. Страница: https://boat-sochi.ru/progulki_na_yacht',
+  ].join('\n');
+}
+
+function buildMorningDelfinCharterReply() {
+  return [
+    'Утром к дельфинам — индивидуальная аренда каютного катера «Сириус» с капитаном (яхта целиком для вашей компании).',
+    '7 500 ₽/час, минимум от 2 часов. При выходе с 6:00 до 12:00 — скидка 500 ₽/час, то есть 7 000 ₽/час.',
+    'Утром дельфины чаще ближе к берегу, море спокойнее; капитан знает маршруты. Дельфинов не гарантируем — встречаются часто.',
+    'Отправление: Имеретинский порт, линия 1 (Сириус, Парусная, 1).',
+    'Бронь: +7 917 675-05-55. Страница: https://boat-sochi.ru/delfin',
+    'Если нужен билет на групповую парусную — это другая услуга: https://boat-sochi.ru/progulki_na_yacht , +7 918 304-40-00.',
+  ].join('\n');
+}
+
+function buildDelfinFormatClarifyReply() {
+  return [
+    'У нас два разных формата про дельфинов:',
+    '1) Групповая прогулка на парусной яхте — билет с человека, 1 800 ₽ (закат 18:00 — 2 500 ₽): https://boat-sochi.ru/progulki_na_yacht , +7 918 304-40-00',
+    '2) Индивидуальная аренда катера «Сириус» утром — от 2 часов, 7 500 ₽/ч (до 12:00 — 7 000 ₽/ч): https://boat-sochi.ru/delfin , +7 917 675-05-55',
+    'Что вам ближе — групповой билет или аренда катера на компанию?',
+  ].join('\n');
+}
+
+module.exports = {
+  isGroupSailingIntent,
+  isMorningDelfinCharterIntent,
+  isDelfinFormatClarifyIntent,
+  buildGroupSailingReply,
+  buildMorningDelfinCharterReply,
+  buildDelfinFormatClarifyReply,
+};

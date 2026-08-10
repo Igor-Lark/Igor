@@ -26,6 +26,14 @@ const { isCapacityIntent, buildCapacityReply, capacityPromptBlock } = require('.
 const { isContactCallbackIntent, buildCallbackFormReply } = require('./contacts');
 const { isSeaRouteIntent, buildSeaRouteReply } = require('./routes');
 const { isWakeIntent, buildWakeReply } = require('./wake');
+const {
+  isGroupSailingIntent,
+  isMorningDelfinCharterIntent,
+  isDelfinFormatClarifyIntent,
+  buildGroupSailingReply,
+  buildMorningDelfinCharterReply,
+  buildDelfinFormatClarifyReply,
+} = require('./delfin-progulki');
 
 /**
  * @param {{
@@ -91,6 +99,54 @@ async function handleChat(input) {
       history: cleaned,
     });
     return { reply, provider: 'route', lead: null };
+  }
+
+  // Групповая парусная /progulki_na_yacht
+  if (lastUser && isGroupSailingIntent(lastUser.content)) {
+    const reply = buildGroupSailingReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'group-sailing',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'group-sailing', lead: null };
+  }
+
+  // Индивидуальная аренда утром к дельфинам /delfin
+  if (lastUser && isMorningDelfinCharterIntent(lastUser.content)) {
+    const reply = buildMorningDelfinCharterReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'delfin-charter',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'delfin-charter', lead: null };
+  }
+
+  // Дельфины — уточнить формат (группа vs аренда)
+  if (lastUser && isDelfinFormatClarifyIntent(lastUser.content)) {
+    const reply = buildDelfinFormatClarifyReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'delfin-clarify',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'delfin-clarify', lead: null };
   }
 
   // Вейкборд / водные лыжи — катер «Инфинити»
