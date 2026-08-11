@@ -20,12 +20,13 @@ LANDING_UTM = (
     LANDING
     + "?utm_source=yandex&utm_medium=cpc"
     + "&utm_campaign=epk_gruppovye_yahta_progulki"
-    + "&utm_content={ad_id}"
 )
 PHONE = "+7 918 304-40-00"
 DISPLAY = "Прогулка-на-яхте"
 
 # --- 8 быстрых ссылок (всегда 8) ---
+# Описания: 2 строки внутри одной ссылки = \n (НЕ ||).
+# || — только разделитель между 8 ссылками в колонках BC/BD/BE.
 SITELINK_TITLES = [
     "Расписание слотов",
     "Цена от 1 800 ₽",
@@ -37,14 +38,14 @@ SITELINK_TITLES = [
     "Как добраться",
 ]
 SITELINK_DESCS = [
-    "С 9:00 до 18:00||Каждый день",
-    "Дневные слоты||Закат — 2 500 ₽",
-    "Билет 2 500 ₽||Прогулка 1,5 часа",
-    "Часто встречаются||Живая природа",
-    "Имеретинский порт||Линия 2",
-    "Парусная яхта||1,5 часа в море",
-    "Звонок или MAX||Ответим быстро",
-    "Парусная, 1||Сириус, линия 2",
+    "С 9:00 до 18:00\nКаждый день",
+    "Дневные слоты\nЗакат 2 500 ₽",
+    "Билет 2 500 ₽\nПрогулка 1,5 часа",
+    "Часто встречаются\nЖивая природа",
+    "Имеретинский порт\nЛиния 2",
+    "Парусная яхта\n1,5 часа в море",
+    "Звонок или MAX\nОтветим быстро",
+    "Парусная, 1\nСириус, линия 2",
 ]
 SITELINK_URLS = [
     f"{LANDING}?utm_content=sl_schedule",
@@ -149,19 +150,19 @@ JUNK_SITES = [
 ]
 
 HEADLINES = [
-    "Групповая прогулка на яхте — от 1 800 ₽",
-    "Парусная яхта Сириус — 1,5 часа",
-    "Увидеть дельфинов — Имеретинский порт",
-    "Морская прогулка к дельфинам · Сириус",
-    "Закат с яхты — слот 18:00 · 2 500 ₽",
+    "Групповая прогулка на яхте от 1 800 ₽",
+    "Парусная яхта Сириус - 1,5 часа",
+    "Увидеть дельфинов - Имеретинский порт",
+    "Морская прогулка к дельфинам, Сириус",
+    "Закат с яхты - слот 18:00, 2 500 ₽",
     "Билет на яхту: группа до 11 человек",
-    "Яхта из Имеретинского порта · линия 2",
+    "Яхта из Имеретинского порта, линия 2",
 ]
 
 TEXTS = [
     "Групповая прогулка 1,5 часа. От 1800 ₽, закат 2500 ₽. Дельфины, Олимпийский парк.",
-    "Не снимайте яхту целиком — купите место. До 11 человек. Бронь: " + PHONE,
-    "Сириус, линия 2. Слоты 9:00–18:00. Ребёнок до 5 лет на яхту — бесплатно.",
+    "Не снимайте яхту целиком - купите место. До 11 человек. Бронь: " + PHONE,
+    "Сириус, линия 2. Слоты 9:00-18:00. Ребенок до 5 лет на яхту - бесплатно.",
 ]
 
 GROUPS = [
@@ -251,6 +252,12 @@ def check_limits():
     assert len(SITELINK_TITLES) == 8
     assert len(SITELINK_DESCS) == 8
     assert len(SITELINK_URLS) == 8
+    joined = "||".join(SITELINK_DESCS)
+    assert joined.count("||") == 7, joined
+    for d in SITELINK_DESCS:
+        assert "||" not in d, d
+        for line in d.split("\n"):
+            assert len(line) <= 30, (line, len(line))
 
 
 def copy_cell_style(src, dst):
@@ -290,7 +297,8 @@ def build():
 
     row = 12
     for group_name, group_num, phrases in GROUPS:
-        for phrase in phrases:
+        for idx, phrase in enumerate(phrases):
+            first_in_group = idx == 0
             # A–H
             ws.cell(row, 1, "-")
             ws.cell(row, 2, "Комбинаторное")
@@ -322,18 +330,22 @@ def build():
             ws.cell(row, 47, LANDING_UTM)
             ws.cell(row, 48, DISPLAY)
             ws.cell(row, 49, "Россия")
-            # BA BB — для новой кампании оставляем пусто (или черновик)
+            # BA BB — для новой кампании оставляем пусто
             ws.cell(row, 53, None)
             ws.cell(row, 54, None)
-            # BC BD BE — 8 быстрых ссылок
-            ws.cell(row, 55, sitelink_titles)
-            ws.cell(row, 56, sitelink_descs)
-            ws.cell(row, 57, sitelink_urls)
-            # BL уточнения
-            ws.cell(row, 64, CLARIFICATIONS)
+            # BC BD BE — 8 быстрых ссылок (на первой строке группы; иначе наследуются)
+            if first_in_group:
+                ws.cell(row, 55, sitelink_titles)
+                ws.cell(row, 56, sitelink_descs)
+                ws.cell(row, 57, sitelink_urls)
+                ws.cell(row, 64, CLARIFICATIONS)
+            else:
+                ws.cell(row, 55, None)
+                ws.cell(row, 56, None)
+                ws.cell(row, 57, None)
+                ws.cell(row, 64, None)
             # BM минус на группу
             ws.cell(row, 65, GROUP_MINUS)
-            # BN возраст — не ставим
             row += 1
 
     # --- sheet: мусорные площадки ---
@@ -410,7 +422,7 @@ def build():
     for i in range(8):
         sl.cell(5 + i, 1, i + 1)
         sl.cell(5 + i, 2, SITELINK_TITLES[i])
-        sl.cell(5 + i, 3, SITELINK_DESCS[i].replace("||", " / "))
+        sl.cell(5 + i, 3, SITELINK_DESCS[i].replace("\n", " / "))
         sl.cell(5 + i, 4, SITELINK_URLS[i])
     sl["A14"] = "В листе «Тексты» колонки BC / BD / BE заполнены через || (формат Директа)."
     sl["A15"] = f"Телефон брони групповых: {PHONE}"
