@@ -10,92 +10,77 @@ html,body{margin:0;padding:0;width:240px;height:400px;overflow:hidden;background
 a.banner{
   display:block;width:240px;height:400px;position:relative;overflow:hidden;
   text-decoration:none;cursor:pointer;background:#fff;
-  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#666;
+  font-family:"Helvetica Neue",Helvetica,Arial,"Segoe UI",sans-serif;color:#5c5c5c;
 }
-.top{
-  position:absolute;left:0;right:0;top:0;height:92px;
-  background:#fff;z-index:2;
+.stage{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;
+  padding:22px 14px 20px;
 }
-.specs{
-  position:absolute;top:18px;right:16px;text-align:right;
-  font-size:13px;line-height:1.35;font-weight:400;letter-spacing:.01em;
-  color:#6a6a6a;
+.rotator-wrap{
+  height:28px;width:100%;
+  position:relative;overflow:hidden;
+  margin-bottom:18px;flex:0 0 auto;
 }
-.mid{
-  position:absolute;left:0;right:0;top:92px;height:236px;
-  background:#fff;z-index:1;
+.rotator{
+  position:absolute;left:0;right:0;top:0;
+  text-align:center;
+  font-size:18px;font-weight:500;letter-spacing:.01em;color:#5a5a5a;
+  line-height:28px;white-space:nowrap;
+  opacity:0;transform:translateY(0);
+  will-change:transform,opacity;
 }
-.photo{
-  position:absolute;left:0;right:0;top:48px;height:188px;
-  background:#cfd8e0 center 45%/cover no-repeat url('bg_240x400.jpg');
+.rotator.is-in{
+  opacity:1;transform:translateY(0);
+  transition:opacity 1s linear;
+}
+.rotator.is-hold{
+  opacity:1;transform:translateY(0);
+  transition:none;
+}
+.rotator.is-out{
+  opacity:1;transform:translateY(-32px);
+  transition:transform 1s linear;
 }
 .title{
-  position:absolute;left:16px;top:8px;z-index:3;
-  color:#6a6a6a;line-height:1;
-}
-.title .small{display:block;font-size:22px;font-weight:400;margin-bottom:2px}
-.title .big{display:block;font-size:48px;font-weight:700;letter-spacing:-.02em}
-.bottom{
-  position:absolute;left:0;right:0;bottom:0;height:72px;
-  background:#fff;z-index:2;
-  display:flex;align-items:center;justify-content:center;
-}
-.footer{
-  font-size:16px;font-weight:400;letter-spacing:.04em;color:#6a6a6a;
-  text-transform:lowercase;
-}
-
-/*
-  Цикл 6 с:
-  0–2 с — появление (opacity 0→1)
-  2–3 с — пауза видимости
-  3–5 с — уход (opacity 1→0)
-  5–6 с — пауза
-*/
-.fade-loop{
+  text-align:center;line-height:1;margin:0 0 18px;flex:0 0 auto;
+  color:#5a5a5a;
   opacity:0;
-  animation:fadeLoop 6s linear infinite;
+  animation:titleIn 2s linear forwards;
 }
-@keyframes fadeLoop{
-  0%{opacity:0}
-  33.333%{opacity:1}   /* 2s */
-  50%{opacity:1}       /* +1s hold */
-  83.333%{opacity:0}   /* +2s out */
-  100%{opacity:0}      /* +1s pause */
-}
-
-/* «яхта Tigger» — один раз появляется за 2 с и остаётся */
-.fade-once{
-  opacity:0;
-  animation:fadeOnce 2s linear forwards;
-}
-@keyframes fadeOnce{
+.title .small{display:block;font-size:20px;font-weight:400;margin-bottom:4px}
+.title .big{display:block;font-size:44px;font-weight:700;letter-spacing:-.02em}
+@keyframes titleIn{
   from{opacity:0}
   to{opacity:1}
+}
+.photo{
+  width:100%;height:150px;flex:0 0 auto;
+  background:#d7e3ec center 48%/cover no-repeat url('bg_240x400.jpg');
+  margin-bottom:auto;
+}
+.footer{
+  flex:0 0 auto;
+  font-size:15px;font-weight:400;letter-spacing:.04em;color:#7a7a7a;
+  text-transform:lowercase;
+  margin-top:18px;
+  opacity:0;
+  animation:titleIn 2s linear forwards;
 }
 </style>
 </head>
 <body>
 <a class="banner" id="click_area" href="#" target="_blank">
-  <div class="top">
-    <div class="specs fade-loop">
-      20 метров<br>
-      до 14 гостей<br>
-      2 палубы<br>
-      флайбридж
+  <div class="stage">
+    <div class="rotator-wrap">
+      <div class="rotator" id="rotator"></div>
     </div>
-  </div>
-
-  <div class="mid">
-    <div class="title fade-once">
+    <div class="title">
       <span class="small">яхта</span>
       <span class="big">Tigger</span>
     </div>
     <div class="photo"></div>
-  </div>
-
-  <div class="bottom">
-    <div class="footer fade-loop">private charter</div>
+    <div class="footer">private charter</div>
   </div>
 </a>
 <script>
@@ -106,6 +91,54 @@ a.banner{
       a.href = yandexHTML5BannerApi.getClickURLNum(1);
     }
   } catch (e) {}
+
+  var lines = ["20 метров", "2 палубы", "до 14 гостей", "флайбридж"];
+  var el = document.getElementById("rotator");
+  var i = 0;
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  function setState(name) {
+    el.className = "rotator " + name;
+  }
+
+  async function showLine(text, holdMs, withFadeIn) {
+    el.textContent = text;
+    el.style.transition = "none";
+    el.style.opacity = withFadeIn ? "0" : "1";
+    el.style.transform = "translateY(0)";
+    // force reflow
+    void el.offsetWidth;
+
+    if (withFadeIn) {
+      el.style.transition = "opacity 1s linear";
+      el.style.opacity = "1";
+      await wait(1000);
+    }
+
+    await wait(holdMs);
+
+    el.style.transition = "transform 1s linear";
+    el.style.transform = "translateY(-36px)";
+    await wait(1000);
+  }
+
+  async function loop() {
+    // первый текст: сразу виден, стоит 2 с, уходит вверх
+    await showLine(lines[0], 2000, false);
+    i = 1;
+    while (true) {
+      // следующие: fade-in 1 с, стоят 1 с, уходят вверх 1 с
+      // при возврате к «20 метров» — снова hold 2 с после fade-in
+      var hold = (i % lines.length === 0) ? 2000 : 1000;
+      await showLine(lines[i % lines.length], hold, true);
+      i++;
+    }
+  }
+
+  loop();
 })();
 </script>
 </body>
