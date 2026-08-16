@@ -40,8 +40,16 @@ irm https://raw.githubusercontent.com/Igor-Lark/Igor/cursor/print-bridge-4385/bo
 git clone --branch cursor/print-bridge-4385 https://github.com/Igor-Lark/Igor.git D:\CURSOR\print-bridge-git
 ```
 
+Сразу после клона (одна строка, без кириллицы в пути к установщику):
+
 ```powershell
-powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge-git\локальная\install-autostart.ps1"
+powershell -ExecutionPolicy Bypass -File D:\CURSOR\print-bridge-git\install.ps1
+```
+
+Если `install.ps1` ещё нет в клоне — сначала `git -C D:\CURSOR\print-bridge-git pull`, либо поставь автозагрузку одной строкой:
+
+```powershell
+$w=(Get-ChildItem D:\CURSOR\print-bridge-git -Recurse -Filter print-watch.ps1 | Select-Object -First 1).FullName; $b=Join-Path ([Environment]::GetFolderPath('Startup')) 'boat-print-watch.bat'; Set-Content -Path $b -Encoding ASCII -Value @('@echo off', "powershell -ExecutionPolicy Bypass -File `"$w`""); Start-Process powershell.exe -ArgumentList '-ExecutionPolicy','Bypass','-File',$w; Write-Host OK $b
 ```
 
 В автозагрузку Windows пишется `print-watch.ps1` из того клона, откуда ставили.
