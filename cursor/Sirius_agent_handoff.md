@@ -232,12 +232,35 @@ API Директа не подключено — анализ только по 
 
 ---
 
-## 8. Как вести дальше
+## 8. Быстрые ссылки — всегда 8
+
+Правило сверки 16.08: в **каждой** группе этой РК — ровно **8** быстрых ссылок. У каждой: текст + описание из двух строк (`\n`, не `||`) + куда (URL). Файл: `cursor/PRAVILO_8_bystryh_ssylok.md`. Word: `cursor/Bystrye_ssylki_Arenda_v_Siriuse_8_2026-08-16.docx`.
+
+### Группа «Аренда в Сириусе» (создаём в 704503370)
+
+Посадка объявлений — главная, не `/delfin`. UTM: `utm_campaign=sirius_704503370`.
+
+| № | Текст | Описание 1 | Описание 2 | Куда |
+|---|-------|------------|------------|------|
+| 1 | Цены | Актуальные тарифы | От 2 часов | `https://boat-sochi.ru/?utm_source=yandex&utm_medium=cpc&utm_campaign=sirius_704503370&utm_content=sl_prices` |
+| 2 | Купание | Открытое море | Вдали от берега | `https://boat-sochi.ru/?utm_source=yandex&utm_medium=cpc&utm_campaign=sirius_704503370&utm_content=sl_swim` |
+| 3 | Наш флот | Катера и яхты | В наличии в порту | `https://boat-sochi.ru/?utm_source=yandex&utm_medium=cpc&utm_campaign=sirius_704503370&utm_content=sl_fleet` |
+| 4 | Причал Сириус | Парусная 1 | Имеретинский порт | `https://boat-sochi.ru/?utm_source=yandex&utm_medium=cpc&utm_campaign=sirius_704503370&utm_content=sl_pier` |
+| 5 | Утро к дельфинам | Скидка до 12:00 | Катер Сириус | `https://boat-sochi.ru/delfin?utm_source=yandex&utm_medium=cpc&utm_campaign=sirius_704503370&utm_content=sl_delfin` |
+| 6 | Закат на море | Выход с 18:00 | Бронь заранее | `https://boat-sochi.ru/?utm_source=yandex&utm_medium=cpc&utm_campaign=sirius_704503370&utm_content=sl_sunset#services` |
+| 7 | Забронировать | Звонок или MAX | Ответим быстро | `https://boat-sochi.ru/?utm_source=yandex&utm_medium=cpc&utm_campaign=sirius_704503370&utm_content=sl_book` |
+| 8 | Контакты | +7 917 675-05-55 | Telegram · MAX | `https://boat-sochi.ru/?utm_source=yandex&utm_medium=cpc&utm_campaign=sirius_704503370&utm_content=sl_contacts` |
+
+Ключи заката в эту группу не ставить (РК ZK). Быстрая ссылка «Закат» на сайт — можно.
+
+---
+
+## 9. Как вести дальше
 
 1. Сверить в Директе **только 704503370**: рыбалка на паузе? галерея выкл? объявление **17381764710** снова в работе?
 2. Выгрузка vitaminki21 по **этой** кампании за **10–16.08** → Word-анализ Сириуса.
 3. Пока обучение своей РК: только минусы и семантика. Стратегию/бюджет/цели 712465896 не трогать.
-4. Крутить **17676642893**, **17729439012**, **17381764710**. Не копировать ключи из группы «Аренда яхт Сириус» соседа.
+4. Крутить **17676642893**, **17729439012**, **17381764710**. Группу «Аренда в Сириусе» создавать **здесь**, не в Морских. 8 быстрых ссылок — раздел 8.
 5. РСЯ в 704503370 не разгонять.
 6. Посадки: главная + `/delfin`.
 7. Ответ на лид **< 2 мин** в пик 10:00–21:00. На Авито < 15–20 мин.
