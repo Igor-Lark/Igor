@@ -9,10 +9,10 @@
 irm https://raw.githubusercontent.com/Igor-Lark/Igor/cursor/print-bridge-4385/bootstrap-print-bridge.ps1 | iex
 ```
 
-Если клон уже есть:
+Если клон уже есть (путь без кириллицы):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge\локальная\install-autostart.ps1"
+powershell -ExecutionPolicy Bypass -File D:\CURSOR\print-bridge-git\install.ps1
 ```
 
 В автозагрузку попадёт:

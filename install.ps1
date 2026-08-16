@@ -1,16 +1,17 @@
-# ASCII only. Same as repo-root install.ps1
+# ASCII only. Windows PowerShell 5.1 cannot parse UTF-8 Cyrillic without BOM.
 $ErrorActionPreference = "Stop"
 
-$Watch = Join-Path $PSScriptRoot "print-watch.ps1"
-$Root = Split-Path $PSScriptRoot -Parent
+$Watch = Get-ChildItem -Path $PSScriptRoot -Recurse -Filter "print-watch.ps1" -File |
+    Select-Object -First 1 -ExpandProperty FullName
+if (-not $Watch) {
+    Write-Error "print-watch.ps1 not found under $PSScriptRoot"
+}
+
+$Root = $PSScriptRoot
 $Inbox = Join-Path $Root "inbox"
 $Cmd = "powershell -ExecutionPolicy Bypass -File `"$Watch`""
 $Startup = [Environment]::GetFolderPath("Startup")
 $Bat = Join-Path $Startup "boat-print-watch.bat"
-
-if (-not (Test-Path $Watch)) {
-    Write-Error "Missing $Watch"
-}
 
 Set-Content -Path $Bat -Value @("@echo off", $Cmd) -Encoding ASCII
 

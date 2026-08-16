@@ -1,12 +1,14 @@
-# Мост печати: забирает Word из inbox/ (клон D:\CURSOR\print-bridge)
-# и печатает односторонне через Microsoft Word.
-# Запуск: powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge\локальная\print-watch.ps1"
+# Print bridge: pull Word from inbox/ and print one-sided via Word COM.
+# ASCII only so Windows PowerShell 5.1 can parse the file.
 
 $ErrorActionPreference = "Continue"
 $PreferredRepo = "D:\CURSOR\print-bridge"
+$FallbackRepo = "D:\CURSOR\print-bridge-git"
 $Here = Split-Path -Parent $MyInvocation.MyCommand.Path
 if (Test-Path (Join-Path $PreferredRepo ".git")) {
     $Repo = $PreferredRepo
+} elseif (Test-Path (Join-Path $FallbackRepo ".git")) {
+    $Repo = $FallbackRepo
 } else {
     $Repo = Split-Path -Parent $Here
 }
@@ -33,7 +35,7 @@ function Print-Docx($path) {
         $word.Visible = $false
         $word.DisplayAlerts = 0
         $doc = $word.Documents.Open($path, $false, $true)
-        # Copies=1, без ручного дуплекса
+        # Copies=1, no duplex
         $missing = [Type]::Missing
         $doc.PrintOut(
             $false, $false, $missing, $missing, $missing, $missing, $missing,
@@ -110,8 +112,8 @@ function Get-InboxLocalFolder {
     }
 }
 
-Write-Host "Мост печати запущен. Репо: $Repo"
-Write-Host "Inbox: $InboxLocal  (Ctrl+C — стоп)"
+Write-Host "Print watch running. Repo: $Repo"
+Write-Host "Inbox: $InboxLocal  (Ctrl+C to stop)"
 while ($true) {
     Get-InboxFromGit
     Get-InboxLocalFolder
