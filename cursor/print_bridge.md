@@ -27,15 +27,19 @@ python3 cursor/queue_print.py cursor/Имя_файла.docx
 ## Локальный ПК (один раз, потом автозагрузка)
 
 1. Клон репозитория (или папка `D:\CURSOR\Igor`).
-2. PowerShell:
+2. Один раз поставить в автозагрузку:
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File "D:\CURSOR\Igor\локальная\install-autostart.ps1"
+```
+
+В автозагрузку Windows пишется та же команда:
+
+```
 powershell -ExecutionPolicy Bypass -File "D:\CURSOR\Igor\локальная\print-watch.ps1"
 ```
 
 Скрипт каждые 60 сек: `git fetch --all`, забирает новые `локальная/print-inbox/*.docx` со всех веток `cursor/*`, печатает через Word, помечает как сделанные.
-
-Чтобы жил постоянно — ярлык в автозагрузку Windows на этот `.ps1`.
 
 Принтер: очередь Windows по умолчанию. Двустороннюю печать на принтере **выключить**.
 
