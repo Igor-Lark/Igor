@@ -28,9 +28,9 @@
 
 ## Срез рынка
 
-Word: `cursor/Konkurenty_gruppovaya_rybalka_Sirius_2026-08-16.docx`  
-Мост печати: `python3 cursor/queue_print.py cursor/….docx` → `inbox/` → watcher на ПК.  
-16.08: файл **в очереди печати** (`inbox/Konkurenty_gruppovaya_rybalka_Sirius_2026-08-16.docx`).
+Word конкурентов: `cursor/Konkurenty_gruppovaya_rybalka_Sirius_2026-08-16.docx` (не перепечатывать).  
+Word ЕПК 16.08: `cursor/EPK_Gruppovaya_rybalka_Moryak_Popaj_2026-08-16.docx`  
+Мост печати: `python3 cursor/queue_print.py cursor/….docx` → `inbox/` → watcher на ПК.
 
 - Типичный билет Имеретинки: **2 300–3 400 ₽ / 3 ч**, группа **10–11**.
 - Массовые слоты: **09:00 / 12:00 / 15:00**.

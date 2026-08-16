@@ -1,7 +1,7 @@
-# ASCII. Drop fishing Word into BOTH inboxes and print now.
+# ASCII. Drop EPK fishing Word into BOTH inboxes and print now.
 $ErrorActionPreference = "Stop"
-$Url = "https://github.com/Igor-Lark/Igor/raw/cursor/rybalka-konkurenty-289c/inbox/Konkurenty_gruppovaya_rybalka_Sirius_2026-08-16.docx"
-$Name = "Konkurenty_gruppovaya_rybalka_Sirius_2026-08-16.docx"
+$Url = "https://github.com/Igor-Lark/Igor/raw/cursor/rybalka-konkurenty-289c/inbox/EPK_Gruppovaya_rybalka_Moryak_Popaj_2026-08-16.docx"
+$Name = "EPK_Gruppovaya_rybalka_Moryak_Popaj_2026-08-16.docx"
 $Dirs = @(
     "D:\CURSOR\print-bridge-git\inbox",
     "D:\CURSOR\print-bridge\inbox"
