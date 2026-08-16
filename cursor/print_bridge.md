@@ -52,7 +52,7 @@ powershell -ExecutionPolicy Bypass -File D:\CURSOR\print-bridge-git\install.ps1
 $w=(Get-ChildItem D:\CURSOR\print-bridge-git -Recurse -Filter print-watch.ps1 | Select-Object -First 1).FullName; $b=Join-Path ([Environment]::GetFolderPath('Startup')) 'boat-print-watch.bat'; Set-Content -Path $b -Encoding ASCII -Value @('@echo off', "powershell -ExecutionPolicy Bypass -File `"$w`""); Start-Process powershell.exe -ArgumentList '-ExecutionPolicy','Bypass','-File',$w; Write-Host OK $b
 ```
 
-В автозагрузку Windows пишется `print-watch.ps1` из того клона, откуда ставили.
+В автозагрузку Windows пишется скрытый `print-watch.ps1` из того клона, откуда ставили. Окно смотреть не нужно: важен процесс, не чёрный экран. Крестик / Ctrl+C останавливает печать до следующего входа в Windows.
 
 Скрипт каждые 60 сек: `git fetch --all`, забирает новые `inbox/*.docx` со всех веток `cursor/*`, печатает через Word, помечает как сделанные.
 
