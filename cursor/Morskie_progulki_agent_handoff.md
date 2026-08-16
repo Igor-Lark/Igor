@@ -174,7 +174,7 @@ WhatsApp https://wa.me/79176750555 · Telegram https://t.me/Oleg_700
 
 - По-русски, коротко. Индивидуалка = часы и судно целиком.
 - Телефон ядра **+7 917 675-05-55**.
-- Анализы — Word в `cursor/`, ветка `cursor/<имя>-4385`. Печать: `python3 cursor/queue_print.py cursor/Файл.docx` (мост `print_bridge.md`).
+- Анализы — Word в `cursor/`, ветка `cursor/<имя>-4385`. Печать: `python3 cursor/queue_print.py cursor/Файл.docx`, затем `git add inbox/Файл.docx` + push. Не просить копировать файлы на диск ПК.
 - Обновляй `Morskie_progulki_campaign_memory.md` после решений пользователя.
 - Скрины в чат не копировать без нужды.
 
