@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Поставить Word в очередь печати: локальная/print-inbox/."""
+"""Поставить Word в очередь печати: inbox/ (клон D:\\CURSOR\\print-bridge)."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-INBOX = ROOT / "локальная" / "print-inbox"
-LEGACY = ROOT / "локальная"
+INBOX = ROOT / "inbox"
+LEGACY = ROOT / "локальная" / "print-inbox"
 
 
 def main() -> int:
@@ -21,12 +21,11 @@ def main() -> int:
         print(f"need an existing .docx, got {src}", file=sys.stderr)
         return 2
     INBOX.mkdir(parents=True, exist_ok=True)
-    LEGACY.mkdir(parents=True, exist_ok=True)
     dest = INBOX / src.name
     shutil.copy2(src, dest)
+    LEGACY.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src, LEGACY / src.name)
     print(f"В очереди печати: {dest.relative_to(ROOT)}")
-    print(f"Копия моста: локальная/{src.name}")
     return 0
 
 
