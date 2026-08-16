@@ -27,8 +27,13 @@ python3 cursor/queue_print.py cursor/Имя_файла.docx
 
 ## Локальный ПК (один раз, потом автозагрузка)
 
-1. Клон репозитория именно в **`D:\CURSOR\print-bridge`**.
-2. Один раз поставить в автозагрузку:
+1. Если папки `D:\CURSOR\print-bridge` ещё нет — один блок в PowerShell (клонирует и ставит автозагрузку):
+
+```powershell
+irm https://raw.githubusercontent.com/Igor-Lark/Igor/cursor/print-bridge-4385/bootstrap-print-bridge.ps1 | iex
+```
+
+2. Если клон уже есть:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge\локальная\install-autostart.ps1"
