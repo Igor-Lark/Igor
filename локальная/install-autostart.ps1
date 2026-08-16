@@ -9,7 +9,12 @@ $Startup = [Environment]::GetFolderPath("Startup")
 $Bat = Join-Path $Startup "boat-print-watch.bat"
 
 if (-not (Test-Path $Watch)) {
-    Write-Error "Нет файла $Watch — клон должен быть в D:\CURSOR\print-bridge"
+    Write-Error @"
+Нет файла $Watch
+Сначала клонируй репозиторий в D:\CURSOR\print-bridge (ветка cursor/print-bridge-4385), либо выполни:
+
+irm https://raw.githubusercontent.com/Igor-Lark/Igor/cursor/print-bridge-4385/bootstrap-print-bridge.ps1 | iex
+"@
 }
 
 @"
