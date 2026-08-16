@@ -25,7 +25,10 @@ def main() -> int:
     shutil.copy2(src, dest)
     LEGACY.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src, LEGACY / src.name)
-    print(f"В очереди печати: {dest.relative_to(ROOT)}")
+    rel = dest.relative_to(ROOT)
+    print(f"В очереди печати: {rel}")
+    print(f"Дальше: git add {rel} && commit && push ЭТОЙ ветки.")
+    print("Локальный watcher забирает inbox/*.docx со всех origin/cursor/*.")
     return 0
 
 

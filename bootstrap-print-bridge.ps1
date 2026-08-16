@@ -49,7 +49,7 @@ if (Test-GitClone $Preferred) {
     }
     if (-not (Test-GitClone $Root)) {
         Write-Host "Cloning $Branch -> $Root"
-        git clone --branch $Branch $RepoUrl $Root
+        git clone --no-single-branch --branch $Branch $RepoUrl $Root
     }
 }
 

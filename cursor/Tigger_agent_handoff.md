@@ -162,7 +162,7 @@ CSV: `cursor/2026-08-14_08-43-25_vitaminki21_c24d.csv`
 ## 7. Как отвечать пользователю
 
 - Пиши по-русски, коротко, с цифрами.
-- Анализы РК — в Word в `cursor/`, коммит/пуш в ветку `cursor/<имя>-4385`. Печать: `python3 cursor/queue_print.py cursor/Файл.docx` (мост `print_bridge.md`).
+- Анализы РК — в Word в `cursor/`, коммит/пуш в ветку `cursor/<имя>-4385`. Печать: `python3 cursor/queue_print.py cursor/Файл.docx`, затем `git add inbox/Файл.docx` + push. Не просить копировать файлы на диск ПК.
 - Скрины в чат не копировать обратно без нужды (раздувают контекст).
 - Обновляй `cursor/Tigger_campaign_memory.md` после каждого решения пользователя по настройкам.
 

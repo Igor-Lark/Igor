@@ -1,30 +1,28 @@
-# Print bridge: pull Word from inbox/ and print one-sided via Word COM.
+# Print bridge: pull Word from inbox/ on ALL origin/cursor/* branches
+# and from local inbox folders on both PC clones. Print one-sided via Word COM.
 # ASCII only so Windows PowerShell 5.1 can parse the file.
-# Watches BOTH D:\CURSOR\print-bridge and D:\CURSOR\print-bridge-git.
 
 $ErrorActionPreference = "Continue"
 $PreferredRepo = "D:\CURSOR\print-bridge"
 $FallbackRepo = "D:\CURSOR\print-bridge-git"
 $Here = Split-Path -Parent $MyInvocation.MyCommand.Path
-if (Test-Path (Join-Path $FallbackRepo ".git")) {
-    $Repo = $FallbackRepo
-} elseif (Test-Path (Join-Path $PreferredRepo ".git")) {
-    $Repo = $PreferredRepo
-} else {
-    $Repo = Split-Path -Parent $Here
+$ScriptRepo = Split-Path -Parent $Here
+
+function Test-GitRepo([string]$Path) {
+    return ($Path -and (Test-Path (Join-Path $Path ".git")))
 }
 
-$InboxDirs = @()
-foreach ($root in @($FallbackRepo, $PreferredRepo, $Repo)) {
-    $ib = Join-Path $root "inbox"
-    if ($InboxDirs -notcontains $ib) { $InboxDirs += $ib }
-}
+$Repo = $null
+if (Test-GitRepo $ScriptRepo) { $Repo = $ScriptRepo }
+elseif (Test-GitRepo $FallbackRepo) { $Repo = $FallbackRepo }
+elseif (Test-GitRepo $PreferredRepo) { $Repo = $PreferredRepo }
+else { $Repo = $ScriptRepo }
+
+$InboxLocal = Join-Path $Repo "inbox"
 $DoneDir = Join-Path $Repo "print-done"
 $Log = Join-Path $DoneDir "printed.log"
-$InboxLocal = Join-Path $Repo "inbox"
 
-New-Item -ItemType Directory -Force -Path $DoneDir | Out-Null
-foreach ($ib in $InboxDirs) { New-Item -ItemType Directory -Force -Path $ib | Out-Null }
+New-Item -ItemType Directory -Force -Path $DoneDir, $InboxLocal | Out-Null
 if (-not (Test-Path $Log)) { New-Item -ItemType File -Path $Log | Out-Null }
 
 function Test-Printed($key) {
@@ -86,34 +84,60 @@ function Save-GitBlob($repo, $spec, $outPath) {
     return ((Test-Path $outPath) -and ((Get-Item $outPath).Length -gt 200))
 }
 
+function Enable-FetchAllBranches([string]$gitRepo) {
+    git -C $gitRepo config --unset-all remote.origin.fetch 2>$null | Out-Null
+    git -C $gitRepo config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+}
+
 function Get-InboxFromGit {
-    if (-not (Test-Path (Join-Path $Repo ".git"))) { return }
-    git -C $Repo fetch origin "+refs/heads/cursor/*:refs/remotes/origin/cursor/*" 2>> (Join-Path $DoneDir "fetch.log")
-    $branches = git -C $Repo branch -r | ForEach-Object { $_.Trim() } | Where-Object { $_ -like "origin/cursor/*" -and $_ -notlike "*HEAD*" }
-    foreach ($b in $branches) {
-        $files = git -C $Repo ls-tree -r --name-only $b 2>$null | Where-Object { $_ -match "(^inbox/|print-inbox/).+\.docx$" }
-        foreach ($rel in $files) {
-            $name = Split-Path $rel -Leaf
-            $key = "$b|$rel"
-            if (Test-Printed $key) { continue }
-            $out = Join-Path $InboxLocal $name
-            if (-not (Save-GitBlob $Repo "${b}:$rel" $out)) { continue }
-            Write-Host "Print $name from $b"
-            if (Print-Docx $out) {
-                Copy-Item $out (Join-Path $DoneDir $name) -Force
-                Write-Printed $key
+    $repos = @($Repo, $PreferredRepo, $FallbackRepo) | Select-Object -Unique
+    foreach ($gitRepo in $repos) {
+        if (-not (Test-GitRepo $gitRepo)) { continue }
+        Enable-FetchAllBranches $gitRepo
+        git -C $gitRepo fetch origin --prune --quiet 2>$null
+        $branches = git -C $gitRepo branch -r | ForEach-Object { $_.Trim() } |
+            Where-Object { $_ -like "origin/cursor/*" -and $_ -notlike "*HEAD*" }
+        foreach ($b in $branches) {
+            $files = git -C $gitRepo ls-tree -r --name-only $b 2>$null |
+                Where-Object { $_ -match "(^inbox/|print-inbox/).+\.docx$" }
+            foreach ($rel in $files) {
+                $name = Split-Path $rel -Leaf
+                $key = "$b|$rel"
+                if (Test-Printed $key) { continue }
+                $out = Join-Path $InboxLocal $name
+                if (-not (Save-GitBlob $gitRepo "${b}:$rel" $out)) { continue }
+                Write-Host "Print $name from $b"
+                if (Print-Docx $out) {
+                    Copy-Item $out (Join-Path $DoneDir $name) -Force
+                    Write-Printed $key
+                }
             }
         }
     }
 }
 
+function Get-LocalInboxDirs {
+    $dirs = @(
+        $InboxLocal,
+        (Join-Path $PreferredRepo "inbox"),
+        (Join-Path $FallbackRepo "inbox"),
+        (Join-Path $PreferredRepo "print-inbox"),
+        (Join-Path $FallbackRepo "print-inbox")
+    )
+    $legacyName = [string]([char]0x043B) + [string]([char]0x043E) + [string]([char]0x043A) + [string]([char]0x0430) + [string]([char]0x043B) + [string]([char]0x044C) + [string]([char]0x043D) + [string]([char]0x0430) + [string]([char]0x044F)
+    $dirs += (Join-Path (Join-Path $PreferredRepo $legacyName) "print-inbox")
+    $dirs += (Join-Path (Join-Path $FallbackRepo $legacyName) "print-inbox")
+    $dirs += (Join-Path (Join-Path $Repo $legacyName) "print-inbox")
+    return $dirs | Select-Object -Unique
+}
+
 function Get-InboxLocalFolder {
-    foreach ($dir in $InboxDirs) {
+    foreach ($dir in Get-LocalInboxDirs) {
         if (-not (Test-Path $dir)) { continue }
         Get-ChildItem -Path $dir -Filter *.docx -File -ErrorAction SilentlyContinue | ForEach-Object {
-            $key = "local|" + $_.FullName + "|" + $_.Length + "|" + $_.LastWriteTimeUtc.ToString("o")
+            $key = "local|" + $dir + "|" + $_.Name + "|" + $_.Length + "|" + $_.LastWriteTimeUtc.ToString("o")
             if (Test-Printed $key) { return }
-            Write-Host "Print local $($_.FullName)"
+            Write-Host "Print local $($_.Name) from $dir"
             if (Print-Docx $_.FullName) {
                 Copy-Item $_.FullName (Join-Path $DoneDir $_.Name) -Force
                 Write-Printed $key
@@ -123,9 +147,8 @@ function Get-InboxLocalFolder {
 }
 
 Write-Host "Print watch running. Repo: $Repo"
-Write-Host "Local inboxes:"
-foreach ($ib in $InboxDirs) { Write-Host "  $ib" }
-Write-Host "Ctrl+C stops until next Windows login."
+Write-Host "Inbox: $InboxLocal  (Ctrl+C to stop)"
+Write-Host "Fetches ALL origin/cursor/* branches (not single-branch)."
 while ($true) {
     Get-InboxFromGit
     Get-InboxLocalFolder

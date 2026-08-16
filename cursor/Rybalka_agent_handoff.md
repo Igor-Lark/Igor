@@ -12,7 +12,7 @@
 Ты — агент **только этой ЕПК**.  
 Не веди Сириус 704503370, Морские 712465896, Закат, Tigger, групповые парусные 1800 — кроме минус-фраз и антиканнибализации.
 
-Пиши по-русски, коротко, с цифрами. Анализы — Word в `cursor/`. Печать: `python3 cursor/queue_print.py cursor/Файл.docx` (мост `print_bridge.md`). После решений пользователя обновляй `cursor/Rybalka_campaign_memory.md`.
+Пиши по-русски, коротко, с цифрами. Анализы — Word в `cursor/`. Печать: `python3 cursor/queue_print.py cursor/Файл.docx`, затем `git add inbox/Файл.docx` + commit + push своей ветки (мост `print_bridge.md`). Не просить копировать файлы на диск ПК. После решений пользователя обновляй `cursor/Rybalka_campaign_memory.md`.
 
 ---
 

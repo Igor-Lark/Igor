@@ -8,6 +8,11 @@ if (-not $Watch) {
 }
 
 $Root = $PSScriptRoot
+if (Test-Path (Join-Path $Root ".git")) {
+    git -C $Root config --unset-all remote.origin.fetch 2>$null | Out-Null
+    git -C $Root config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+    git -C $Root fetch origin --prune --quiet 2>$null
+}
 $Inbox = Join-Path $Root "inbox"
 $Cmd = "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$Watch`""
 $Startup = [Environment]::GetFolderPath("Startup")

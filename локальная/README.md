@@ -1,7 +1,7 @@
 # Мост печати
 
 Клон: **`D:\CURSOR\print-bridge`**  
-Очередь: **`D:\CURSOR\print-bridge\inbox`**
+Очередь: `inbox/` в git на любой ветке `cursor/*`. Watcher: `D:\CURSOR\print-bridge-git`.
 
 Если папки клона ещё нет — в PowerShell:
 
