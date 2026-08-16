@@ -1,2 +1,2 @@
 @echo off
-powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File "D:\CURSOR\print-bridge-git\print-watch.ps1"
+powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File "%~dp0print-watch.ps1"
