@@ -3,7 +3,8 @@
 Облачный агент **не видит** принтер. Мост: агент кладёт `.docx` в очередь → скрипт на ПК забирает и печатает **односторонне**.
 
 Клон на ПК: **`D:\CURSOR\print-bridge`**  
-Очередь: **`D:\CURSOR\print-bridge\inbox`** (в репо это папка `inbox/`)
+Если эта папка занята (не git-клон / файл открыт) — **`D:\CURSOR\print-bridge-git`**  
+Очередь: `inbox/` внутри клона
 
 ---
 
@@ -33,17 +34,17 @@ python3 cursor/queue_print.py cursor/Имя_файла.docx
 irm https://raw.githubusercontent.com/Igor-Lark/Igor/cursor/print-bridge-4385/bootstrap-print-bridge.ps1 | iex
 ```
 
-2. Если клон уже есть:
+2. Если `D:\CURSOR\print-bridge` занята другим процессом — две отдельные строки (не блок):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge\локальная\install-autostart.ps1"
+git clone --branch cursor/print-bridge-4385 https://github.com/Igor-Lark/Igor.git D:\CURSOR\print-bridge-git
 ```
 
-В автозагрузку Windows пишется:
+```powershell
+powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge-git\локальная\install-autostart.ps1"
+```
 
-```
-powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge\локальная\print-watch.ps1"
-```
+В автозагрузку Windows пишется `print-watch.ps1` из того клона, откуда ставили.
 
 Скрипт каждые 60 сек: `git fetch --all`, забирает новые `inbox/*.docx` со всех веток `cursor/*`, печатает через Word, помечает как сделанные.
 
