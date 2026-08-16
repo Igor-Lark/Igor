@@ -1,20 +1,16 @@
 # Ставит мост печати в автозагрузку Windows.
-# Клон: D:\CURSOR\print-bridge  Очередь: D:\CURSOR\print-bridge\inbox
-# Запуск один раз: powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge\локальная\install-autostart.ps1"
+# Путь берётся из места, где лежит этот скрипт (print-bridge или print-bridge-git).
 
 $ErrorActionPreference = "Stop"
-$Watch = "D:\CURSOR\print-bridge\локальная\print-watch.ps1"
+$Watch = Join-Path $PSScriptRoot "print-watch.ps1"
+$Root = Split-Path $PSScriptRoot -Parent
+$Inbox = Join-Path $Root "inbox"
 $Cmd = "powershell -ExecutionPolicy Bypass -File `"$Watch`""
 $Startup = [Environment]::GetFolderPath("Startup")
 $Bat = Join-Path $Startup "boat-print-watch.bat"
 
 if (-not (Test-Path $Watch)) {
-    Write-Error @"
-Нет файла $Watch
-Сначала клонируй репозиторий в D:\CURSOR\print-bridge (ветка cursor/print-bridge-4385), либо выполни:
-
-irm https://raw.githubusercontent.com/Igor-Lark/Igor/cursor/print-bridge-4385/bootstrap-print-bridge.ps1 | iex
-"@
+    Write-Error "Нет файла $Watch"
 }
 
 @"
@@ -24,7 +20,7 @@ $Cmd
 
 Write-Host "Автозагрузка: $Bat"
 Write-Host "Команда: $Cmd"
-Write-Host "Inbox: D:\CURSOR\print-bridge\inbox"
+Write-Host "Inbox: $Inbox"
 
 $running = Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
     Where-Object { $_.CommandLine -and $_.CommandLine -like "*print-watch.ps1*" }
