@@ -14,8 +14,9 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 
 if (-not (Test-Path (Join-Path $Root ".git"))) {
     if (Test-Path $Root) {
-        Write-Host "Папка $Root есть, но это не git-клон. Переименовываю в print-bridge.bak"
-        Rename-Item $Root ($Root + ".bak")
+        $bak = "$Root.bak-$(Get-Date -Format yyyyMMdd-HHmmss)"
+        Write-Host "Папка $Root есть, но это не git-клон. Переименовываю в $bak"
+        Rename-Item $Root $bak
     }
     Write-Host "Клонирую $Branch → $Root"
     git clone --branch $Branch $RepoUrl $Root
