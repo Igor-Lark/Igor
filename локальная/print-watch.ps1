@@ -33,24 +33,66 @@ function Write-Printed($key) {
     Add-Content -Path $Log -Value $key
 }
 
+function Get-DefaultPrinterName {
+    $cim = Get-CimInstance Win32_Printer -Filter "Default=True" -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+    if ($cim -and $cim.Name) { return [string]$cim.Name }
+    return $null
+}
+
+function Enable-SimplexPrint {
+    $name = Get-DefaultPrinterName
+    if (-not $name) {
+        Write-Host "No default printer; cannot force one-sided."
+        return
+    }
+    try {
+        Set-PrintConfiguration -PrinterName $name -DuplexMode OneSided -ErrorAction Stop
+        Write-Host "Printer duplex OneSided: $name"
+    } catch {
+        Write-Host "Set-PrintConfiguration failed: $_"
+    }
+    try {
+        $cs = Join-Path $Here "PrinterSimplex.cs"
+        if ((Test-Path $cs) -and -not ("PrintBridgeDuplex" -as [type])) {
+            Add-Type -Path $cs -ErrorAction Stop
+        }
+        if ("PrintBridgeDuplex" -as [type]) {
+            $ok = [PrintBridgeDuplex]::ForceSimplex($name)
+            Write-Host "DEVMODE simplex ${ok}: $name"
+        }
+    } catch {
+        Write-Host "DEVMODE simplex failed: $_"
+    }
+}
+
 function Print-Docx($path) {
     $word = $null
     $doc = $null
+    Enable-SimplexPrint
     try {
         $word = New-Object -ComObject Word.Application
         $word.Visible = $false
         $word.DisplayAlerts = 0
+        $active = [string]$word.ActivePrinter
+        if ($active) {
+            $short = ($active -replace " on .+$", "")
+            try { Set-PrintConfiguration -PrinterName $short -DuplexMode OneSided -ErrorAction SilentlyContinue } catch {}
+            try { if ("PrintBridgeDuplex" -as [type]) { [PrintBridgeDuplex]::ForceSimplex($short) | Out-Null } } catch {}
+        }
         $doc = $word.Documents.Open($path, $false, $true)
         $missing = [Type]::Missing
         $doc.PrintOut(
             $false, $false, $missing, $missing, $missing, $missing, $missing,
-            1, $missing, $missing, $false, $false
+            1, $missing, $missing, $false, $false,
+            $missing, $missing, $false
         )
         Start-Sleep -Seconds 3
         return $true
     } catch {
         Write-Host "Word COM failed, fallback Verb Print: $_"
         try {
+            Enable-SimplexPrint
             Start-Process -FilePath $path -Verb Print -Wait
             return $true
         } catch {
@@ -149,6 +191,7 @@ function Get-InboxLocalFolder {
 Write-Host "Print watch running. Repo: $Repo"
 Write-Host "Inbox: $InboxLocal  (Ctrl+C to stop)"
 Write-Host "Fetches ALL origin/cursor/* branches (not single-branch)."
+Enable-SimplexPrint
 while ($true) {
     Get-InboxFromGit
     Get-InboxLocalFolder

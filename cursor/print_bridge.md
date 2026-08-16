@@ -45,7 +45,7 @@ Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*print-watc
 
 Watcher каждые 60 сек: снимает single-branch, `fetch` всех веток, печатает новые `inbox/*.docx`, плюс локальные `inbox` в `print-bridge` и `print-bridge-git`.
 
-Принтер: очередь Windows по умолчанию. Двустороннюю печать **выключить**.
+Принтер: очередь Windows по умолчанию. Перед каждым заданием watcher ставит **OneSided** (односторонняя). Если всё равно двусторонне — в свойствах принтера по умолчанию выключить «печать с двух сторон».
 
 ---
 
