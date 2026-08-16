@@ -1,13 +1,18 @@
-# Мост печати: забирает Word из локальная/print-inbox на всех ветках cursor/*
+# Мост печати: забирает Word из inbox/ (клон D:\CURSOR\print-bridge)
 # и печатает односторонне через Microsoft Word.
-# Запуск: powershell -ExecutionPolicy Bypass -File .\print-watch.ps1
+# Запуск: powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge\локальная\print-watch.ps1"
 
 $ErrorActionPreference = "Continue"
+$PreferredRepo = "D:\CURSOR\print-bridge"
 $Here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$Repo = Split-Path -Parent $Here
-$DoneDir = Join-Path $Here "print-done"
+if (Test-Path (Join-Path $PreferredRepo ".git")) {
+    $Repo = $PreferredRepo
+} else {
+    $Repo = Split-Path -Parent $Here
+}
+$InboxLocal = Join-Path $Repo "inbox"
+$DoneDir = Join-Path $Repo "print-done"
 $Log = Join-Path $DoneDir "printed.log"
-$InboxLocal = Join-Path $Here "print-inbox"
 
 New-Item -ItemType Directory -Force -Path $DoneDir, $InboxLocal | Out-Null
 if (-not (Test-Path $Log)) { New-Item -ItemType File -Path $Log | Out-Null }
@@ -77,7 +82,7 @@ function Get-InboxFromGit {
     git -C $Repo fetch --all --quiet 2>$null
     $branches = git -C $Repo branch -r | ForEach-Object { $_.Trim() } | Where-Object { $_ -like "origin/cursor/*" -and $_ -notlike "*HEAD*" }
     foreach ($b in $branches) {
-        $files = git -C $Repo ls-tree -r --name-only $b 2>$null | Where-Object { $_ -match "print-inbox/.+\.docx$" }
+        $files = git -C $Repo ls-tree -r --name-only $b 2>$null | Where-Object { $_ -match "(^inbox/|print-inbox/).+\.docx$" }
         foreach ($rel in $files) {
             $name = Split-Path $rel -Leaf
             $key = "$b|$rel"

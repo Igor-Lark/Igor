@@ -2,7 +2,8 @@
 
 Облачный агент **не видит** принтер. Мост: агент кладёт `.docx` в очередь → скрипт на ПК забирает и печатает **односторонне**.
 
-Папка моста: **`локальная/`** (как раньше). Очередь: **`локальная/print-inbox/`**.
+Клон на ПК: **`D:\CURSOR\print-bridge`**  
+Очередь: **`D:\CURSOR\print-bridge\inbox`** (в репо это папка `inbox/`)
 
 ---
 
@@ -14,32 +15,32 @@
 python3 cursor/queue_print.py cursor/Имя_файла.docx
 ```
 
-Скрипт копирует файл в `локальная/print-inbox/` и в `локальная/`.  
-Дальше: `git add` этих копий + исходный Word, commit, push **своей** ветки.
+Скрипт копирует файл в `inbox/`.  
+Дальше: `git add` этой копии + исходный Word, commit, push **своей** ветки.
 
 Не писать «распечатал» — только «в очереди печати». Печатает локальный мост.
 
 Если `queue_print.py` нет в ветке:  
-`mkdir -p локальная/print-inbox && cp cursor/Файл.docx локальная/print-inbox/ && cp cursor/Файл.docx локальная/`
+`mkdir -p inbox && cp cursor/Файл.docx inbox/`
 
 ---
 
 ## Локальный ПК (один раз, потом автозагрузка)
 
-1. Клон репозитория (или папка `D:\CURSOR\Igor`).
+1. Клон репозитория именно в **`D:\CURSOR\print-bridge`**.
 2. Один раз поставить в автозагрузку:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "D:\CURSOR\Igor\локальная\install-autostart.ps1"
+powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge\локальная\install-autostart.ps1"
 ```
 
-В автозагрузку Windows пишется та же команда:
+В автозагрузку Windows пишется:
 
 ```
-powershell -ExecutionPolicy Bypass -File "D:\CURSOR\Igor\локальная\print-watch.ps1"
+powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge\локальная\print-watch.ps1"
 ```
 
-Скрипт каждые 60 сек: `git fetch --all`, забирает новые `локальная/print-inbox/*.docx` со всех веток `cursor/*`, печатает через Word, помечает как сделанные.
+Скрипт каждые 60 сек: `git fetch --all`, забирает новые `inbox/*.docx` со всех веток `cursor/*`, печатает через Word, помечает как сделанные.
 
 Принтер: очередь Windows по умолчанию. Двустороннюю печать на принтере **выключить**.
 

@@ -1,14 +1,15 @@
 # Ставит мост печати в автозагрузку Windows.
-# Запуск один раз: powershell -ExecutionPolicy Bypass -File "D:\CURSOR\Igor\локальная\install-autostart.ps1"
+# Клон: D:\CURSOR\print-bridge  Очередь: D:\CURSOR\print-bridge\inbox
+# Запуск один раз: powershell -ExecutionPolicy Bypass -File "D:\CURSOR\print-bridge\локальная\install-autostart.ps1"
 
 $ErrorActionPreference = "Stop"
-$Watch = "D:\CURSOR\Igor\локальная\print-watch.ps1"
+$Watch = "D:\CURSOR\print-bridge\локальная\print-watch.ps1"
 $Cmd = "powershell -ExecutionPolicy Bypass -File `"$Watch`""
 $Startup = [Environment]::GetFolderPath("Startup")
 $Bat = Join-Path $Startup "boat-print-watch.bat"
 
 if (-not (Test-Path $Watch)) {
-    Write-Error "Нет файла $Watch — поправь путь к клону."
+    Write-Error "Нет файла $Watch — клон должен быть в D:\CURSOR\print-bridge"
 }
 
 @"
@@ -18,8 +19,8 @@ $Cmd
 
 Write-Host "Автозагрузка: $Bat"
 Write-Host "Команда: $Cmd"
+Write-Host "Inbox: D:\CURSOR\print-bridge\inbox"
 
-# Запустить мост сейчас, не ждать перезагрузки
 $running = Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
     Where-Object { $_.CommandLine -and $_.CommandLine -like "*print-watch.ps1*" }
 if (-not $running) {
