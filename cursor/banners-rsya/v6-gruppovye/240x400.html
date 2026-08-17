@@ -9,62 +9,25 @@ html,body{margin:0;padding:0;width:240px;height:400px;overflow:hidden;background
 *{box-sizing:border-box}
 a.banner{
   display:block;width:240px;height:400px;position:relative;overflow:hidden;
-  text-decoration:none;cursor:pointer;background:#fff;
+  text-decoration:none;cursor:pointer;
+  background:#fff url('bg_240x400.jpg') center/cover no-repeat;
   font-family:Arial,Helvetica,"Helvetica Neue",sans-serif;color:#111;
 }
-.head{
-  position:absolute;left:10px;right:10px;top:16px;
-  text-align:center;text-transform:uppercase;
-  font-weight:800;font-size:16px;line-height:1.18;letter-spacing:.01em;
-  color:#111;
-}
-.cta{
-  position:absolute;left:22px;right:22px;top:62px;
-  display:block;text-align:center;
-  background:#ff9800;color:#111;
-  font-weight:800;font-size:12px;letter-spacing:.03em;
-  text-transform:uppercase;line-height:1;
-  padding:11px 8px;border-radius:8px;
-}
-.fan{
-  position:absolute;left:50%;top:102px;
-  width:268px;height:268px;margin-left:-134px;
-  border-radius:50%;overflow:hidden;
-  background:#fff center/cover no-repeat url('bg_240x400.jpg');
-}
-.name{
-  position:absolute;left:54%;top:34%;
-  z-index:2;
-  font-size:16px;font-weight:700;color:#3d3d3d;
-  letter-spacing:.01em;line-height:1;
-}
-.price{
-  position:absolute;left:0;right:0;bottom:38px;
-  z-index:2;text-align:center;
-  font-size:48px;font-weight:800;color:#111;letter-spacing:-.02em;
-  line-height:1;
-}
 .rotator-wrap{
-  position:absolute;left:8px;right:8px;bottom:12px;height:28px;
+  position:absolute;left:10px;right:10px;bottom:28px;height:32px;
   overflow:hidden;
 }
 .rotator{
   position:absolute;left:0;right:0;top:0;
   text-align:center;
-  font-size:16px;font-weight:700;color:#111;
-  line-height:28px;white-space:nowrap;
+  font-size:18px;font-weight:700;color:#111;
+  line-height:32px;white-space:nowrap;
   will-change:transform,opacity;
 }
 </style>
 </head>
 <body>
 <a class="banner" id="click_area" href="https://boat-sochi.ru/progulki_na_yacht" target="_blank">
-  <div class="head">Групповые прогулки<br>на парусной яхте</div>
-  <div class="cta">Расписание прогулок</div>
-  <div class="fan">
-    <div class="name">Сириус</div>
-    <div class="price">1800 ₽</div>
-  </div>
   <div class="rotator-wrap">
     <div class="rotator" id="rotator"></div>
   </div>
@@ -102,7 +65,7 @@ a.banner{
     await wait(holdMs);
 
     el.style.transition = "transform 1s linear";
-    el.style.transform = "translateY(-32px)";
+    el.style.transform = "translateY(-36px)";
     await wait(1000);
   }
 
