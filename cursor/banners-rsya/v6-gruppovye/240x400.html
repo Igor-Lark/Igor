@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="ad.size" content="width=240,height=400">
+<title>boat-sochi · Групповые прогулки · 240x400</title>
+<style>
+html,body{margin:0;padding:0;width:240px;height:400px;overflow:hidden;background:#fff}
+*{box-sizing:border-box}
+a.banner{
+  display:block;width:240px;height:400px;position:relative;overflow:hidden;
+  text-decoration:none;cursor:pointer;background:#fff;
+  font-family:Arial,Helvetica,"Helvetica Neue",sans-serif;color:#111;
+}
+.head{
+  position:absolute;left:10px;right:10px;top:16px;
+  text-align:center;text-transform:uppercase;
+  font-weight:800;font-size:16px;line-height:1.18;letter-spacing:.01em;
+  color:#111;
+}
+.cta{
+  position:absolute;left:22px;right:22px;top:62px;
+  display:block;text-align:center;
+  background:#ff9800;color:#111;
+  font-weight:800;font-size:12px;letter-spacing:.03em;
+  text-transform:uppercase;line-height:1;
+  padding:11px 8px;border-radius:8px;
+}
+.fan{
+  position:absolute;left:50%;top:102px;
+  width:268px;height:268px;margin-left:-134px;
+  border-radius:50%;overflow:hidden;
+  background:#2a7ec4 center 46%/cover no-repeat url('bg_240x400.jpg');
+}
+.fan::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:46%;
+  background:linear-gradient(180deg,rgba(10,40,80,0) 0%,rgba(8,32,70,.38) 100%);
+}
+.name{
+  position:absolute;left:54%;top:34%;
+  z-index:2;
+  font-size:16px;font-weight:700;color:#3d3d3d;
+  letter-spacing:.01em;line-height:1;
+}
+.price{
+  position:absolute;left:0;right:0;bottom:38px;
+  z-index:2;text-align:center;
+  font-size:48px;font-weight:800;color:#fff;letter-spacing:-.02em;
+  line-height:1;
+  text-shadow:0 2px 10px rgba(0,30,60,.45);
+}
+.rotator-wrap{
+  position:absolute;left:8px;right:8px;bottom:12px;height:28px;
+  overflow:hidden;
+}
+.rotator{
+  position:absolute;left:0;right:0;top:0;
+  text-align:center;
+  font-size:16px;font-weight:700;color:#111;
+  line-height:28px;white-space:nowrap;
+  will-change:transform,opacity;
+}
+</style>
+</head>
+<body>
+<a class="banner" id="click_area" href="https://boat-sochi.ru/progulki_na_yacht" target="_blank">
+  <div class="head">Групповые прогулки<br>на парусной яхте</div>
+  <div class="cta">Расписание прогулок</div>
+  <div class="fan">
+    <div class="name">Сириус</div>
+    <div class="price">1800 ₽</div>
+  </div>
+  <div class="rotator-wrap">
+    <div class="rotator" id="rotator"></div>
+  </div>
+</a>
+<script>
+(function () {
+  var a = document.getElementById("click_area");
+  try {
+    if (typeof yandexHTML5BannerApi !== "undefined" && yandexHTML5BannerApi.getClickURLNum) {
+      a.href = yandexHTML5BannerApi.getClickURLNum(1);
+    }
+  } catch (e) {}
+
+  var lines = ["до 11 человек", "1,5 часа", "купание в море", "заявка на сайте"];
+  var el = document.getElementById("rotator");
+  var i = 0;
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  async function showLine(text, holdMs, withFadeIn) {
+    el.textContent = text;
+    el.style.transition = "none";
+    el.style.opacity = withFadeIn ? "0" : "1";
+    el.style.transform = "translateY(0)";
+    void el.offsetWidth;
+
+    if (withFadeIn) {
+      el.style.transition = "opacity 1s linear";
+      el.style.opacity = "1";
+      await wait(1000);
+    }
+
+    await wait(holdMs);
+
+    el.style.transition = "transform 1s linear";
+    el.style.transform = "translateY(-32px)";
+    await wait(1000);
+  }
+
+  async function loop() {
+    await showLine(lines[0], 2000, false);
+    i = 1;
+    while (true) {
+      var hold = (i % lines.length === 0) ? 2000 : 1000;
+      await showLine(lines[i % lines.length], hold, true);
+      i++;
+    }
+  }
+
+  loop();
+})();
+</script>
+</body>
+</html>
