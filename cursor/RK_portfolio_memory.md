@@ -30,7 +30,7 @@ Handoff: [`cursor/RK_portfolio_agent_handoff.md`](RK_portfolio_agent_handoff.md)
 | **TG** | Яхта Tigger | уточнять | VIP 50 000 ₽/ч | `/yacht_tigger` | +7 917 675-05-55 | https://cursor.com/agents/bc-8cda2c34-20d9-48ac-a87a-a0266e608641 |
 | **RB** | EPK групповая рыбалка Попай | нет | билет **2 800 ₽/чел., 3 ч**, слоты 07:30–16:30 | `/gruppovaja_ribalka` (ещё нет) | +7 918 304-40-00 | `Rybalka_agent_handoff.md` · `cursor/gruppovaya-rybalka-4385` |
 | **AX** | Alexum | уточнять | VIP 40 000 ₽/ч, Морпорт | `/alexum` | уточнять | — |
-| **GU** | EPK галерея услуг | нет | карточка boat-sochi.ru в галерее | `/` + орг. Яндекс Бизнеса | +7 917 675-05-55 | `Galereya_uslug_agent_handoff.md` · `cursor/galereya-uslug-4385` |
+| **GU** | EPK галерея услуг | нет | карточка boat-sochi.ru в галерее | `/` + орг. Яндекс Бизнеса | +7 917 675-05-55 | https://cursor.com/agents/bc-38eae2c0-267b-4d34-ba6c-f51bef4259f5 · `Galereya_uslug_agent_handoff.md` · `cursor/galereya-uslug-4385` |
 
 Трофейная рыбалка внутри SR/MP — **СТОП**.
 

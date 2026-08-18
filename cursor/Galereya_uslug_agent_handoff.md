@@ -3,6 +3,7 @@
 Дата пакета: 18.08.2026  
 Репозиторий: Igor-Lark/Igor  
 Ветка: `cursor/galereya-uslug-4385`  
+Живой агент: https://cursor.com/agents/bc-38eae2c0-267b-4d34-ba6c-f51bef4259f5  
 Аккаунт Директа: **vitaminki21**  
 Кампания (план/название): **EPK_Galereya_Uslug_BoatSochi**  
 Код в портфеле: **GU**  
@@ -231,6 +232,8 @@ Tigger и рыбалку в быстрые ссылки **не** ставить 
 ---
 
 ## 8. Соседи
+
+Этот агент GU: https://cursor.com/agents/bc-38eae2c0-267b-4d34-ba6c-f51bef4259f5
 
 | Агент | URL |
 |-------|-----|

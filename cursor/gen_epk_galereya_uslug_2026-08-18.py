@@ -220,7 +220,8 @@ def build():
     add_p(
         doc,
         "Аккаунт vitaminki21 · код GU · 18.08.2026. РК ещё нет в Директе. "
-        "Этот документ — как завести кампанию вручную. Агент в кабинет не входит.",
+        "Этот документ — как завести кампанию вручную. Агент в кабинет не входит. "
+        "Живой агент GU: https://cursor.com/agents/bc-38eae2c0-267b-4d34-ba6c-f51bef4259f5",
         bold=True,
     )
     add_p(
@@ -431,7 +432,7 @@ def build():
     add_bullets(
         doc,
         [
-            "Прислать агенту GU номер кампании и скрин: стратегия, цели, места показа, 8 ссылок.",
+            "Прислать агенту GU (https://cursor.com/agents/bc-38eae2c0-267b-4d34-ba6c-f51bef4259f5) номер кампании и скрин: стратегия, цели, места показа, 8 ссылок.",
             "Проверить, что в соседних РК галерея выключена (раздел 11).",
             "Смотреть звонки/мессенджер карточки (103116887), не CTR поиска.",
             "Не включать Поиск и РСЯ «чтобы набрать 10 конверсий».",
@@ -439,7 +440,12 @@ def build():
         ],
     )
 
-    add_p(doc, "Handoff агента: cursor/Galereya_uslug_agent_handoff.md", size=10)
+    add_p(
+        doc,
+        "Агент GU: https://cursor.com/agents/bc-38eae2c0-267b-4d34-ba6c-f51bef4259f5 · "
+        "handoff: cursor/Galereya_uslug_agent_handoff.md",
+        size=10,
+    )
     doc.save(OUT)
     print("wrote", OUT, OUT.stat().st_size)
 
