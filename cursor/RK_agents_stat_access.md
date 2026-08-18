@@ -24,6 +24,7 @@
 | **RB** | ЕПК групповая рыбалка 2800 | если запущена | https://cursor.com/agents/bc-c9518cd8-5b13-4c49-9827-f74734ee289c | вставь `cursor/Rybalka_agent_start.md` |
 | **Сверка** | все РК сразу, каннибализация | — | https://cursor.com/agents/bc-304b9767-ff2c-430f-bd3c-17d790447ed0 | вставь `cursor/RK_portfolio_agent_start.md` |
 | **AX** | Alexum | если живая | отдельного агента нет; не мешать с Tigger | — |
+| **GU** | ЕПК галерея услуг | если запущена | новый агент по `cursor/Galereya_uslug_agent_start.md` | вставь `cursor/Galereya_uslug_agent_start.md` |
 
 Сайт: boat-sochi.ru. Счётчики: **94713538** (сайт), **103116887** (орг).
 
