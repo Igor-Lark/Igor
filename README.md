@@ -12,7 +12,7 @@
 | Node.js API | `POST /api/chat` — ответы через YandexGPT или OpenAI |
 | Виджет | Кнопка 💬 на сайте Tilda (`/embed.js`) |
 | Погода | Open-Meteo: воздух + температура воды (Сириус / Сочи) |
-| База знаний | `knowledge/llms-full.txt` + `faq-extra.md` + `delfin-progulki.md/json` |
+| База знаний | `knowledge/llms-full.txt` + `faq-extra.md` + `delfin-progulki` + `group-fishing` + `fishing-season-sochi` |
 | Заявки | При «хочу забронировать» / телефоне → уведомление в **MAX** |
 
 ## Быстрый старт (4 шага)

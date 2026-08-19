@@ -32,6 +32,7 @@ app.get('/health', (_req, res) => {
       contactCallback: true,
       wake: true,
       groupSailing: true,
+      groupFishing: true,
       delfinCharter: true,
       streamingUi: true,
     },

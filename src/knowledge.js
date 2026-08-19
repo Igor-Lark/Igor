@@ -26,13 +26,24 @@ function loadKnowledge() {
   const faq = readIfExists(path.join(ROOT, 'faq-extra.md'));
   const delfinMd = readIfExists(path.join(ROOT, 'delfin-progulki.md'));
   const delfinJson = readIfExists(path.join(ROOT, 'delfin-progulki.json'));
+  const groupFishing = readIfExists(path.join(ROOT, 'group-fishing.md'));
+  const fishingSeason = readIfExists(path.join(ROOT, 'fishing-season-sochi.md'));
 
   cached = {
     llms,
     faq,
     delfinMd,
     delfinJson,
-    combined: [llms, faq, delfinMd, delfinJson && `FAQ JSON (delfin/progulki):\n${delfinJson}`]
+    groupFishing,
+    fishingSeason,
+    combined: [
+      llms,
+      faq,
+      delfinMd,
+      delfinJson && `FAQ JSON (delfin/progulki):\n${delfinJson}`,
+      groupFishing,
+      fishingSeason,
+    ]
       .filter(Boolean)
       .join('\n\n---\n\n'),
   };
@@ -226,6 +237,8 @@ function buildSystemPrompt() {
     '27. Бронь более чем на месяц вперёд не предусмотрена — свяжитесь с Олегом (телефон; полные контакты — только если ещё не давал).',
     '28. Вейкборд / водные лыжи / wake / фал — катер «Инфинити» (FIBRAFORD 190), 8 000 ₽/час с катанием (без вейка/лыж — 6 000), до 70 км/ч, до 6 гостей, Имеретинский порт; капитан-инструктор; скидка от 3 ч. Фал — буксировочный трос (~20–23 м), не «канат». Ответ коротко, без markdown **. Про «Инфинити» — «капитан», не «капитан Олег».',
     '29. /progulki_na_yacht и /delfin — два разных продукта. Сначала уточни формат: групповая парусная (билет) или индивидуальная аренда яхты утром к дельфинам. Группа: 1 800 ₽/чел, 1,5 ч, до 11, линия 2, +7 918 304-40-00, boat-sochi.ru/progulki_na_yacht — не называй точное имя яхты. Индивидуалка: **яхта «Сириус»**, **8 000 ₽/ч** (6:00–12:00 со скидкой 500 ₽/ч → **7 500 ₽/ч**, не 7 000!), от 2 ч, линия 1, +7 917 675-05-55, boat-sochi.ru/delfin. Формула утром: N × 7 500. «Сириус» — яхта, не катер. Дельфинов не гарантировать. VIP «Алексум»/«Tigger» — не эти страницы.',
+    '30. Групповая рыбалка — /gruppovaja_ribalka : 2 800 ₽/чел., 3 ч, «Моряк-Попай», до 8, выходы 07:30/10:30/13:30/16:30, линия 2, +7 918 304-40-00. Не путать с групповой парусной (/progulki_na_yacht) и с трофейной (катамаран целиком от 20 000 ₽, катран/скат). Улов не гарантировать. Сезонность — fishing-season-sochi.md.',
+    '31. Рыбалка без уточнения — спроси: групповой билет (2800) или аренда катамарана (трофейная от 20000). Про «Моряк-Попай» — «капитан», не «капитан Олег».',
     '',
     '=== БАЗА ЗНАНИЙ ===',
     combined ||

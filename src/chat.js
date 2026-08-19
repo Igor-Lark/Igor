@@ -34,6 +34,14 @@ const {
   buildMorningDelfinCharterReply,
   buildDelfinFormatClarifyReply,
 } = require('./delfin-progulki');
+const {
+  isGroupFishingIntent,
+  isTrophyFishingIntent,
+  isFishingFormatClarifyIntent,
+  buildGroupFishingReply,
+  buildTrophyFishingReply,
+  buildFishingFormatClarifyReply,
+} = require('./group-fishing');
 
 /**
  * @param {{
@@ -99,6 +107,54 @@ async function handleChat(input) {
       history: cleaned,
     });
     return { reply, provider: 'route', lead: null };
+  }
+
+  // Групповая рыбалка /gruppovaja_ribalka
+  if (lastUser && isGroupFishingIntent(lastUser.content)) {
+    const reply = buildGroupFishingReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'group-fishing',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'group-fishing', lead: null };
+  }
+
+  // Трофейная рыбалка — катамаран целиком
+  if (lastUser && isTrophyFishingIntent(lastUser.content)) {
+    const reply = buildTrophyFishingReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'trophy-fishing',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'trophy-fishing', lead: null };
+  }
+
+  // Рыбалка — уточнить формат (группа vs трофейная)
+  if (lastUser && isFishingFormatClarifyIntent(lastUser.content)) {
+    const reply = buildFishingFormatClarifyReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'fishing-clarify',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'fishing-clarify', lead: null };
   }
 
   // Групповая парусная /progulki_na_yacht
