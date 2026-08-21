@@ -177,13 +177,13 @@ API Директа не подключено — анализ только по 
 
 **Память и настройки**
 
-- `cursor/Morskie_progulki_campaign_memory.md` — оперативная память «Морских» на 09–10.08
+- `cursor/Morskie_progulki_campaign_memory.md` — **архив** «Морских» (кампании нет с 21.08)
 - `cursor/Nastroyki_gruppy_Arenda_yaht_Sirius_2026-08-09.docx`
 - `cursor/Sirius_frazy_zagolovki_gruppa_2026-08-09.docx`
 - `cursor/Layfhaki_Agentstv_Direkt_Sirius_Katera_2026-08.docx`
 - `cursor/Plan_bronirovaniya_avgust_strategiya_2026-08-08.docx`
 
-**Анализы Сириус / Морские**
+**Анализы Сириус (история «Морских» — архив)**
 
 - `Analiz_RK_Sirius_vitaminki21_2026-07-24.docx` / `_2026-07-25.docx`
 - `Analiz_RK_Sirius_Morskie_posle_CPA_2026-07-28.docx`
