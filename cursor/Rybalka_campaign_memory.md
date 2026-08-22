@@ -284,7 +284,8 @@ UTM в объявлении: `utm_source=yandex&utm_medium=cpc&utm_campaign=epk_
 
 G9 — карточка группы: `cursor/G9_Trofejnaya_rybalka_Moryak_Popaj_2026-08-20.docx`  
 G9 в кабинете **уже есть** (факт отчёта 21.08): имя «G9 - трофейная рыбалка», 118 показов / 4 клика / 1 конв. (Карты, «аренда катеров лодок яхт»).  
-G10 — карточка группы: `cursor/G10_Morskaya_rybalka_Sochi_Popaj_2026-08-20.docx` (в кабинете ещё не заведена)  
+G10 — карточка группы: `cursor/G10_Morskaya_rybalka_Sochi_Popaj_2026-08-20.docx`  
+G10 — пошаговая настройка + аудитория: `cursor/G10_Nastroyka_Direct_auditoriya_Popaj_2026-08-22.docx` (сегменты: ядро / море Сочи / приложения)  
 Анализ запросов 18–21.08: `cursor/Analiz_zaprosov_RB_Popaj_2026-08-21.docx` · CSV: `cursor/2026-08-21_vitaminki21_zaprosy.csv`
 
 ## Решения 16.08 (без изменений)
