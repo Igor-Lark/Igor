@@ -1,1 +1,1 @@
-Очередь печати. Агент кладёт `.docx` сюда через `python3 cursor/queue_print.py …` и пушит **свою** ветку. Watcher на ПК забирает `inbox/*.docx` со всех `origin/cursor/*`.
+Очередь печати **для агентов РК отключена** (23.08.2026). Word только в `cursor/`, ссылка в чат. Не класть сюда анализы. Правило: `cursor/RK_agents_conventions.md`.
