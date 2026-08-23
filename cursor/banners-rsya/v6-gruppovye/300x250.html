@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="ad.size" content="width=300,height=250">
+<title>boat-sochi · Групповые прогулки · 300x250</title>
+<style>
+html,body{margin:0;padding:0;width:300px;height:250px;overflow:hidden;background:#fff}
+*{box-sizing:border-box}
+a.banner{
+  display:block;width:300px;height:250px;position:relative;overflow:hidden;
+  text-decoration:none;cursor:pointer;
+  background:#fff url('bg_300x250.jpg') center/cover no-repeat;
+  font-family:Arial,Helvetica,"Helvetica Neue",sans-serif;color:#111;
+}
+.rotator-wrap{
+  position:absolute;left:156px;right:18px;top:60px;height:32px;
+  overflow:hidden;
+}
+.rotator{
+  position:absolute;left:0;right:0;top:0;
+  text-align:left;
+  font-size:14px;font-weight:700;color:#111;
+  line-height:32px;white-space:nowrap;
+  will-change:transform,opacity;
+}
+</style>
+</head>
+<body>
+<a class="banner" id="click_area" href="https://boat-sochi.ru/progulki_na_yacht" target="_blank">
+  <div class="rotator-wrap">
+    <div class="rotator" id="rotator"></div>
+  </div>
+</a>
+<script>
+(function () {
+  var a = document.getElementById("click_area");
+  try {
+    if (typeof yandexHTML5BannerApi !== "undefined" && yandexHTML5BannerApi.getClickURLNum) {
+      a.href = yandexHTML5BannerApi.getClickURLNum(1);
+    }
+  } catch (e) {}
+
+  var lines = ["до 11 человек", "1,5 часа", "купание в море", "заявка на сайте"];
+  var el = document.getElementById("rotator");
+  var i = 0;
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  async function showLine(text, holdMs, withFadeIn) {
+    el.textContent = text;
+    el.style.transition = "none";
+    el.style.opacity = withFadeIn ? "0" : "1";
+    el.style.transform = "translateY(0)";
+    void el.offsetWidth;
+
+    if (withFadeIn) {
+      el.style.transition = "opacity 1s linear";
+      el.style.opacity = "1";
+      await wait(1000);
+    }
+
+    await wait(holdMs);
+
+    el.style.transition = "transform 1s linear";
+    el.style.transform = "translateY(-36px)";
+    await wait(1000);
+  }
+
+  async function loop() {
+    await showLine(lines[0], 2000, false);
+    i = 1;
+    while (true) {
+      var hold = (i % lines.length === 0) ? 2000 : 1000;
+      await showLine(lines[i % lines.length], hold, true);
+      i++;
+    }
+  }
+
+  loop();
+})();
+</script>
+</body>
+</html>
