@@ -13,6 +13,15 @@ LEGACY = ROOT / "локальная" / "print-inbox"
 
 
 def main() -> int:
+    print(
+        "Агентам РК печать не нужна (23.08.2026). "
+        "Word только в cursor/, ссылку дать в чат. Не класть в inbox/.",
+        file=sys.stderr,
+    )
+    if "--force" not in sys.argv:
+        print("Остановлено. Явный запрос на бумагу: queue_print.py --force файл.docx", file=sys.stderr)
+        return 1
+    sys.argv = [a for a in sys.argv if a != "--force"]
     if len(sys.argv) < 2:
         print("usage: python3 cursor/queue_print.py <file.docx>", file=sys.stderr)
         return 2
