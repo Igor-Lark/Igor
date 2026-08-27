@@ -140,7 +140,7 @@ UTM объявления:
 
 | Код | Статус |
 |-----|--------|
-| **BP-RB** | Word `Banner_Poisk_Gruppovaya_Rybalka_2026-08-27.docx` · сезон ставрида/барабулька/пеламида · посадка `/gruppovaja_ribalka` · GIF ещё нет |
+| **BP-RB** | Word `Banner_Poisk_Gruppovaya_Rybalka_2026-08-27.docx` · сезон · посадка `/gruppovaja_ribalka` · **2 объявления в 1 группе**: `rb-barabulka-240x400.png`, `rb-pelamida-240x400.jpg` |
 | BP-SR / ZK / VIP | Только по запросу пользователя; новая РК + свой GIF |
 
 Когда пользователь скажет «добавь катер / закат»:
