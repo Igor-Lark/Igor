@@ -26,8 +26,9 @@ HOLD_MS = [1820, 1560, 1560, 1560]
 FADE_STEPS = 7
 FADE_FRAME_MS = 90  # 7 кадров × 90 мс ≈ 630 мс кроссфейд
 LINE_Y = 332
-ZOOM = 1.62
-CROP_TOP_FRAC = 1.0
+# Новое фото: яхта по центру, длинное отражение снизу — корпус над ценой
+ZOOM = 1.48
+CROP_TOP_FRAC = 0.52
 
 
 def font(path: str, size: int) -> ImageFont.FreeTypeFont:
