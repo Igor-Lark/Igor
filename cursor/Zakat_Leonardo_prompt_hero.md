@@ -2,9 +2,12 @@
 
 **РК:** ZK «Закат на море» (Поиск). **Не** группа 1 800 / 2 500, **не** дельфины утром.
 
-**Кадр:** девушка **не крупно** — **по пояс минимум**. **Катер** «Сириус», не яхта, только фрагмент. **На горизонте ТОЛЬКО море и закат. Берега нет вообще** — ни полоски суши, ни гор, ни города, ни пирса. Немного светлых облаков.
+**Референс:** `cursor/Zakat_Leonardo_reference_hero.jpg` — горизонт, свет, поза ок. В Leonardo: Image Guidance / Reference **этого** кадра, вес **0,30–0,45**. Выше 0,5 — девушка останется мелкой, как на рефе.
 
-Если в Leonardo подкладываете фото «Сириуса» — берите кадр **без берега** (только борт/стекло/рейлинг). Береговой референс снова вытянет сушу.
+**Что меняем относительно рефа:**
+- девушку **увеличить в 2 раза** (по пояс / чуть ниже, левая треть кадра);
+- **катера меньше** — только рейлинг и узкий край стекла, не четверть кадра;
+- горизонт **как на рефе: только море и закат, берега нет**.
 
 **Люди:** **одна** блондинка. Не пара. Не капитан.
 
@@ -13,6 +16,6 @@
 Скопировать блок целиком.
 
 ```
-Ultra-realistic lifestyle photograph, full-frame DSLR, 35mm lens, f/2.8, golden hour, shot from a boat looking OFFSHORE toward open ocean, far from any coast. Horizon is ONLY open sea and sunset: a perfectly straight empty water horizon, the orange-gold sun disk sitting on the sea, a few pale light clouds. Zero land. No dark strip on the horizon. No mountains, no hills, no beach, no city, no pier, no rocks. Endless Black Sea water to the edge of the frame. Environmental medium-wide: one young woman about 30, natural blonde shoulder-length hair in the wind, light makeup, sleeveless cream summer dress. Not large in the frame — at least waist-up, preferably knees-up, about one fifth of the frame to the side. Small white MOTOR BOAT, not a yacht: Sirius, Bayliner 285 cuddy. Only a cropped fragment: stainless railing she holds, slice of curved windshield, white gelcoat, edge of cuddy cabin. Calm look toward the sun. No other people. No text, no logos, no watermarks.
-Negative: land, landmass, coastline, shoreline, shore, beach, sand, mountains, hills, cliffs, rocks, island, spit, cape, headland, dark strip on horizon, distant coast, landscape, terrain, city, buildings, skyline, pier, dock, marina, harbor, quay, breakwater, promenade, Adler, Sochi, Imeretinsky, Caucasus, trees, yacht, luxury yacht, mega yacht, Azimut, flybridge, 20+ meter yacht, couple, man, brunette, tight headshot, extreme close-up, girl filling the frame, portrait, cartoon, CGI, illustration, anime, plastic skin, storm clouds, overcast, no sunset, sun missing, dolphins, Maldives, Dubai, banana boat, parasail, champagne, nudity, sexy pose, selfie, celebrity, neon purple sky, text, letters, logo, watermark, Cyrillic, price
+Same scene as the reference photo, same sunset, same open sea, same blonde woman in a sleeveless cream dress on a small white motor boat. Zoom in: make the woman TWICE as large in the frame as in the reference, waist-up or mid-thigh, left third of the frame, still not a close-up portrait. Show LESS of the boat than the reference — only a small corner: stainless railing she holds and a thin slice of curved windshield, white gelcoat, almost no hull. MOTOR BOAT Sirius, Bayliner 285 cuddy, not a yacht. Horizon unchanged: ONLY open sea and sunset, orange-gold sun disk on the water, a few pale wispy clouds, perfectly straight empty water line. Zero land, no dark strip, no mountains, no beach, no city, no pier. Shot from the boat looking offshore. Calm look toward the sun. No other people. No text, no logos, no watermarks.
+Negative: land, landmass, coastline, shoreline, shore, beach, sand, mountains, hills, cliffs, rocks, island, spit, cape, headland, dark strip on horizon, distant coast, landscape, city, buildings, pier, dock, marina, harbor, Adler, Sochi, Caucasus, trees, yacht, luxury yacht, mega yacht, Azimut, flybridge, woman as small as the reference, tiny person, wide establishing shot, huge boat filling the corner, full windshield, entire hull, tight headshot, extreme close-up, girl filling the whole frame, couple, man, brunette, cartoon, CGI, illustration, anime, plastic skin, storm clouds, overcast, no sunset, dolphins, Maldives, Dubai, banana boat, parasail, champagne, nudity, sexy pose, selfie, celebrity, neon purple sky, text, letters, logo, watermark, Cyrillic, price
 ```
