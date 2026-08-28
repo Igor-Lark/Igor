@@ -175,7 +175,7 @@ WhatsApp https://wa.me/79176750555 · Telegram https://t.me/Oleg_700
 - Быстрые ссылки: всегда **8**, с описанием (две строки) и URL. Эталон: `cursor/PRAVILO_8_bystryh_ssylok.md`. Не делать 4–6 ссылок без описания.
 - По-русски, коротко. Индивидуалка = часы и судно целиком.
 - Телефон ядра **+7 917 675-05-55**.
-- Анализы — Word в `cursor/`, ветка `cursor/<имя>-4385`. **Печать не нужна:** не вызывать `queue_print.py`, не класть в `inbox/`. Ссылку на Word дать в чат.
+- Анализы — Word в `cursor/`, ветка `cursor/<имя>-4385`. **Печать не нужна:** не вызывать `queue_print.py`, не класть в `inbox/`. Ссылку на Word дать в чат. Промпт Leonardo: prompt + negative **одним блоком** (`cursor/RK_agents_conventions.md`).
 - Обновляй `Morskie_progulki_campaign_memory.md` после решений пользователя.
 - Скрины в чат не копировать без нужды.
 

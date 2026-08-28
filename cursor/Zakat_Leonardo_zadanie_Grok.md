@@ -45,9 +45,17 @@
 Для каждой сцены:
 - Название RU (3–6 слов)
 - Зачем в РК (1 строка)
-- PROMPT (English) — одним блоком
-- Negative
+- **Один блок** copy-paste (prompt и negative вместе, негатив с новой строки `Negative:`)
 - Aspects: 3:4 / 1:1 / 16:9
+
+Пример блока:
+
+```
+Ultra-realistic photograph, ... Black Sea sunset ... No text, no logos.
+Negative: cartoon, CGI, dolphins, crowded tourist boat, text, watermark
+```
+
+Не разносить Prompt и Negative в два поля.
 
 В конце: 5 идей, чего **не** генерировать для этой РК (чтобы не слиться с дельфинами и групповым билетом).
 

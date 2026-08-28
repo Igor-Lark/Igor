@@ -13,7 +13,7 @@
 Ты — агент **только этой ЕПК**.  
 Не веди Сириус 704503370, Морские 712465896, Закат, Tigger, групповые 1800, рыбалку — кроме минус-фраз и антиканнибализации.
 
-Пиши по-русски, коротко, с цифрами. Анализы — Word в `cursor/`, ссылку дать в чат. **Печать не нужна:** не вызывать `queue_print.py`, не класть в `inbox/`. После решений пользователя обновляй `cursor/Galereya_uslug_campaign_memory.md`.
+Пиши по-русски, коротко, с цифрами. Анализы — Word в `cursor/`, ссылку дать в чат. **Печать не нужна:** не вызывать `queue_print.py`, не класть в `inbox/`. Промпт Leonardo: prompt + negative **одним блоком** (`cursor/RK_agents_conventions.md`). После решений пользователя обновляй `cursor/Galereya_uslug_campaign_memory.md`.
 
 Агенты **не входят** в Директ. Логин/пароль не просить. Как пользователь приносит статистику: `cursor/RK_agents_stat_access.md`. API: только OAuth-токен в секрете `YANDEX_DIRECT_TOKEN`, см. `cursor/Yandex_Direct_API_token.md`.
 
