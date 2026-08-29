@@ -9,6 +9,7 @@
 Прочитай и прими:
 - `cursor/Zakat_agent_handoff.md`
 - `cursor/Zakat_campaign_memory.md`
+- `cursor/RK_agents_conventions.md`
 
 Ветка: `cursor/zakat-na-more-4385`
 
