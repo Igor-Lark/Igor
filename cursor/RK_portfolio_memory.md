@@ -116,3 +116,5 @@ Handoff: [`cursor/RK_portfolio_agent_handoff.md`](RK_portfolio_agent_handoff.md)
 
 Жду: живая `/gruppovaja_ribalka` и номер ЕПК рыбалки; номер ZK; выгрузка SR/MP.  
 Или новая РК: номер + имя + посадка + оффер.
+
+**Практика 29.08 (все РК):** в заявку чаще идёт **Автоцель: отправил контактные данные** (94713538 / 565362888), не клик Телефон/MAX/TG. Держать вкл, цена не ниже телефона. `cursor/RK_agents_conventions.md`.
