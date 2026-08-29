@@ -71,6 +71,8 @@
 
 Ниже, чем в «Морских прогулках» (там телефон был 140 ₽) и сильно ниже Tigger (300 ₽).
 
+**Практика 29.08 (все РК):** в заявку чаще идёт **Автоцель: отправил контактные данные** (94713538 / 565362888), не клик Телефон/MAX/TG. Держать вкл, цена не ниже телефона. `cursor/RK_agents_conventions.md`.
+
 UTM:  
 `utm_source=yandex&utm_medium=cpc&utm_campaign=epk_gruppovye_yahta_progulki&utm_content={ad_id}&utm_term={keyword}`
 
