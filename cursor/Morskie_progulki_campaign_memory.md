@@ -71,3 +71,5 @@
 - Word: `EPK_Gruppovye_progulki_yahta_2026-08-10.docx`
 - База бота: `bot_knowledge_boat_sochi_delfin_progulki.md`, FAQ JSON, schema HTML
 - Ассеты: `cursor/assets/gruppovye-yahta/`
+
+**Практика 29.08 (все РК):** в заявку чаще идёт **Автоцель: отправил контактные данные** (94713538 / 565362888), не клик Телефон/MAX/TG. Держать вкл, цена не ниже телефона. `cursor/RK_agents_conventions.md`.
