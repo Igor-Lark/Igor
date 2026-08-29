@@ -9,6 +9,7 @@
 Прочитай и прими:
 - `cursor/Rybalka_agent_handoff.md`
 - `cursor/Rybalka_campaign_memory.md`
+- `cursor/RK_agents_conventions.md`
 
 Ветка: `cursor/gruppovaya-rybalka-4385`
 
