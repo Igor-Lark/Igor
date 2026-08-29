@@ -9,6 +9,7 @@
 Прочитай и прими:
 - `cursor/RK_portfolio_agent_handoff.md`
 - `cursor/RK_portfolio_memory.md`
+- `cursor/RK_agents_conventions.md`
 
 Ветка: `cursor/rk-portfolio-4385` · PR https://github.com/Igor-Lark/Igor/pull/24
 
