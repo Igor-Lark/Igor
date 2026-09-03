@@ -10,10 +10,10 @@ https://boat-sochi.ru/progulki_na_yacht?utm_source=max&utm_medium=cpc&utm_campai
 
 Параметры: `utm_source=max` · `utm_medium=cpc` · `utm_campaign=gruppovye_progulki` · `utm_content=max_post`
 
-## Заголовок (76 знаков)
+## Заголовок (56 знаков)
 
 ```
-Групповая прогулка на парусной яхте в Сириусе. Билет 1 800 ₽, 1,5 ч (до 11).
+Групповая прогулка на яхте, Сириус. Билет 1 800 ₽, 1,5 ч
 ```
 
 ## Текст поста (764 знака)

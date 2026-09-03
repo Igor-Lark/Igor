@@ -230,6 +230,6 @@ Word: `Analiz_RK_Gruppovye_progulki_EPK_2026-08-30.docx` + копия в `лок
 URL:
 `https://boat-sochi.ru/progulki_na_yacht?utm_source=max&utm_medium=cpc&utm_campaign=gruppovye_progulki&utm_content=max_post`
 
-Заголовок (76): `Групповая прогулка на парусной яхте в Сириусе. Билет 1 800 ₽, 1,5 ч (до 11).`
+Заголовок (56): `Групповая прогулка на яхте, Сириус. Билет 1 800 ₽, 1,5 ч`
 
 Текст (764) — в чате 03.09. Не вести на /delfin. Яхту не называть.
