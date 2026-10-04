@@ -47,6 +47,7 @@
 | **RB** | EPK_Gruppovaya_Rybalka_Popaj | **не запущена** | билет **2 800 ₽/чел., 3 ч**, слоты 07:30–16:30, «Моряк Попай» | **только `/gruppovaja_ribalka`** (страницы ещё нет) | **+7 918 304-40-00** | `Rybalka_agent_handoff.md` (ветка `cursor/gruppovaya-rybalka-4385`) |
 | **AX** | Alexum (если живая) | уточнять | VIP 40 000 ₽/ч, Морпорт | **только `/alexum`** | уточнять | не смешивать с TG и MP |
 | **GU** | EPK_Galereya_Uslug_BoatSochi | план | витрина организации в **галерее услуг** | сайт `/` + карточка Яндекс Бизнеса | **+7 917 675-05-55** | `Galereya_uslug_agent_handoff.md` (ветка `cursor/galereya-uslug-4385`) |
+| **MN** | Мантера | **уточнить** | продукт, посадка, телефон — с первой выгрузки | уточнить | уточнить | `Mantera_agent_handoff.md` (ветка `cursor/mantera-agent-7ed0`) |
 
 Трофейная рыбалка как **группа внутри SR или MP — СТОП**. Не реанимировать там.
 
@@ -75,6 +76,7 @@
 | **AX ↔ TG** | Средний (оба VIP) | Разные порты. Минусы имён. Не одна посадка. |
 | **AX ↔ SR/MP/GP** | VIP vs масс | Минус алексум в масс-РК. |
 | **GU ↔ все** | Ок при разведении мест | GU владеет **только** «список организаций и галерея услуг». Поиск/РСЯ/Карты в GU выкл. В SR/MP/ZK/GP/TG/RB галерея **ВЫКЛ**. |
+| **MN ↔ SR/GP/ZK** | **Ждать выгрузку** | Мантера — Красная Поляна, не Имеретинка. Риск, если ключи «яхта/катер Сочи/Сириус» без минусов. После CSV — чеклист. |
 
 Общие опасные фразы (смотреть в запросах **всех** РК):
 - морские прогулки сириус
@@ -139,7 +141,7 @@
 
 - Этот пакет: `cursor/RK_portfolio_agent_handoff.md`
 - Память портфеля: `cursor/RK_portfolio_memory.md`
-- Агенты РК: `Tigger_agent_handoff.md`, `Gruppovye_progulki_agent_handoff.md`, `Morskie_progulki_agent_handoff.md`, `Zakat_agent_handoff.md`, `Rybalka_agent_handoff.md`, `Galereya_uslug_agent_handoff.md`
+- Агенты РК: `Tigger_agent_handoff.md`, `Gruppovye_progulki_agent_handoff.md`, `Morskie_progulki_agent_handoff.md`, `Zakat_agent_handoff.md`, `Rybalka_agent_handoff.md`, `Galereya_uslug_agent_handoff.md`, `Mantera_agent_handoff.md`
 - Сириус (другая ветка): `cursor/Sirius_agent_handoff.md`, `Sirius_campaign_memory.md`
 - Рыбалка Word-каркас: `EPK_Gruppovaya_rybalka_Moryak_Popaj_2026-08-13.docx` (в генераторе XXXX, факт: **2800 ₽/чел., 3 ч**)
 
@@ -160,4 +162,6 @@
 - **Печать не нужна.** Word в `cursor/`, ссылку дать в чат. Не вызывать `queue_print.py`, не класть в `inbox/`.
 - После решений пользователя обновляй `RK_portfolio_memory.md`.
 
-Готовность: подтверди реестр (SR + MP + ZK + GP + TG + RB + AX + **GU**) и жди задачу на сверку или новую РК в матрицу.
+Готовность: подтверди реестр (SR + MP + ZK + GP + TG + RB + AX + GU + **MN Мантера**) и жди задачу на сверку или новую РК в матрицу.
+
+**MN (04.10.2026):** агент заведён, номера Директа ещё нет. Не выдумывать посадку/цену. После первой выгрузки прогнать чеклист против SR, GP, ZK, TG, RB, GU.
