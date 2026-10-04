@@ -25,6 +25,7 @@
 | **Сверка** | все РК сразу, каннибализация | — | https://cursor.com/agents/bc-304b9767-ff2c-430f-bd3c-17d790447ed0 | вставь `cursor/RK_portfolio_agent_start.md` |
 | **AX** | Alexum | если живая | отдельного агента нет; не мешать с Tigger | — |
 | **GU** | ЕПК галерея услуг | если запущена | https://cursor.com/agents/bc-38eae2c0-267b-4d34-ba6c-f51bef4259f5 | вставь `cursor/Galereya_uslug_agent_start.md` |
+| **MN** | Мантера | уточнить | агент создаётся 04.10.2026 · ветка `cursor/mantera-agent-7ed0` | вставь `cursor/Mantera_agent_start.md` |
 
 Сайт: boat-sochi.ru. Счётчики: **94713538** (сайт), **103116887** (орг).
 
