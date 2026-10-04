@@ -47,7 +47,7 @@
 | **RB** | EPK_Gruppovaya_Rybalka_Popaj | **не запущена** | билет **2 800 ₽/чел., 3 ч**, слоты 07:30–16:30, «Моряк Попай» | **только `/gruppovaja_ribalka`** (страницы ещё нет) | **+7 918 304-40-00** | `Rybalka_agent_handoff.md` (ветка `cursor/gruppovaya-rybalka-4385`) |
 | **AX** | Alexum (если живая) | уточнять | VIP 40 000 ₽/ч, Морпорт | **только `/alexum`** | уточнять | не смешивать с TG и MP |
 | **GU** | EPK_Galereya_Uslug_BoatSochi | план | витрина организации в **галерее услуг** | сайт `/` + карточка Яндекс Бизнеса | **+7 917 675-05-55** | `Galereya_uslug_agent_handoff.md` (ветка `cursor/galereya-uslug-4385`) |
-| **MN** | Мантера | **уточнить** | продукт, посадка, телефон — с первой выгрузки | уточнить | уточнить | `Mantera_agent_handoff.md` (ветка `cursor/mantera-agent-7ed0`) |
+| **MN** | Мантера | **уточнить** | продукт, посадка, телефон — с первой выгрузки | уточнить | уточнить | [Мантера](https://cursor.com/agents/bc-6e741ebc-544c-5bb8-a5ab-dafeca6e376e) · `Mantera_agent_handoff.md` (ветка `cursor/mantera-agent-7ed0`) |
 
 Трофейная рыбалка как **группа внутри SR или MP — СТОП**. Не реанимировать там.
 
