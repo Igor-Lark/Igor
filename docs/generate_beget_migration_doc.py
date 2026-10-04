@@ -67,8 +67,9 @@ def build():
 
     add_para(
         doc,
-        "Подробная инструкция по миграции двух ИИ-ботов с текущего VPS (webtaxi2.ru) "
-        "на виртуальный сервер Beget. Документ подготовлен: 21 августа 2026 г.",
+        "Подробная инструкция по миграции двух ИИ-ботов с VPS REG.RU "
+        "(сейчас: boat.webtaxi2.ru и klinker.webtaxi2.ru) на виртуальный сервер Beget. "
+        "Документ обновлён: 4 октября 2026 г.",
         italic=True,
     )
     doc.add_paragraph()
@@ -127,8 +128,25 @@ def build():
     add_para(doc, "Репозиторий: https://github.com/Igor-Lark/Igor", bold=False)
     add_para(
         doc,
-        "После переноса старый VPS (webtaxi2.ru) можно отключить, когда новые адреса "
-        "протестированы и виджеты на Tilda обновлены.",
+        "После переноса VPS на REG.RU можно отключить (или оставить резервом на 1–2 недели), "
+        "когда новые адреса протестированы и виджеты на Tilda обновлены.",
+    )
+
+    add_heading(doc, "1.1. Где что лежит сейчас (REG.RU)", 2)
+    add_table(
+        doc,
+        ["Что", "Где сейчас (REG.RU VPS)", "Куда (Beget VPS)"],
+        [
+            ["Boat Sochi", "/var/www/boat-sochi-bot, порт 3000", "тот же путь или /var/www/boat-sochi-bot"],
+            ["KlinkerPro", "~/igor/bots/klinkerpro-bot или /var/www/igor-klinker, порт 3001", "/var/www/igor/bots/klinkerpro-bot"],
+            ["DNS boat/klinker", "Панель REG.RU → DNS зона webtaxi2.ru (A-записи)", "REG.RU или Beget — см. раздел 3"],
+            ["SSL", "Let's Encrypt на старом VPS (certbot)", "Новый certbot на Beget после nginx"],
+        ],
+    )
+    add_para(
+        doc,
+        "SSH на старый сервер: логин и IP из личного кабинета REG.RU → «VPS» → ваш сервер. "
+        "Перед миграцией сохраните .env и список процессов: pm2 list или systemctl list-units '*bot*'.",
     )
 
     # Section 2
@@ -174,12 +192,31 @@ def build():
         "TTL: 300–600 сек. Распространение DNS: 5–30 минут, иногда до 2 часов.",
     )
 
-    add_heading(doc, "3.2. Вариант B — оставить webtaxi2.ru", 2)
+    add_heading(doc, "3.2. Вариант B — оставить boat.webtaxi2.ru и klinker.webtaxi2.ru (удобнее)", 2)
     add_para(
         doc,
-        "Если зона webtaxi2.ru тоже на Beget, можно просто сменить A-записи boat и klinker "
-        "на IP нового VPS (вместо старого сервера). URL не меняются — Tilda трогать не нужно.",
+        "URL ботов не меняются — на Tilda менять embed.js не нужно. Меняется только IP в DNS.",
     )
+    add_heading(doc, "3.2.1. DNS в REG.RU (если webtaxi2.ru обслуживается REG.RU)", 3)
+    add_para(
+        doc,
+        "Личный кабинет REG.RU → «Домены» → webtaxi2.ru → «Управление зоной DNS» / «Ресурсные записи»:",
+    )
+    add_table(
+        doc,
+        ["Тип", "Поддомен (хост)", "Было (IP REG.RU VPS)", "Стало"],
+        [
+            ["A", "boat", "старый IP VPS REG.RU", "новый IP VPS Beget"],
+            ["A", "klinker", "старый IP VPS REG.RU", "новый IP VPS Beget"],
+        ],
+    )
+    add_para(
+        doc,
+        "Сохраните записи. TTL после смены: подождите 5–30 минут (иногда до 2 часов). "
+        "Пока DNS не переключили — тестируйте ботов на Beget по curl к IP или через временный поддомен (вариант A).",
+    )
+    add_heading(doc, "3.2.2. DNS в Beget (если зону webtaxi2.ru уже перенесли на Beget)", 3)
+    add_para(doc, "Beget → «Домены» → webtaxi2.ru → DNS → те же A-записи boat и klinker на IP Beget VPS.")
     add_table(
         doc,
         ["Тип", "Имя", "Новое значение"],
@@ -313,7 +350,13 @@ def build():
         doc,
         "Копирование .env со старого сервера (выполнить на своём ПК или со старого VPS):",
     )
-    add_code(doc, "scp root@СТАРЫЙ_IP:/var/www/boat-sochi-bot/.env deploy@НОВЫЙ_IP:/var/www/boat-sochi-bot/.env")
+    add_code(
+        doc,
+        "# Старый IP — из REG.RU → VPS; новый IP — из письма Beget после заказа VPS\n"
+        "scp root@СТАРЫЙ_IP_REGRU:/var/www/boat-sochi-bot/.env deploy@НОВЫЙ_IP_BEGET:/var/www/boat-sochi-bot/.env\n"
+        "# Klinker .env (путь на REG.RU может отличаться):\n"
+        "scp root@СТАРЫЙ_IP_REGRU:/var/www/igor/bots/klinkerpro-bot/.env deploy@НОВЫЙ_IP_BEGET:/var/www/igor/bots/klinkerpro-bot/.env",
+    )
     add_para(doc, "После копирования отредактируйте PUBLIC_URL на новый домен.")
 
     add_heading(doc, "6.4. Тестовый запуск", 2)
@@ -540,12 +583,20 @@ def build():
     add_heading(doc, "12.1. Бэкап перед миграцией", 2)
     add_code(
         doc,
-        "# на старом VPS:\n"
+        "# на VPS REG.RU (по SSH):\n"
         "tar czf ~/backup-bots-$(date +%Y%m%d).tar.gz \\\n"
         "  /var/www/boat-sochi-bot/.env \\\n"
         "  /var/www/boat-sochi-bot/knowledge \\\n"
+        "  /var/www/igor/bots/klinkerpro-bot/.env \\\n"
         "  ~/igor/bots/klinkerpro-bot/.env 2>/dev/null\n"
-        "scp root@СТАРЫЙ_IP:~/backup-bots-*.tar.gz .",
+        "pm2 save\n"
+        "pm2 list > ~/pm2-list.txt\n\n"
+        "# скачать архив на свой ПК:\n"
+        "scp root@СТАРЫЙ_IP_REGRU:~/backup-bots-*.tar.gz .",
+    )
+    add_para(
+        doc,
+        "После успешной миграции: REG.RU → VPS → остановить сервисы (pm2 stop all) и позже удалить/не продлевать тариф.",
     )
 
     # Section 13 - Verification
@@ -614,8 +665,9 @@ def build():
         ("Yandex Cloud", "https://console.cloud.yandex.ru"),
         ("MAX dev", "https://dev.max.ru"),
         ("Beget VPS", "https://beget.com/ru/vps"),
-        ("Текущий boat (старый VPS)", "https://boat.webtaxi2.ru/health"),
-        ("Текущий klinker (старый VPS)", "https://klinker.webtaxi2.ru/health"),
+        ("REG.RU — VPS и DNS", "https://www.reg.ru/user/account/"),
+        ("Текущий boat (REG.RU VPS)", "https://boat.webtaxi2.ru/health"),
+        ("Текущий klinker (REG.RU VPS)", "https://klinker.webtaxi2.ru/health"),
     ]
     for name, url in links:
         p = doc.add_paragraph()
