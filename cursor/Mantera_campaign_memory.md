@@ -3,6 +3,7 @@
 **Создано 04.10.2026.** Живых цифр ещё нет.  
 Handoff: [`cursor/Mantera_agent_handoff.md`](Mantera_agent_handoff.md)  
 Ветка: `cursor/mantera-agent-7ed0`  
+Агент: https://cursor.com/agents/bc-6e741ebc-544c-5bb8-a5ab-dafeca6e376e  
 Аккаунт: **vitaminki21**
 
 ---
