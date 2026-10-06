@@ -170,12 +170,20 @@
       '<svg class="bsb-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.4 6.4l11.2 11.2M17.6 6.4L6.4 17.6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
     var AVATAR_URL = API_BASE + '/avatar-oleg.jpg';
     var LOGO_URL = API_BASE + '/logo-stripes.svg';
-    var BTN_AI_LABEL =
-      '<img class="bsb-logo" src="' + LOGO_URL + '" width="28" height="26" alt="" />' +
-      '<span class="bsb-ai-block">' +
-      '<span class="bsb-ai-label">AI</span>' +
-      '<span class="bsb-ai-sub"><span class="bsb-ai-sub-line">помощник</span><span class="bsb-ai-sub-line">капитана</span></span>' +
-      '</span>';
+    function btnLabelHtml() {
+      var icon = isMobileUi()
+        ? '<img class="bsb-btn-mascot" src="' +
+          resolveMascotUrl() +
+          '" width="44" height="44" alt="" />'
+        : '<img class="bsb-logo" src="' + LOGO_URL + '" width="28" height="26" alt="" />';
+      return (
+        icon +
+        '<span class="bsb-ai-block">' +
+        '<span class="bsb-ai-label">AI</span>' +
+        '<span class="bsb-ai-sub"><span class="bsb-ai-sub-line">помощник</span><span class="bsb-ai-sub-line">капитана</span></span>' +
+        '</span>'
+      );
+    }
 
     var style = document.createElement('style');
     style.textContent = [
@@ -185,7 +193,8 @@
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
       '#bsb-fab-stack{all:initial;position:fixed !important;right:16px !important;bottom:130px !important;z-index:2147483001 !important;display:flex !important;flex-direction:column !important;align-items:flex-end !important;gap:2px !important;pointer-events:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important}',
       '#bsb-fab-stack.bsb-hidden,#bsb-fab-stack.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
-      '#bsb-mascot{height:92px;width:auto;display:block;margin:0;padding:0;border:0;pointer-events:auto;cursor:pointer;line-height:0;vertical-align:bottom;-webkit-tap-highlight-color:transparent}',
+      '#bsb-mascot{height:138px;width:auto;display:block;margin:0 0 0 -50px;padding:0;border:0;pointer-events:auto;cursor:pointer;line-height:0;vertical-align:bottom;-webkit-tap-highlight-color:transparent;transform:translateX(0)}',
+      '#bsb-btn .bsb-btn-mascot{display:block;flex-shrink:0;width:44px;height:44px;object-fit:contain;object-position:center}',
       '#bsb-fab-stack #bsb-btn{position:relative !important;left:auto !important;right:auto !important;top:auto !important;bottom:auto !important;margin:0 !important}',
       '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:130px;width:180px !important;min-width:180px !important;height:61px !important;border:2px solid rgba(239,31,31,.8) !important;border-radius:5px !important;cursor:pointer;background:rgba(32,67,96,.8) !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.32);display:flex !important;flex-direction:row !important;align-items:center;justify-content:flex-start;gap:6px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 8px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#bsb-btn.bsb-hidden,#bsb-btn.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
@@ -274,7 +283,7 @@
     btn.type = 'button';
     btn.setAttribute('aria-label', 'Открыть ИИ-помощника');
     btn.title = 'ИИ-помощник';
-    btn.innerHTML = BTN_AI_LABEL;
+    btn.innerHTML = btnLabelHtml();
     btn.classList.add('bsb-scroll-hidden');
 
     var fabStack = document.createElement('div');
