@@ -71,7 +71,8 @@ def build():
         doc,
         "Чистая установка на VPS Beget: только программный код ботов и база знаний (инструкции для ИИ). "
         "Старые логи, pm2-логи, node_modules, архивы /var/www и прочий «хвост» с REG.RU не переносятся. "
-        "Секреты — только файл .env (скопировать вручную). Сервисы: boat.webtaxi2.ru и klinker.webtaxi2.ru. "
+        "Секреты — только YandexGPT в .env. Без MAX, Telegram и веток под мессенджеры. "
+        "Сервисы: boat.webtaxi2.ru и klinker.webtaxi2.ru. "
         "Документ обновлён: 6 октября 2026 г.",
         italic=True,
     )
@@ -81,7 +82,7 @@ def build():
     add_heading(doc, "Содержание", 1)
     toc = [
         "1. Что переносим и зачем",
-        "1.2–1.7. Код + обучение, без логов; knowledge; .env; DNS",
+        "1.2–1.8. Код + обучение; без MAX/Telegram; ветки Git; .env; DNS",
         "2. Что заказать на Beget",
         "3. Домены и DNS",
         "4. Первичная настройка VPS",
@@ -117,7 +118,7 @@ def build():
                 "https://boat.webtaxi2.ru",
                 "3000",
                 "cursor/boat-contact-route-5814",
-                "Чат на сайте аренды яхт; заявки в MAX; отзывы Avito",
+                "Только виджет на сайте (Tilda) + YandexGPT; без MAX и Telegram",
             ],
             [
                 "KlinkerPro",
@@ -125,7 +126,7 @@ def build():
                 "https://klinker.webtaxi2.ru",
                 "3001",
                 "cursor/termopaneli-bot-bfbc",
-                "Чат по термопанелям; заявки в MAX (пока отключены)",
+                "Только виджет на marmara-pro.ru; без MAX и Telegram",
             ],
         ],
     )
@@ -185,10 +186,28 @@ def build():
             ],
             [
                 "Секреты",
-                ".env",
-                ".env",
-                "Только scp с REG.RU (не в Git!)",
+                ".env (только YandexGPT)",
+                ".env (только YandexGPT)",
+                "scp с REG.RU или вручную; MAX/Telegram не заполняем",
             ],
+        ],
+    )
+
+    add_heading(doc, "1.3.1. MAX и Telegram — не используем", 3)
+    add_para(
+        doc,
+        "На Beget боты работают только как чат на сайте (embed.js → POST /api/chat). "
+        "Интеграции с мессенджерами и MAX не настраиваем: токены пустые, cron без уведомлений в MAX.",
+    )
+    add_table(
+        doc,
+        ["Ветка GitHub", "Нужна на Beget?", "Комментарий"],
+        [
+            ["cursor/boat-contact-route-5814", "Да", "Основной boat: виджет + knowledge"],
+            ["cursor/termopaneli-bot-bfbc", "Да", "KlinkerPro в bots/klinkerpro-bot/"],
+            ["cursor/boat-sochi-max-5814", "Нет", "Заявки в MAX — не деплоим"],
+            ["cursor/boat-sochi-telegram-5814", "Нет", "Telegram-бот — не деплоим"],
+            ["cursor/boat-sochi-bot-5814", "Нет", "Отдельная Telegram-ветка — не нужна"],
         ],
     )
 
@@ -238,7 +257,8 @@ def build():
     )
     add_para(
         doc,
-        "На Beget в .env обновите PUBLIC_URL, если меняете домен. YandexGPT/MAX/Telegram — те же значения, что работали на REG.RU.",
+        "На Beget в .env укажите PUBLIC_URL и ключи YandexGPT. Поля MAX_* и TELEGRAM_* оставьте пустыми "
+        "(если скопировали старый .env — удалите или очистите эти строки).",
     )
 
     add_heading(doc, "1.7. DNS (только боты)", 2)
@@ -271,7 +291,7 @@ def build():
 
     add_heading(doc, "2.2. Что понадобится заранее", 2)
     add_bullet(doc, "Доступ по SSH (логин root или пользователь с sudo).")
-    add_bullet(doc, "Файл .env с текущего VPS для boat (YandexGPT, MAX, Telegram — если используется).")
+    add_bullet(doc, "Ключи YandexGPT (из старого .env или Yandex Cloud); MAX/Telegram не нужны.")
     add_bullet(doc, "Доступ к панели DNS Beget (домены уже есть у вас).")
     add_bullet(doc, "Доступ к Tilda: boat-sochi.ru и marmara-pro.ru — для смены URL embed.js.")
 
@@ -433,25 +453,21 @@ def build():
     add_heading(doc, "6.3. Файл .env", 2)
     add_para(doc, "Скопируйте .env со старого VPS или создайте из шаблона:")
     add_code(doc, "cp .env.example .env\nnano .env")
-    add_para(doc, "Обязательно измените PUBLIC_URL на новый адрес:")
+    add_para(doc, "Минимальный .env (только сайт + ИИ; MAX и Telegram не заполняем):")
     add_code(
         doc,
-        "# --- AI: YandexGPT ---\n"
+        "# --- AI: YandexGPT (обязательно) ---\n"
         "YANDEX_API_KEY=AQVN...\n"
         "YANDEX_FOLDER_ID=b1g...\n"
         "YANDEX_MODEL=yandexgpt-lite\n\n"
-        "# --- MAX (заявки менеджеру) ---\n"
-        "MAX_BOT_TOKEN=...\n"
-        "MAX_CHAT_ID=...\n"
-        "MAX_USER_ID=...\n"
-        "AVITO_ITEM_URL=https://m.avito.ru/sochi/...\n"
-        "AVITO_NOTIFY_ALWAYS=0\n\n"
-        "# --- Telegram (если используется) ---\n"
-        "TELEGRAM_BOT_TOKEN=...\n\n"
+        "# --- MAX / Telegram / Avito — не используем на Beget ---\n"
+        "TELEGRAM_BOT_TOKEN=\n"
+        "MAX_BOT_TOKEN=\n"
+        "MAX_CHAT_ID=\n"
+        "MAX_USER_ID=\n\n"
         "# --- Сервер ---\n"
         "PORT=3000\n"
-        "PUBLIC_URL=https://boat-bot.example.ru\n"
-        "# или: PUBLIC_URL=https://boat.webtaxi2.ru\n"
+        "PUBLIC_URL=https://boat.webtaxi2.ru\n"
         "BOT_NAME=Boat Sochi\n"
         "TZ=Europe/Moscow\n\n"
         "BOOKING_REMINDERS_ENABLED=0\n"
@@ -460,7 +476,7 @@ def build():
     )
     add_para(
         doc,
-        "Копирование .env со старого сервера (выполнить на своём ПК или со старого VPS):",
+        "Можно взять YANDEX_* из старого .env на REG.RU (scp), остальное — как выше:",
     )
     add_code(
         doc,
@@ -547,7 +563,10 @@ def build():
         "YANDEX_API_KEY=...          # можно те же, что у boat\n"
         "YANDEX_FOLDER_ID=...\n"
         "YANDEX_MODEL=yandexgpt-lite\n\n"
-        "MAX_NOTIFY_ENABLED=false    # заявки в MAX пока выключены\n\n"
+        "MAX_NOTIFY_ENABLED=false\n"
+        "TELEGRAM_BOT_TOKEN=\n"
+        "MAX_BOT_TOKEN=\n"
+        "MAX_CHAT_ID=\n\n"
         "PORT=3001\n"
         "PUBLIC_URL=https://klinker-bot.example.ru\n"
         "# или: PUBLIC_URL=https://klinker.webtaxi2.ru\n"
@@ -651,32 +670,23 @@ def build():
     add_code(doc, '<script src="https://klinker-bot.example.ru/embed.js"></script>')
     add_para(doc, "Страница каталога: https://marmara-pro.ru/termo — кнопка чата в углу.")
 
-    add_heading(doc, "10.3. Telegram webhook (если используется)", 2)
     add_para(
         doc,
-        "После смены PUBLIC_URL перезапустите boat — webhook Telegram обновится автоматически "
-        "при старте (если TELEGRAM_BOT_TOKEN задан и PUBLIC_URL — HTTPS).",
+        "Telegram и MAX на Beget не подключаем — отдельный webhook и npm run max:chat-id не нужны.",
     )
-    add_code(doc, "pm2 restart boat-sochi\ncurl -s https://boat-bot.example.ru/health")
 
     # Section 11 - Cron
-    add_heading(doc, "11. Cron: мониторинг и фоновые задачи", 1)
-    add_para(doc, "Открыть crontab пользователя deploy:")
-    add_code(doc, "crontab -e -u deploy")
-    add_para(doc, "Рекомендуемые задачи для boat:")
-    add_code(
+    add_heading(doc, "11. Cron (опционально, без MAX)", 1)
+    add_para(
         doc,
-        "# Health ping каждые 10 минут (алерт в MAX при падении)\n"
-        "*/10 * * * * cd /var/www/boat-sochi-bot && npm run health:ping -- --notify >> /var/log/boat-health.log 2>&1\n\n"
-        "# Проверка новых отзывов Avito (раз в 6 часов)\n"
-        "0 */6 * * * cd /var/www/boat-sochi-bot && npm run check:avito >> /var/log/boat-avito.log 2>&1\n\n"
-        "# Напоминания о бронировании (если включите BOOKING_REMINDERS_ENABLED=1)\n"
-        "# */15 * * * * cd /var/www/boat-sochi-bot && npm run remind:bookings >> /var/log/boat-remind.log 2>&1",
+        "Cron не обязателен. Если нужен простой мониторинг без уведомлений в MAX — health:ping "
+        "без флага --notify. Скрипты check:avito, remind:bookings, max:chat-id не используем.",
     )
-    add_para(doc, "Для klinker (опционально):")
+    add_code(doc, "crontab -e -u deploy")
     add_code(
         doc,
-        "*/10 * * * * cd /var/www/igor/bots/klinkerpro-bot && npm run health:ping -- --notify >> /var/log/klinker-health.log 2>&1",
+        "# опционально — только запись в лог, без MAX:\n"
+        "*/15 * * * * cd /var/www/boat-sochi-bot && npm run health:ping >> /var/log/boat-health.log 2>&1",
     )
 
     # Section 12 - Cutover
@@ -697,6 +707,7 @@ def build():
     add_code(
         doc,
         "# С REG.RU сохраняем только секреты и (если нужно) локальный knowledge — без логов:\n"
+        "# из boat.env на ПК переносим на Beget только YANDEX_* (+ PUBLIC_URL, PORT)\n"
         "scp root@СТАРЫЙ_IP_REGRU:/var/www/boat-sochi-bot/.env ./backup/boat.env\n"
         "scp root@СТАРЫЙ_IP_REGRU:/var/www/igor/bots/klinkerpro-bot/.env ./backup/klinker.env\n"
         "# опционально, если правки не в Git:\n"
@@ -719,7 +730,7 @@ def build():
             ["Klinker embed", "curl -sI https://klinker-bot.example.ru/embed.js | head -3", "HTTP/2 200"],
             ["Boat чат", "Вопрос на boat-sochi.ru", "Ответ про яхты/катера"],
             ["Klinker чат", "Вопрос на marmara-pro.ru/termo", "Ответ про термопанели"],
-            ["Заявка boat", "«Хочу забронировать, +7...»", "Сообщение в MAX"],
+            ["Boat в виджете", "«Хочу забронировать» + телефон", "Ответ в чате на сайте (MAX не шлём)"],
             ["pm2", "pm2 list", "boat-sochi и klinkerpro online"],
         ],
     )
@@ -754,7 +765,7 @@ def build():
             ["ai: none в health", "Нет Yandex ключей", "Проверить .env, перезапустить pm2"],
             ["Виджет не появляется", "Старый URL в Tilda или не опубликовано", "F12 → Network → embed.js"],
             ["SSL ошибка", "DNS ещё не обновился", "dig +short; подождать; certbot снова"],
-            ["Telegram не отвечает", "Webhook на старый URL", "PUBLIC_URL + pm2 restart boat-sochi"],
+            ["В логах MAX/Telegram", "В .env остались токены", "Очистить MAX_* и TELEGRAM_*; pm2 restart"],
             ["CORS / чат молчит", "HTTP вместо HTTPS на сайте", "Tilda только HTTPS"],
             ["Порт занят", "Два процесса на 3000/3001", "ss -tlnp | grep 300"],
             ["Knowledge устарел", "На REG.RU правили без git push", "scp только knowledge/ или закоммитить в GitHub"],
@@ -773,7 +784,6 @@ def build():
         ("Сайт boat-sochi.ru", "https://boat-sochi.ru"),
         ("Сайт marmara-pro.ru/termo", "https://marmara-pro.ru/termo"),
         ("Yandex Cloud", "https://console.cloud.yandex.ru"),
-        ("MAX dev", "https://dev.max.ru"),
         ("Beget VPS", "https://beget.com/ru/vps"),
         ("REG.RU — VPS и DNS", "https://www.reg.ru/user/account/"),
         ("Текущий boat (REG.RU VPS)", "https://boat.webtaxi2.ru/health"),
