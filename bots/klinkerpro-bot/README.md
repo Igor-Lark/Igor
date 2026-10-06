@@ -1,12 +1,12 @@
 # КлинкерПрофi Bot
 
-ИИ-консультант по фасадным термопанелям для [marmara-pro.ru/termo](https://marmara-pro.ru/termo): **виджет на сайте (Tilda)** + **заявки менеджеру в MAX**. Основан на проекте boat-sochi-bot (ветка `cursor/boat-sochi-max-5814`).
+ИИ-консультант для [marmara-pro.ru/termo](https://marmara-pro.ru/termo): **только виджет на Tilda** + YandexGPT. MAX и Telegram на Beget **не используем** (`MAX_NOTIFY_ENABLED=false`, пустые токены).
 
 | Канал | Назначение |
 |--------|------------|
 | Сайт | `embed.js` → `POST /api/chat` |
-| MAX | Заявки (по умолчанию **выключены**, `MAX_NOTIFY_ENABLED=true` — когда включите) |
-| Telegram | **Не обязателен** (включите `TELEGRAM_BOT_TOKEN`, если нужен чат в TG) |
+
+С VPS в Git: [../../docs/VPS-TO-GITHUB.md](../../docs/VPS-TO-GITHUB.md).
 
 **Прод:** `https://klinker.webtaxi2.ru` · порт на VPS **`3001`** (boat обычно `3000`).
 
@@ -28,14 +28,6 @@ npm start
 ```
 
 Проверка: `curl -s http://127.0.0.1:3001/health | jq`
-
-### MAX (заявки — позже)
-
-Пока **`MAX_NOTIFY_ENABLED=false`**. Когда включите:
-
-1. [dev.max.ru](https://dev.max.ru) → `MAX_BOT_TOKEN`
-2. Чат заявок → `npm run max:chat-id` → `MAX_CHAT_ID`
-3. `MAX_NOTIFY_ENABLED=true` и перезапуск сервиса
 
 ### YandexGPT
 
