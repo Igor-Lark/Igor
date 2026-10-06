@@ -22,7 +22,7 @@
   }
   function resolveMascotUrl() {
     if (mascotUrlOverride) return mascotUrlOverride;
-    return API_BASE + '/widget-mascot-captain.png';
+    return API_BASE + '/widget-mascot-captain.png?v=20261006';
   }
   var MOBILE_MQ = '(max-width:1024px)';
   function isMobileUi() {
