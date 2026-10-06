@@ -62,14 +62,17 @@ def build():
     doc = Document()
 
     # Title
-    title = doc.add_heading("Перенос ботов Boat Sochi и KlinkerPro на VPS Beget", 0)
+    title = doc.add_heading(
+        "Перенос VPS целиком: REG.RU → Beget (boat, klinker и всё содержимое)", 0
+    )
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     add_para(
         doc,
-        "Подробная инструкция по миграции двух ИИ-ботов с VPS REG.RU "
-        "(сейчас: boat.webtaxi2.ru и klinker.webtaxi2.ru) на виртуальный сервер Beget. "
-        "Документ обновлён: 4 октября 2026 г.",
+        "Пошаговый перенос виртуального сервера REG.RU на VPS Beget: все проекты в /var/www, "
+        "репозитории, nginx, SSL, pm2/systemd, cron и DNS. Ключевые сервисы: boat.webtaxi2.ru и "
+        "klinker.webtaxi2.ru (боты для boat-sochi.ru и marmara-pro.ru). "
+        "Документ обновлён: 6 октября 2026 г.",
         italic=True,
     )
     doc.add_paragraph()
@@ -78,6 +81,7 @@ def build():
     add_heading(doc, "Содержание", 1)
     toc = [
         "1. Что переносим и зачем",
+        "1.2–1.5. Полный перенос VPS (инвентаризация, rsync, DNS, SSL)",
         "2. Что заказать на Beget",
         "3. Домены и DNS",
         "4. Первичная настройка VPS",
@@ -149,12 +153,145 @@ def build():
         "Перед миграцией сохраните .env и список процессов: pm2 list или systemctl list-units '*bot*'.",
     )
 
+    add_heading(doc, "1.2. Два способа переноса (выберите один)", 2)
+    add_table(
+        doc,
+        ["Способ", "Когда подходит", "Плюсы", "Минусы"],
+        [
+            [
+                "A. Полный перенос данных (rsync)",
+                "Нужно сохранить всё как на REG.RU: /var/www, nginx, pm2, cron",
+                "Минимум ручной настройки, те же пути и .env",
+                "Нужно переустановить Node/nginx на Beget; SSL часто перевыпускают",
+            ],
+            [
+                "B. Чистый Beget + только боты из Git",
+                "На REG.RU кроме boat/klinker ничего нет",
+                "Свежая система, меньше «мусора»",
+                "Не переносит другие сайты/скрипты на VPS",
+            ],
+        ],
+    )
+    add_para(
+        doc,
+        "Ниже описан способ A — перенос VPS со всем содержимым. Разделы 6–7 (git clone) — запасной "
+        "вариант, если rsync не используете.",
+    )
+
+    add_heading(doc, "1.3. Инвентаризация на REG.RU (обязательно)", 2)
+    add_para(doc, "Выполните на старом VPS и сохраните вывод в файл на свой ПК:")
+    add_code(
+        doc,
+        "ssh root@СТАРЫЙ_IP_REGRU\n"
+        "mkdir -p ~/migration-export\n"
+        "df -h | tee ~/migration-export/disk.txt\n"
+        "ls -la /var/www | tee ~/migration-export/var-www.txt\n"
+        "find /var/www -maxdepth 3 -type d 2>/dev/null | tee ~/migration-export/var-www-dirs.txt\n"
+        "ls -la /etc/nginx/sites-enabled/ | tee ~/migration-export/nginx-enabled.txt\n"
+        "cat /etc/nginx/sites-enabled/* 2>/dev/null | tee ~/migration-export/nginx-configs.txt\n"
+        "ss -tlnp | tee ~/migration-export/ports.txt\n"
+        "pm2 list | tee ~/migration-export/pm2-list.txt\n"
+        "pm2 save\n"
+        "systemctl list-unit-files --type=service --state=enabled | tee ~/migration-export/systemd.txt\n"
+        "crontab -l 2>/dev/null | tee ~/migration-export/cron-root.txt\n"
+        "for u in deploy ubuntu www-data; do crontab -u $u -l 2>/dev/null >> ~/migration-export/cron-users.txt; done\n"
+        "docker ps -a 2>/dev/null | tee ~/migration-export/docker.txt\n"
+        "tar czf ~/migration-export-$(date +%Y%m%d).tar.gz ~/migration-export\n"
+        "scp root@СТАРЫЙ_IP_REGRU:~/migration-export-*.tar.gz .",
+    )
+    add_para(
+        doc,
+        "В панели REG.RU выпишите все A- и CNAME-записи доменов, которые указывают на IP этого VPS "
+        "(не только webtaxi2.ru — любые сайты, API, почта если на том же IP).",
+    )
+
+    add_heading(doc, "1.4. Rsync: копирование содержимого на Beget", 2)
+    add_para(
+        doc,
+        "Сначала на Beget: базовая Ubuntu, пользователь deploy, открыты порты 22/80/443 (раздел 4). "
+        "Команды выполняйте на новом VPS Beget. Подставьте IP REG.RU.",
+    )
+    add_code(
+        doc,
+        "OLD=root@СТАРЫЙ_IP_REGRU\n"
+        "mkdir -p /root/migration/nginx-backup\n\n"
+        "# 1) Все сайты и боты\n"
+        "rsync -avz --progress -e ssh $OLD:/var/www/ /var/www/\n\n"
+        "# 2) Репозиторий Igor (если не в /var/www)\n"
+        "rsync -avz --progress -e ssh $OLD:/root/igor/ /root/igor/ 2>/dev/null || true\n"
+        "rsync -avz --progress -e ssh $OLD:/home/deploy/ /home/deploy/ 2>/dev/null || true\n\n"
+        "# 3) Nginx — сначала в backup, потом вручную в sites-available\n"
+        "rsync -avz -e ssh $OLD:/etc/nginx/sites-available/ /root/migration/nginx-backup/sites-available/\n"
+        "rsync -avz -e ssh $OLD:/etc/nginx/nginx.conf /root/migration/nginx-backup/nginx.conf\n\n"
+        "# 4) pm2 (список процессов и логи)\n"
+        "rsync -avz -e ssh $OLD:/root/.pm2/dump.pm2 /root/.pm2/dump.pm2 2>/dev/null || true\n\n"
+        "# 5) Cron\n"
+        "scp $OLD:/var/spool/cron/crontabs/root /root/migration/cron-root 2>/dev/null || true",
+    )
+    add_para(
+        doc,
+        "Опционально (ускоряет, но может перенести лишнее): исключить node_modules и .git — "
+        "после rsync в каждом проекте выполнить npm install.",
+    )
+    add_code(
+        doc,
+        "rsync -avz --progress --exclude 'node_modules' --exclude '.git' \\\n"
+        "  -e ssh $OLD:/var/www/ /var/www/",
+    )
+    add_heading(doc, "1.4.1. Что не копировать с REG.RU", 3)
+    add_bullet(doc, "Весь диск или каталоги /etc целиком — сеть, hostname и пакеты могут не совпасть с Beget.")
+    add_bullet(doc, "/proc, /sys, /dev, /boot — не переносятся.")
+    add_bullet(doc, "Старые логи (/var/log) — по желанию; для работы не нужны.")
+    add_bullet(doc, "Кэш apt — не нужен.")
+
+    add_heading(doc, "1.5. После rsync: включить сервисы на Beget", 2)
+    add_code(
+        doc,
+        "# Node + pm2 (раздел 5), затем:\n"
+        "cd /var/www/boat-sochi-bot && npm install\n"
+        "cd /var/www/igor/bots/klinkerpro-bot && npm install   # путь уточните по find\n\n"
+        "cp /root/migration/nginx-backup/sites-available/* /etc/nginx/sites-available/\n"
+        "ln -sf /etc/nginx/sites-available/* /etc/nginx/sites-enabled/ 2>/dev/null\n"
+        "nginx -t && systemctl reload nginx\n\n"
+        "pm2 resurrect    # если перенесли dump.pm2\n"
+        "# или вручную:\n"
+        "pm2 start /var/www/boat-sochi-bot/src/index.js --name boat-sochi\n"
+        "pm2 start /var/www/igor/bots/klinkerpro-bot/src/index.js --name klinkerpro\n"
+        "pm2 save && pm2 startup",
+    )
+    add_para(
+        doc,
+        "SSL: проще перевыпустить certbot на Beget (раздел 9), чем копировать /etc/letsencrypt — "
+        "сертификаты привязаны к серверу. До смены DNS certbot можно запустить в режиме DNS уже после "
+        "переключения A-записей.",
+    )
+    add_heading(doc, "1.6. DNS: все записи на IP Beget", 2)
+    add_para(
+        doc,
+        "В REG.RU (или Beget, если DNS уже там) замените IP во всех A-записях, которые вели на VPS REG.RU:",
+    )
+    add_table(
+        doc,
+        ["Запись", "Действие"],
+        [
+            ["@ или www (если сайт на VPS)", "A → новый IP Beget"],
+            ["boat, klinker (webtaxi2.ru)", "A → новый IP Beget"],
+            ["Любые другие поддомены на тот же IP", "A → новый IP Beget"],
+            ["TTL", "За сутки до переезда поставьте 300–600 сек для быстрого отката"],
+        ],
+    )
+    add_para(
+        doc,
+        "Пока DNS старый — не останавливайте REG.RU VPS. После переключения проверьте сайты и health ботов.",
+    )
+
     # Section 2
     add_heading(doc, "2. Что заказать на Beget", 1)
     add_heading(doc, "2.1. Тариф VPS", 2)
     add_bullet(doc, "Раздел Beget → «VPS/VDS» → Ubuntu 22.04 или 24.04 LTS.")
-    add_bullet(doc, "Минимум: 1 vCPU, 1–2 GB RAM, 10 GB SSD — достаточно для двух лёгких Node.js-ботов.")
-    add_bullet(doc, "Рекомендуется: 2 vCPU, 2 GB RAM — запас под пики YandexGPT и certbot.")
+    add_bullet(doc, "Объём диска и RAM — не меньше, чем на REG.RU (смотрите df -h и тариф в кабинете REG.RU).")
+    add_bullet(doc, "Минимум для только ботов: 1 vCPU, 2 GB RAM, 15 GB SSD.")
+    add_bullet(doc, "Если в /var/www несколько сайтов — возьмите запас по SSD (×1.5 от занятого места).")
     add_bullet(doc, "Регион: любой с низкой задержкой до России (Москва/СПб, если доступен).")
 
     add_heading(doc, "2.2. Что понадобится заранее", 2)
@@ -570,7 +707,8 @@ def build():
     # Section 12 - Cutover
     add_heading(doc, "12. План переключения (cutover) со старого VPS", 1)
     add_para(doc, "Рекомендуемый порядок — минимум простоя:")
-    add_bullet(doc, "Шаг 1. Развернуть оба бота на Beget, проверить health по IP/новому домену (до смены DNS).")
+    add_bullet(doc, "Шаг 0. Инвентаризация и rsync (раздел 1.3–1.4) или git-деплой (разделы 6–7).")
+    add_bullet(doc, "Шаг 1. На Beget поднять nginx + pm2, проверить curl http://127.0.0.1:3000/health локально.")
     add_bullet(doc, "Шаг 2. Временно прописать в /etc/hosts на своём ПК новый IP для теста домена.")
     add_bullet(doc, "Шаг 3. Проверить чат на Tilda (локально через hosts) или временный поддомен.")
     add_bullet(doc, "Шаг 4. Сменить A-записи DNS (или обновить Tilda, если новые домены).")
@@ -583,16 +721,15 @@ def build():
     add_heading(doc, "12.1. Бэкап перед миграцией", 2)
     add_code(
         doc,
-        "# на VPS REG.RU (по SSH):\n"
+        "# на VPS REG.RU — полный архив /var/www (может быть большим):\n"
+        "tar czf ~/backup-var-www-$(date +%Y%m%d).tar.gz /var/www\n"
         "tar czf ~/backup-bots-$(date +%Y%m%d).tar.gz \\\n"
         "  /var/www/boat-sochi-bot/.env \\\n"
-        "  /var/www/boat-sochi-bot/knowledge \\\n"
+        "  /etc/nginx/sites-available \\\n"
         "  /var/www/igor/bots/klinkerpro-bot/.env \\\n"
         "  ~/igor/bots/klinkerpro-bot/.env 2>/dev/null\n"
-        "pm2 save\n"
-        "pm2 list > ~/pm2-list.txt\n\n"
-        "# скачать архив на свой ПК:\n"
-        "scp root@СТАРЫЙ_IP_REGRU:~/backup-bots-*.tar.gz .",
+        "pm2 save && pm2 list > ~/pm2-list.txt\n\n"
+        "scp root@СТАРЫЙ_IP_REGRU:~/backup-*.tar.gz .",
     )
     add_para(
         doc,
@@ -649,6 +786,9 @@ def build():
             ["Telegram не отвечает", "Webhook на старый URL", "PUBLIC_URL + pm2 restart boat-sochi"],
             ["CORS / чат молчит", "HTTP вместо HTTPS на сайте", "Tilda только HTTPS"],
             ["Порт занят", "Два процесса на 3000/3001", "ss -tlnp | grep 300"],
+            ["После rsync nginx -t падает", "Старые пути SSL или IPv6", "Поправить ssl_certificate; certbot --nginx"],
+            ["pm2 resurrect пустой", "Не скопировали dump.pm2", "pm2 start вручную по pm2-list.txt с REG.RU"],
+            ["Сайт открывает старый VPS", "DNS не обновился", "dig +short; сменить все A на Beget IP"],
         ],
     )
 
