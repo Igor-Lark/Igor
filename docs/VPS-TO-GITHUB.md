@@ -25,7 +25,51 @@ Klinker: ветка **`cursor/termopaneli-bot-bfbc`**, каталог `bots/klin
 
 Не копировать: `node_modules/`, `~/.pm2/logs`, `/var/log`, архивы.
 
-## Скрипт (с вашего ПК)
+## Пуш прямо с VPS (`~/Igor`)
+
+Ошибка `src refspec cursor/boat-contact-route-5814 does not match any` значит: **локально этой ветки нет** (вы на `main` или другой ветке). Сначала создайте её от origin:
+
+```bash
+cd ~/Igor
+git fetch origin
+git switch -c cursor/boat-contact-route-5814 origin/cursor/boat-contact-route-5814
+git branch --show-current   # должно быть cursor/boat-contact-route-5814
+```
+
+Боевой бот часто в **`/var/www/boat-sochi-bot`**, а клон — в **`~/Igor`**. Тогда скопируйте knowledge в клон и запушьте:
+
+```bash
+cd ~/Igor
+git switch cursor/boat-contact-route-5814
+git pull origin cursor/boat-contact-route-5814
+rsync -a /var/www/boat-sochi-bot/knowledge/ ./knowledge/
+cp -f /var/www/boat-sochi-bot/public/embed.js ./public/embed.js 2>/dev/null || true
+git add knowledge public/embed.js
+git status
+git commit -m "sync: knowledge с /var/www/boat-sochi-bot"
+git push -u origin cursor/boat-contact-route-5814
+```
+
+**`nothing to commit`** — файлы уже как в GitHub; push всё равно не нужен, если нечего менять.
+
+**Один скрипт на VPS:**
+
+```bash
+cd ~/Igor
+git pull origin cursor/boat-contact-route-5814 2>/dev/null || git fetch origin
+bash scripts/vps-commit-boat-to-github.sh
+```
+
+Если `git push` просит пароль: на VPS для GitHub нужен **Personal Access Token** (не пароль аккаунта) или **SSH**:
+
+```bash
+git remote set-url origin git@github.com:Igor-Lark/Igor.git
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub   # добавить в GitHub → Settings → SSH keys
+git push -u origin cursor/boat-contact-route-5814
+```
+
+## Скрипт с вашего ПК (rsync по SSH)
 
 ```bash
 git checkout cursor/boat-contact-route-5814
