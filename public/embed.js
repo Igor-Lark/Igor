@@ -224,6 +224,8 @@
       '.bsb-oleg-text,.bsb-helper-text{display:flex;flex-direction:column;justify-content:center;line-height:1.15;gap:2px;white-space:nowrap}',
       '.bsb-oleg-name{font-size:15px;font-weight:700}',
       '.bsb-oleg-role{font-size:13px;font-weight:500;opacity:.92}',
+      '#bsb-head .bsb-head-mascot{display:block;flex-shrink:0;width:52px;height:52px;object-fit:contain;object-position:center}',
+      '#bsb-head .bsb-logo-head-mobile{display:none}',
       '#bsb-head .bsb-logo{display:block;flex-shrink:0;width:36px;height:33px}',
       '.bsb-helper-line{font-size:14px;font-weight:700;line-height:1.15}',
       '#bsb-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}',
@@ -245,8 +247,8 @@
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
       /* та же компоновка шапки, что на десктопе — только компактнее */
-      '@media (max-width:1024px){#bsb-fab-stack{display:none !important}#bsb-btn{left:20px !important;right:auto !important;bottom:20px;width:180px !important;min-width:180px !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-logo{width:28px;height:26px}}',
-      '@media (max-width:480px){#bsb-panel{height:70vh;max-height:70vh}#bsb-head{--bsb-avatar:44px;min-height:72px;padding:8px 36px 8px 10px;gap:6px}#bsb-head-left,#bsb-head-right{gap:6px}#bsb-avatar{border-width:1.5px}.bsb-oleg-name{font-size:13px}.bsb-oleg-role,.bsb-helper-line{font-size:11px}#bsb-head .bsb-logo{width:24px;height:22px}#bsb-close{right:6px;top:6px}#bsb-close .bsb-ico{width:18px;height:18px}}',
+      '@media (max-width:1024px){#bsb-fab-stack{display:none !important}#bsb-btn{left:20px !important;right:auto !important;bottom:20px;width:180px !important;min-width:180px !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-head-mascot{display:none}#bsb-head .bsb-logo-head-mobile{display:block;width:28px;height:26px}}',
+      '@media (max-width:480px){#bsb-panel{height:70vh;max-height:70vh}#bsb-head{--bsb-avatar:44px;min-height:72px;padding:8px 36px 8px 10px;gap:6px}#bsb-head-left,#bsb-head-right{gap:6px}#bsb-avatar{border-width:1.5px}.bsb-oleg-name{font-size:13px}.bsb-oleg-role,.bsb-helper-line{font-size:11px}#bsb-head .bsb-logo-head-mobile{width:24px;height:22px}#bsb-close{right:6px;top:6px}#bsb-close .bsb-ico{width:18px;height:18px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
@@ -262,7 +264,12 @@
       '      <div class="bsb-oleg-text"><span class="bsb-oleg-name">Олег</span><span class="bsb-oleg-role">Капитан</span></div>',
       '    </div>',
       '    <div id="bsb-head-right">',
-      '      <img class="bsb-logo" src="' + LOGO_URL + '" width="36" height="33" alt="" />',
+      '      <img class="bsb-head-mascot" src="' +
+        resolveMascotUrl() +
+        '" width="52" height="52" alt="ИИ-помощник" />',
+      '      <img class="bsb-logo bsb-logo-head-mobile" src="' +
+        LOGO_URL +
+        '" width="36" height="33" alt="" />',
       '      <div class="bsb-helper-text"><span class="bsb-helper-line">А я его</span><span class="bsb-helper-line">помощник</span></div>',
       '    </div>',
       '    <span id="bsb-title">Boat Sochi</span>',
