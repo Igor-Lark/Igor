@@ -8,10 +8,10 @@
 |-------|------------|
 | **`cursor/boat-contact-route-5814`** | Виджет Tilda + YandexGPT + `knowledge/` |
 
-Ветки мессенджеров (**удалены**, не использовать):
+Ветки мессенджеров **удалены с GitHub** (MAX/Telegram не деплоим):
 
-- ~~`cursor/boat-sochi-max-5814`~~ — MAX  
-- ~~`cursor/boat-sochi-bot-5814`~~ / telegram — Telegram  
+- ~~`cursor/boat-sochi-max-5814`~~  
+- ~~`cursor/boat-sochi-bot-5814`~~ / telegram  
 
 Klinker: ветка **`cursor/termopaneli-bot-bfbc`**, каталог `bots/klinkerpro-bot/`.
 
@@ -24,6 +24,16 @@ Klinker: ветка **`cursor/termopaneli-bot-bfbc`**, каталог `bots/klin
 | `.env` | **не в Git** — только на Beget вручную (YandexGPT) |
 
 Не копировать: `node_modules/`, `~/.pm2/logs`, `/var/log`, архивы.
+
+## Чистый старт на VPS (удалить все логи)
+
+```bash
+cd /var/www/boat-sochi-bot   # или ~/Igor после git pull
+git pull origin cursor/boat-contact-route-5814
+bash scripts/vps-clean-logs-and-restart.sh
+```
+
+Скрипт: pm2, логи pm2/npm/journald, `*.log` в `/var/log` и `/var/www`; затем запуск boat + klinker. **`.env` и `knowledge/` не удаляются.**
 
 ## Пуш прямо с VPS (`~/Igor`)
 
