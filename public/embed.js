@@ -16,6 +16,19 @@
   }
   if (!API_BASE) API_BASE = 'https://boat.webtaxi2.ru';
 
+  var mascotUrlOverride = '';
+  if (scriptEl) {
+    mascotUrlOverride = (scriptEl.getAttribute('data-mascot-src') || '').trim();
+  }
+  function resolveMascotUrl() {
+    if (mascotUrlOverride) return mascotUrlOverride;
+    return API_BASE + '/widget-mascot-captain.png';
+  }
+  var MOBILE_MQ = '(max-width:1024px)';
+  function isMobileUi() {
+    return window.matchMedia(MOBILE_MQ).matches;
+  }
+
   function onReady(fn) {
     if (document.body) {
       fn();
@@ -170,6 +183,10 @@
       '#bsb-root *{box-sizing:border-box;font-family:inherit}',
       '#bsb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
+      '#bsb-fab-stack{all:initial;position:fixed !important;right:16px !important;bottom:130px !important;z-index:2147483001 !important;display:flex !important;flex-direction:column !important;align-items:flex-end !important;gap:2px !important;pointer-events:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important}',
+      '#bsb-fab-stack.bsb-hidden,#bsb-fab-stack.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
+      '#bsb-mascot{height:92px;width:auto;display:block;margin:0;padding:0;border:0;pointer-events:auto;cursor:pointer;line-height:0;vertical-align:bottom;-webkit-tap-highlight-color:transparent}',
+      '#bsb-fab-stack #bsb-btn{position:relative !important;left:auto !important;right:auto !important;top:auto !important;bottom:auto !important;margin:0 !important}',
       '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:130px;width:180px !important;min-width:180px !important;height:61px !important;border:2px solid rgba(239,31,31,.8) !important;border-radius:5px !important;cursor:pointer;background:rgba(32,67,96,.8) !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.32);display:flex !important;flex-direction:row !important;align-items:center;justify-content:flex-start;gap:6px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 8px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#bsb-btn.bsb-hidden,#bsb-btn.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       /* Под боковым меню Tilda (t450__menu_show z-index 999999 / overlay 99999) */
@@ -219,7 +236,7 @@
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
       /* та же компоновка шапки, что на десктопе — только компактнее */
-      '@media (max-width:1024px){#bsb-btn{left:20px !important;right:auto !important;bottom:20px;width:180px !important;min-width:180px !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-logo{width:28px;height:26px}}',
+      '@media (max-width:1024px){#bsb-fab-stack{display:none !important}#bsb-btn{left:20px !important;right:auto !important;bottom:20px;width:180px !important;min-width:180px !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-logo{width:28px;height:26px}}',
       '@media (max-width:480px){#bsb-panel{height:70vh;max-height:70vh}#bsb-head{--bsb-avatar:44px;min-height:72px;padding:8px 36px 8px 10px;gap:6px}#bsb-head-left,#bsb-head-right{gap:6px}#bsb-avatar{border-width:1.5px}.bsb-oleg-name{font-size:13px}.bsb-oleg-role,.bsb-helper-line{font-size:11px}#bsb-head .bsb-logo{width:24px;height:22px}#bsb-close{right:6px;top:6px}#bsb-close .bsb-ico{width:18px;height:18px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
@@ -259,7 +276,34 @@
     btn.title = 'ИИ-помощник';
     btn.innerHTML = BTN_AI_LABEL;
     btn.classList.add('bsb-scroll-hidden');
-    document.body.appendChild(btn);
+
+    var fabStack = document.createElement('div');
+    fabStack.id = 'bsb-fab-stack';
+    fabStack.classList.add('bsb-scroll-hidden');
+    var mascotEl = null;
+    if (isMobileUi()) {
+      document.body.appendChild(btn);
+    } else {
+      mascotEl = document.createElement('img');
+      mascotEl.id = 'bsb-mascot';
+      mascotEl.alt = '';
+      mascotEl.setAttribute('aria-hidden', 'true');
+      mascotEl.setAttribute('role', 'button');
+      mascotEl.setAttribute('tabindex', '0');
+      mascotEl.title = 'Открыть ИИ-помощника';
+      mascotEl.decoding = 'async';
+      mascotEl.src = resolveMascotUrl();
+      mascotEl.addEventListener('error', function () {
+        mascotEl.style.display = 'none';
+      });
+      fabStack.appendChild(mascotEl);
+      fabStack.appendChild(btn);
+      document.body.appendChild(fabStack);
+    }
+
+    function fabShell() {
+      return isMobileUi() ? btn : fabStack;
+    }
 
     var panel = root.querySelector('#bsb-panel');
     var backdrop = root.querySelector('#bsb-backdrop');
@@ -322,9 +366,10 @@
     }
 
     function updateFabScrollVisibility() {
-      var wasHidden = btn.classList.contains('bsb-scroll-hidden');
+      var shell = fabShell();
+      var wasHidden = shell.classList.contains('bsb-scroll-hidden');
       var hide = pageScrollY() < SCROLL_SHOW_PX;
-      btn.classList.toggle('bsb-scroll-hidden', hide);
+      shell.classList.toggle('bsb-scroll-hidden', hide);
       if (wasHidden && !hide) schedulePinFab();
     }
 
@@ -338,24 +383,32 @@
     function pinFab() {
       var base = fabBaseBottom();
       var vv = window.visualViewport;
-      var mobile = window.matchMedia('(max-width:1024px)').matches;
-      var h = btn.offsetHeight || 61;
-      // мобилка: 20px слева, 20px снизу; десктоп: справа 16px, снизу 130px
+      var mobile = isMobileUi();
+      var shell = fabShell();
+      var h = shell.offsetHeight || btn.offsetHeight || 61;
       if (mobile) {
         btn.style.left = '20px';
         btn.style.right = 'auto';
       } else {
-        btn.style.right = '16px';
-        btn.style.left = 'auto';
+        fabStack.style.right = '16px';
+        fabStack.style.left = 'auto';
       }
       if (!vv) {
-        btn.style.top = 'auto';
-        btn.style.bottom = base + 'px';
+        shell.style.top = 'auto';
+        shell.style.bottom = base + 'px';
+        if (mobile) {
+          btn.style.top = 'auto';
+          btn.style.bottom = base + 'px';
+        }
         return;
       }
       var top = vv.offsetTop + vv.height - base - h;
-      btn.style.bottom = 'auto';
-      btn.style.top = Math.max(0, top) + 'px';
+      shell.style.bottom = 'auto';
+      shell.style.top = Math.max(0, top) + 'px';
+      if (mobile) {
+        btn.style.bottom = 'auto';
+        btn.style.top = Math.max(0, top) + 'px';
+      }
     }
 
     var pinFabRaf = 0;
@@ -490,7 +543,7 @@
       backdrop.classList.toggle('open', open);
       panel.setAttribute('aria-hidden', open ? 'false' : 'true');
       // display:flex !important в CSS бьёт inline style — прячем классом
-      btn.classList.toggle('bsb-hidden', open);
+      fabShell().classList.toggle('bsb-hidden', open);
       btn.setAttribute('aria-hidden', open ? 'true' : 'false');
       document.documentElement.style.overflow = open ? 'hidden' : '';
       if (open) {
@@ -507,10 +560,20 @@
       }
     }
 
-    btn.addEventListener('click', function () {
+    function openFromFab() {
       if (open) return;
       setOpen(true);
-    });
+    }
+    btn.addEventListener('click', openFromFab);
+    if (mascotEl) {
+      mascotEl.addEventListener('click', openFromFab);
+      mascotEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openFromFab();
+        }
+      });
+    }
     closeBtn.addEventListener('click', function () {
       setOpen(false);
     });
