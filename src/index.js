@@ -69,13 +69,11 @@ app.post('/api/chat', async (req, res) => {
 });
 
 // Конфиг для виджета (имя бота, публичный URL)
-app.get('/api/widget-config', async (_req, res) => {
-  // Предзагрузка погоды при открытии виджета (кэш 1 час), без сообщений клиенту
-  try {
-    await prefetchWeather('sirius');
-  } catch (err) {
+app.get('/api/widget-config', (_req, res) => {
+  // Погоду не ждём: иначе приветствие в чате висит 4–5 сек на Open-Meteo.
+  prefetchWeather('sirius').catch((err) => {
     console.error('[widget-config] weather prefetch:', err.message);
-  }
+  });
   res.json({
     name: config.botName,
     greeting: buildGreeting(),

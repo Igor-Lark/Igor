@@ -577,22 +577,27 @@
         });
     }
 
+    title.textContent = botName;
+    addBubble(greeting, 'bot');
+    var greetingEl = msgs.lastElementChild;
+
     fetch(API_BASE + '/api/widget-config')
       .then(function (r) {
         return r.ok ? r.json() : null;
       })
       .then(function (cfg) {
-        if (cfg) {
-          if (cfg.name) botName = cfg.name;
-          if (cfg.greeting) greeting = cfg.greeting;
-          if (cfg.unavailableReply) unavailableReply = cfg.unavailableReply;
+        if (!cfg) return;
+        if (cfg.name) {
+          botName = cfg.name;
+          title.textContent = botName;
+        }
+        if (cfg.unavailableReply) unavailableReply = cfg.unavailableReply;
+        if (cfg.greeting && greetingEl && msgs.firstElementChild === greetingEl && !open) {
+          greeting = cfg.greeting;
+          greetingEl.innerHTML = linkifyText(greeting);
         }
       })
-      .catch(function () {})
-      .finally(function () {
-        title.textContent = botName;
-        addBubble(greeting, 'bot');
-      });
+      .catch(function () {});
   }
 
   onReady(mount);
