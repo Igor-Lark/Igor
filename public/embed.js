@@ -149,7 +149,7 @@
     var sending = false;
     var botName = 'Boat Sochi';
     var greeting =
-      'Здравствуйте! Помогу подобрать яхту или катер и отвечу на вопросы.\nСпрашивайте — я почти такой же собеседник, как человек.';
+      'Здравствуйте! Я лоцман сайта.\nПомогу подобрать яхту или катер и отвечу на вопросы.\nСпрашивайте — я почти такой же собеседник, как человек.';
     var unavailableReply = [
       'Сейчас помощник временно недоступен. Свяжитесь с нами:',
       '',
@@ -470,30 +470,10 @@
       if (el && el.parentNode) el.parentNode.removeChild(el);
     }
 
-    /** Построчный вывод ответа (как в Klinker) + автоскролл. */
+    /** Сразу полный ответ: построчная анимация (150 мс/строка) сильно замедляла чат. */
     function addBubbleStreaming(text, kind, done) {
-      var full = String(text || '');
-      var lines = full.split('\n');
-      var el = document.createElement('div');
-      el.className = 'bsb-msg ' + kind;
-      msgs.appendChild(el);
-      scrollMsgs();
-      var idx = 0;
-      var delayMs = 150;
-      function tick() {
-        if (idx >= lines.length) {
-          el.innerHTML = linkifyText(full);
-          scrollMsgs();
-          if (done) done();
-          return;
-        }
-        var chunk = lines.slice(0, idx + 1).join('\n');
-        el.innerHTML = linkifyText(chunk);
-        scrollMsgs();
-        idx += 1;
-        setTimeout(tick, delayMs);
-      }
-      tick();
+      addBubble(text, kind);
+      if (done) done();
     }
 
     function prefetchWeatherOnOpen() {
