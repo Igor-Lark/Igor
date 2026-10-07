@@ -22,7 +22,11 @@
   }
   function resolveMascotUrl() {
     if (mascotUrlOverride) return mascotUrlOverride;
-    return API_BASE + '/widget-mascot-captain.png?v=20261006';
+    return API_BASE + '/widget-mascot-captain.png?v=20261007';
+  }
+  function resolveLauncherUrl() {
+    if (mascotUrlOverride) return mascotUrlOverride;
+    return API_BASE + '/widget-launcher.png?v=20261007';
   }
   var MOBILE_MQ = '(max-width:1024px)';
   function isMobileUi() {
@@ -171,17 +175,10 @@
     var AVATAR_URL = API_BASE + '/avatar-oleg.jpg';
     var LOGO_URL = API_BASE + '/logo-stripes.svg';
     function btnLabelHtml() {
-      var icon = isMobileUi()
-        ? '<img class="bsb-btn-mascot" src="' +
-          resolveMascotUrl() +
-          '" width="44" height="44" alt="" />'
-        : '<img class="bsb-logo" src="' + LOGO_URL + '" width="28" height="26" alt="" />';
       return (
-        icon +
-        '<span class="bsb-ai-block">' +
-        '<span class="bsb-ai-label">AI</span>' +
-        '<span class="bsb-ai-sub"><span class="bsb-ai-sub-line">помощник</span><span class="bsb-ai-sub-line">капитана</span></span>' +
-        '</span>'
+        '<img class="bsb-launcher-img" src="' +
+        resolveLauncherUrl() +
+        '" alt="Лоцман сайта — открыть чат" />'
       );
     }
 
@@ -191,23 +188,13 @@
       '#bsb-root *{box-sizing:border-box;font-family:inherit}',
       '#bsb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#bsb-fab-stack{all:initial;position:fixed !important;right:16px !important;bottom:130px !important;z-index:2147483001 !important;display:flex !important;flex-direction:column !important;align-items:flex-end !important;gap:2px !important;pointer-events:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important}',
-      '#bsb-fab-stack.bsb-hidden,#bsb-fab-stack.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
-      '#bsb-mascot{height:138px;width:auto;display:block;margin:0 0 0 -50px;padding:0;border:0;pointer-events:auto;cursor:pointer;line-height:0;vertical-align:bottom;-webkit-tap-highlight-color:transparent;transform:translateX(0)}',
-      '#bsb-btn .bsb-btn-mascot{display:block;flex-shrink:0;width:44px;height:44px;object-fit:contain;object-position:center}',
-      '#bsb-fab-stack #bsb-btn{position:relative !important;left:auto !important;right:auto !important;top:auto !important;bottom:auto !important;margin:0 !important}',
-      '#bsb-btn{all:initial;position:fixed !important;right:16px !important;bottom:130px;width:180px !important;min-width:180px !important;height:61px !important;border:2px solid rgba(239,31,31,.8) !important;border-radius:5px !important;cursor:pointer;background:rgba(32,67,96,.8) !important;color:#fff !important;line-height:1.05 !important;box-shadow:0 8px 24px rgba(32,67,96,.32);display:flex !important;flex-direction:row !important;align-items:center;justify-content:flex-start;gap:6px;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:6px 8px !important;margin:0 !important;transform:none !important;transition:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#bsb-btn{all:initial;position:fixed !important;right:12px !important;bottom:130px;width:260px !important;max-width:42vw !important;height:auto !important;border:0 !important;border-radius:0 !important;cursor:pointer;background:transparent !important;line-height:0 !important;box-shadow:none;display:block !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:0 !important;margin:0 !important;transform:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#bsb-btn.bsb-hidden,#bsb-btn.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       /* Под боковым меню Tilda (t450__menu_show z-index 999999 / overlay 99999) */
       '#bsb-btn.bsb-under-menu{z-index:99990 !important}',
-      '#bsb-btn *{box-sizing:border-box;font-family:inherit;pointer-events:none}',
-      '#bsb-btn:hover{background:rgba(24,52,76,.8) !important}',
-      '#bsb-btn .bsb-ico{display:block;flex-shrink:0}',
-      '#bsb-btn .bsb-logo{display:block;flex-shrink:0;width:28px;height:26px}',
-      '#bsb-btn .bsb-ai-block{margin-left:auto;margin-right:20px;display:flex;flex-direction:row;align-items:center;gap:6px;flex-shrink:0}',
-      '#bsb-btn .bsb-ai-label{font-size:26px;font-weight:600;letter-spacing:.04em;line-height:1;flex-shrink:0}',
-      '#bsb-btn .bsb-ai-sub{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;font-size:12px;font-weight:600;opacity:.95;letter-spacing:.01em;line-height:1.1;text-align:left;min-width:0}',
-      '#bsb-btn .bsb-ai-sub-line{display:block;white-space:nowrap}',
+      '#bsb-btn *{box-sizing:border-box;pointer-events:none}',
+      '#bsb-btn:hover{opacity:.94 !important;background:transparent !important}',
+      '#bsb-btn .bsb-launcher-img{display:block;width:100%;height:auto}',
       '#bsb-panel{position:absolute;top:auto;right:0;bottom:0;height:75vh;max-height:75vh;width:min(600px,100vw);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(15,23,42,.2);transform:translateX(105%);transition:transform .28s ease;pointer-events:auto;z-index:3;border-radius:5px 0 0 0;overflow:hidden}',
       '#bsb-panel.open{transform:translateX(0)}',
       '#bsb-head{--bsb-avatar:64px;position:relative;background:#204360;color:#fff;min-height:96px;padding:12px 44px 12px 14px;display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-shrink:0;flex-wrap:nowrap}',
@@ -245,7 +232,7 @@
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
       /* та же компоновка шапки, что на десктопе — только компактнее */
-      '@media (max-width:1024px){#bsb-fab-stack{display:none !important}#bsb-btn{left:20px !important;right:auto !important;bottom:20px;width:180px !important;min-width:180px !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-head-mascot{width:44px;height:44px}}',
+      '@media (max-width:1024px){#bsb-btn{left:12px !important;right:auto !important;bottom:20px;width:200px !important;max-width:72vw !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-head-mascot{width:44px;height:44px}}',
       '@media (max-width:480px){#bsb-panel{height:70vh;max-height:70vh}#bsb-head{--bsb-avatar:44px;min-height:72px;padding:8px 36px 8px 10px;gap:6px}#bsb-head-left,#bsb-head-right{gap:6px}#bsb-avatar{border-width:1.5px}.bsb-oleg-name{font-size:13px}.bsb-oleg-role,.bsb-helper-line{font-size:11px}#bsb-head .bsb-head-mascot{width:40px;height:40px}#bsb-close{right:6px;top:6px}#bsb-close .bsb-ico{width:18px;height:18px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
@@ -283,37 +270,14 @@
     var btn = document.createElement('button');
     btn.id = 'bsb-btn';
     btn.type = 'button';
-    btn.setAttribute('aria-label', 'Открыть ИИ-помощника');
-    btn.title = 'ИИ-помощник';
+    btn.setAttribute('aria-label', 'Лоцман сайта — открыть чат');
+    btn.title = 'Лоцман сайта';
     btn.innerHTML = btnLabelHtml();
     btn.classList.add('bsb-scroll-hidden');
-
-    var fabStack = document.createElement('div');
-    fabStack.id = 'bsb-fab-stack';
-    fabStack.classList.add('bsb-scroll-hidden');
-    var mascotEl = null;
-    if (isMobileUi()) {
-      document.body.appendChild(btn);
-    } else {
-      mascotEl = document.createElement('img');
-      mascotEl.id = 'bsb-mascot';
-      mascotEl.alt = '';
-      mascotEl.setAttribute('aria-hidden', 'true');
-      mascotEl.setAttribute('role', 'button');
-      mascotEl.setAttribute('tabindex', '0');
-      mascotEl.title = 'Открыть ИИ-помощника';
-      mascotEl.decoding = 'async';
-      mascotEl.src = resolveMascotUrl();
-      mascotEl.addEventListener('error', function () {
-        mascotEl.style.display = 'none';
-      });
-      fabStack.appendChild(mascotEl);
-      fabStack.appendChild(btn);
-      document.body.appendChild(fabStack);
-    }
+    document.body.appendChild(btn);
 
     function fabShell() {
-      return isMobileUi() ? btn : fabStack;
+      return btn;
     }
 
     var panel = root.querySelector('#bsb-panel');
@@ -395,31 +359,22 @@
       var base = fabBaseBottom();
       var vv = window.visualViewport;
       var mobile = isMobileUi();
-      var shell = fabShell();
-      var h = shell.offsetHeight || btn.offsetHeight || 61;
+      var h = btn.offsetHeight || 160;
       if (mobile) {
-        btn.style.left = '20px';
+        btn.style.left = '12px';
         btn.style.right = 'auto';
       } else {
-        fabStack.style.right = '16px';
-        fabStack.style.left = 'auto';
+        btn.style.right = '12px';
+        btn.style.left = 'auto';
       }
       if (!vv) {
-        shell.style.top = 'auto';
-        shell.style.bottom = base + 'px';
-        if (mobile) {
-          btn.style.top = 'auto';
-          btn.style.bottom = base + 'px';
-        }
+        btn.style.top = 'auto';
+        btn.style.bottom = base + 'px';
         return;
       }
       var top = vv.offsetTop + vv.height - base - h;
-      shell.style.bottom = 'auto';
-      shell.style.top = Math.max(0, top) + 'px';
-      if (mobile) {
-        btn.style.bottom = 'auto';
-        btn.style.top = Math.max(0, top) + 'px';
-      }
+      btn.style.bottom = 'auto';
+      btn.style.top = Math.max(0, top) + 'px';
     }
 
     var pinFabRaf = 0;
@@ -576,15 +531,6 @@
       setOpen(true);
     }
     btn.addEventListener('click', openFromFab);
-    if (mascotEl) {
-      mascotEl.addEventListener('click', openFromFab);
-      mascotEl.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          openFromFab();
-        }
-      });
-    }
     closeBtn.addEventListener('click', function () {
       setOpen(false);
     });
