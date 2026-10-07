@@ -188,7 +188,7 @@
       '#bsb-root *{box-sizing:border-box;font-family:inherit}',
       '#bsb-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.55);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;pointer-events:none}',
       '#bsb-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}',
-      '#bsb-btn{all:initial;position:fixed !important;right:12px !important;bottom:130px;width:260px !important;max-width:42vw !important;height:auto !important;border:0 !important;border-radius:0 !important;cursor:pointer;background:transparent !important;line-height:0 !important;box-shadow:none;display:block !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:0 !important;margin:0 !important;transform:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
+      '#bsb-btn{all:initial;position:fixed !important;right:12px !important;bottom:130px;width:208px !important;max-width:42vw !important;height:auto !important;border:0 !important;border-radius:0 !important;cursor:pointer;background:transparent !important;line-height:0 !important;box-shadow:none;display:block !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important;z-index:2147483001 !important;padding:0 !important;margin:0 !important;transform:none !important;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif !important;box-sizing:border-box !important;-webkit-tap-highlight-color:transparent}',
       '#bsb-btn.bsb-hidden,#bsb-btn.bsb-scroll-hidden{display:none !important;visibility:hidden !important;opacity:0 !important;pointer-events:none !important}',
       /* Под боковым меню Tilda (t450__menu_show z-index 999999 / overlay 99999) */
       '#bsb-btn.bsb-under-menu{z-index:99990 !important}',
@@ -211,8 +211,7 @@
       '.bsb-oleg-text,.bsb-helper-text{display:flex;flex-direction:column;justify-content:center;line-height:1.15;gap:2px;white-space:nowrap}',
       '.bsb-oleg-name{font-size:15px;font-weight:700}',
       '.bsb-oleg-role{font-size:13px;font-weight:500;opacity:.92}',
-      '#bsb-head .bsb-head-mascot{display:block;flex-shrink:0;width:52px;height:52px;object-fit:contain;object-position:center}',
-      '.bsb-helper-line{font-size:14px;font-weight:700;line-height:1.15}',
+      '#bsb-head .bsb-head-mascot{display:block;flex-shrink:0;width:auto;height:57px;object-fit:contain;object-position:center}',
       '#bsb-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}',
       '#bsb-close{position:absolute;right:8px;top:8px;background:transparent;border:0;color:#fff;cursor:pointer;line-height:1;padding:4px;display:flex;align-items:center;justify-content:center;z-index:2}',
       '#bsb-msgs{flex:1;overflow:auto;padding:14px;background:#f8fafc;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}',
@@ -232,8 +231,8 @@
       '#bsb-send:disabled{opacity:.6;cursor:default}',
       '#bsb-send .bsb-ico{width:20px;height:20px}',
       /* та же компоновка шапки, что на десктопе — только компактнее */
-      '@media (max-width:1024px){#bsb-btn{left:12px !important;right:auto !important;bottom:20px;width:200px !important;max-width:72vw !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role,.bsb-helper-line{font-size:12px}#bsb-head .bsb-head-mascot{width:44px;height:44px}}',
-      '@media (max-width:480px){#bsb-panel{height:70vh;max-height:70vh}#bsb-head{--bsb-avatar:44px;min-height:72px;padding:8px 36px 8px 10px;gap:6px}#bsb-head-left,#bsb-head-right{gap:6px}#bsb-avatar{border-width:1.5px}.bsb-oleg-name{font-size:13px}.bsb-oleg-role,.bsb-helper-line{font-size:11px}#bsb-head .bsb-head-mascot{width:40px;height:40px}#bsb-close{right:6px;top:6px}#bsb-close .bsb-ico{width:18px;height:18px}}',
+      '@media (max-width:1024px){#bsb-btn{left:12px !important;right:auto !important;bottom:20px;width:120px !important;max-width:72vw !important}#bsb-panel{width:90vw;max-width:90vw;height:75vh;max-height:75vh;top:auto;bottom:0;border-radius:5px 0 0 0}#bsb-head{--bsb-avatar:52px;min-height:80px;padding:10px 40px 10px 12px;gap:8px}#bsb-head-left,#bsb-head-right{gap:8px}.bsb-oleg-name{font-size:14px}.bsb-oleg-role{font-size:12px}#bsb-head .bsb-head-mascot{height:48px}}',
+      '@media (max-width:480px){#bsb-panel{height:70vh;max-height:70vh}#bsb-head{--bsb-avatar:44px;min-height:72px;padding:8px 36px 8px 10px;gap:6px}#bsb-head-left,#bsb-head-right{gap:6px}#bsb-avatar{border-width:1.5px}.bsb-oleg-name{font-size:13px}.bsb-oleg-role{font-size:11px}#bsb-head .bsb-head-mascot{height:44px}#bsb-close{right:6px;top:6px}#bsb-close .bsb-ico{width:18px;height:18px}}',
     ].join('');
     (document.head || document.documentElement).appendChild(style);
 
@@ -250,9 +249,8 @@
       '    </div>',
       '    <div id="bsb-head-right">',
       '      <img class="bsb-head-mascot" src="' +
-        resolveMascotUrl() +
-        '" width="52" height="52" alt="ИИ-помощник" />',
-      '      <div class="bsb-helper-text"><span class="bsb-helper-line">А я его</span><span class="bsb-helper-line">помощник</span></div>',
+        resolveLauncherUrl() +
+        '" height="57" alt="Лоцман сайта" />',
       '    </div>',
       '    <span id="bsb-title">Boat Sochi</span>',
       '    <button id="bsb-close" type="button" aria-label="Закрыть">' + ICON_CLOSE + '</button>',
