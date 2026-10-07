@@ -470,10 +470,30 @@
       if (el && el.parentNode) el.parentNode.removeChild(el);
     }
 
-    /** Сразу полный ответ: построчная анимация (150 мс/строка) сильно замедляла чат. */
+    /** Построчный вывод ответа + автоскролл. */
     function addBubbleStreaming(text, kind, done) {
-      addBubble(text, kind);
-      if (done) done();
+      var full = String(text || '');
+      var lines = full.split('\n');
+      var el = document.createElement('div');
+      el.className = 'bsb-msg ' + kind;
+      msgs.appendChild(el);
+      scrollMsgs();
+      var idx = 0;
+      var delayMs = 150;
+      function tick() {
+        if (idx >= lines.length) {
+          el.innerHTML = linkifyText(full);
+          scrollMsgs();
+          if (done) done();
+          return;
+        }
+        var chunk = lines.slice(0, idx + 1).join('\n');
+        el.innerHTML = linkifyText(chunk);
+        scrollMsgs();
+        idx += 1;
+        setTimeout(tick, delayMs);
+      }
+      tick();
     }
 
     function prefetchWeatherOnOpen() {
