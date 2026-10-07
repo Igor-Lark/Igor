@@ -25,6 +25,14 @@ Klinker: ветка **`cursor/termopaneli-bot-bfbc`**, каталог `bots/klin
 
 Не копировать: `node_modules/`, `~/.pm2/logs`, `/var/log`, архивы.
 
+## Логи старше 10 дней (cron на VPS)
+
+```bash
+chmod +x /var/www/boat-sochi-bot/scripts/vps-prune-logs.sh
+# каждый день в 4:15
+(crontab -l 2>/dev/null | grep -v vps-prune-logs.sh; echo '15 4 * * * /var/www/boat-sochi-bot/scripts/vps-prune-logs.sh >> /var/log/boat-prune-logs.log 2>&1') | crontab -
+```
+
 ## Чистый старт на VPS (удалить все логи)
 
 ```bash

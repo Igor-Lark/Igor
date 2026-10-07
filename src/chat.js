@@ -23,7 +23,12 @@ const {
   buildSwimWaterNote,
 } = require('./weather');
 const { isCapacityIntent, buildCapacityReply, capacityPromptBlock } = require('./fleet');
-const { isContactCallbackIntent, buildCallbackFormReply } = require('./contacts');
+const {
+  isContactCallbackIntent,
+  isLiveContactsIntent,
+  buildCallbackFormReply,
+  buildLiveContactsReply,
+} = require('./contacts');
 const { isSeaRouteIntent, buildSeaRouteReply } = require('./routes');
 const { isWakeIntent, buildWakeReply } = require('./wake');
 const {
@@ -66,6 +71,21 @@ async function handleChat(input) {
   }
 
   const lastUser = [...cleaned].reverse().find((m) => m.role === 'user');
+
+  if (lastUser && isLiveContactsIntent(lastUser.content)) {
+    const reply = buildLiveContactsReply();
+    logChatTurn({
+      sessionId: input.sessionId,
+      source: input.source || 'web',
+      username: input.username,
+      userText: lastUser.content,
+      reply,
+      provider: 'contacts',
+      leadSent: false,
+      history: cleaned,
+    });
+    return { reply, provider: 'contacts', lead: null };
+  }
 
   if (lastUser) {
     touchSession({
@@ -291,11 +311,14 @@ async function handleChat(input) {
   }
 
   let system = buildSystemPrompt();
-  try {
-    const wx = await weatherPromptBlock(lastUser ? lastUser.content : '');
-    if (wx) system = `${system}\n\n=== ПОГОДА СЕЙЧАС ===\n${wx}`;
-  } catch {
-    // ignore
+  // Погоду в промпт — только если спрашивают про неё (иначе Open-Meteo + GPT = ~10 сек).
+  if (lastUser && isWeatherIntent(lastUser.content)) {
+    try {
+      const wx = await weatherPromptBlock(lastUser.content);
+      if (wx) system = `${system}\n\n=== ПОГОДА СЕЙЧАС ===\n${wx}`;
+    } catch {
+      // ignore
+    }
   }
   try {
     const cap = capacityPromptBlock(lastUser ? lastUser.content : '');

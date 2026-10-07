@@ -62,6 +62,30 @@ function isWriteToClientIntent(text) {
   return WRITE_TO_CLIENT_RE.test(String(text || ''));
 }
 
+/** «Дай контакты», «живые контакты», телефон — без LLM. */
+const LIVE_CONTACTS_RE =
+  /живые\s+контакты|(?:дай(?:те)?|скинь(?:те)?|покажи(?:те)?|нужн[ыао]|хочу)\s+(?:ваши?\s+)?контакты|(?:ваши?\s+)?контакты(?:\s|$|[,.!?])|номер(?:а)?(?:\s+(?:телефон|тел\.?))?|как\s+с\s*вами\s+связаться|как\s+связаться|телефон(?:ы|чик)?(?:\s|$|[,.!?])/i;
+
+function isLiveContactsIntent(text) {
+  return LIVE_CONTACTS_RE.test(String(text || ''));
+}
+
+function buildLiveContactsReply() {
+  return [
+    'Живые контакты:',
+    '',
+    'Наталья',
+    nataliaPhoneLink(),
+    'https://wa.me/79183044000',
+    'https://t.me/nata_rybiy',
+    '',
+    'Капитан Олег',
+    olegPhoneLink(),
+    'https://wa.me/79176750555',
+    'https://t.me/Oleg_700',
+  ].join('\n');
+}
+
 function hasContactInText(text) {
   const t = String(text || '');
   if (extractPhone(t)) return true;
@@ -122,7 +146,9 @@ module.exports = {
   stripPhoneTokens,
   UNAVAILABLE_REPLY,
   isWriteToClientIntent,
+  isLiveContactsIntent,
   isContactCallbackIntent,
   hasContactInText,
+  buildLiveContactsReply,
   buildCallbackFormReply,
 };
