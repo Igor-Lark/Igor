@@ -42,7 +42,8 @@ echo "=== Диск после очистки ==="
 df -h /
 
 BOAT="/var/www/boat-sochi-bot"
-KLINKER="/var/www/igor/bots/klinkerpro-bot"
+KLINKER="/var/www/igor-klinker/bots/klinkerpro-bot"
+[[ -d "$KLINKER" ]] || KLINKER="/var/www/igor/bots/klinkerpro-bot"
 [[ -d "$KLINKER" ]] || KLINKER="$HOME/igor/bots/klinkerpro-bot"
 
 if [[ -f "$BOAT/src/index.js" ]]; then
