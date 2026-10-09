@@ -192,7 +192,11 @@ function watchPolling(bot) {
  */
 function startTelegram(app) {
   if (!config.hasTelegram) {
-    console.log('[telegram] TELEGRAM_BOT_TOKEN не задан — бот отключён');
+    if (config.telegram.token && !config.telegram.enabled) {
+      console.log('[telegram] токен есть, но TELEGRAM_ENABLED не включён — polling выключен (виджет без TG)');
+    } else {
+      console.log('[telegram] TELEGRAM_BOT_TOKEN не задан — бот отключён');
+    }
     return null;
   }
 

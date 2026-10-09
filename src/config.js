@@ -20,6 +20,10 @@ const config = {
 
   telegram: {
     token: process.env.TELEGRAM_BOT_TOKEN || '',
+    // Виджет на сайте не нуждается в Telegram. По умолчанию выкл.
+    enabled: ['1', 'true', 'yes'].includes(
+      String(process.env.TELEGRAM_ENABLED || '0').trim().toLowerCase()
+    ),
   },
 
   // Заявки менеджеру + Avito → тот же групповой чат MAX (где бот Тильды)
@@ -40,7 +44,7 @@ const config = {
 
 config.hasYandex = Boolean(config.yandex.apiKey && config.yandex.folderId);
 config.hasOpenAI = Boolean(config.openai.apiKey);
-config.hasTelegram = Boolean(config.telegram.token);
+config.hasTelegram = Boolean(config.telegram.token && config.telegram.enabled);
 config.hasMaxNotify = Boolean(
   config.max.token && (config.max.chatId || config.max.userId)
 );
