@@ -1,0 +1,13 @@
+node_modules/
+.env
+.DS_Store
+*.log
+npm-debug.log*
+.idea/
+.vscode/
+data/avito-reviews-state.json
+data/chats/*.jsonl
+data/chats/sessions/
+data/bookings/
+data/no-contact/
+data/ai-alert-state.json
