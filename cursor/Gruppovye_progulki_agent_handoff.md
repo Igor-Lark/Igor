@@ -187,7 +187,7 @@ UTM:
 - Бот: `cursor/bot_knowledge_boat_sochi_delfin_progulki.md`, `cursor/bot_faq_delfin_progulki.json`
 - Ассеты: `cursor/assets/gruppovye-yahta/`
 - Контекст соседней РК: `cursor/Morskie_progulki_campaign_memory.md` (не путать продукты)
-- НГ 2026/27 (загрузка Сириуса + план рекламы): секция в `cursor/Gruppovye_progulki_campaign_memory.md` (09.10.2026)
+- НГ 2026/27: секция в `cursor/Gruppovye_progulki_campaign_memory.md` (09.10.2026) — цитата Сириуса + интернет (календарь 1187, 470 тыс., штормы, Twil/АТОР)
 
 ---
 
