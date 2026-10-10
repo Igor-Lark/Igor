@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="ad.size" content="width=320,height=100">
+<title>Сириус · Дельфины · 320x100</title>
+<style>
+html,body{margin:0;padding:0;width:320px;height:100px;overflow:hidden;background:#fff}
+*{box-sizing:border-box}
+
+a.banner{
+  display:block;width:320px;height:100px;text-decoration:none;color:#4a6082;
+  font-family:Arial,Helvetica,"Segoe UI",sans-serif;
+  position:relative;cursor:pointer;overflow:hidden;
+}
+
+/* Фото: слева катер → центр дельфины → справа закрывается плашкой */
+.photo{
+  position:absolute;inset:0;
+  background:#0aa url('bg_320x100.jpg') left center/cover no-repeat;
+}
+
+/* Белая плашка справа с круглой левой границей */
+.panel{
+  position:absolute;right:0;top:0;bottom:0;width:128px;
+  background:#fff;
+  border-radius:100% 0 0 100% / 55% 0 0 55%;
+  box-shadow:none;
+  z-index:2;
+  display:flex;flex-direction:column;align-items:stretch;
+  padding:6px 12px 8px 28px;
+}
+
+.logo{
+  display:flex;align-items:center;gap:4px;
+  margin-bottom:2px;
+}
+.logo-icon{width:20px;height:16px;flex-shrink:0;display:block}
+.logo-name{
+  font-family:Georgia,"Times New Roman",Times,serif;
+  font-size:14px;font-weight:400;color:#2f4560;line-height:1;
+}
+.logo-line{
+  height:1px;background:#2f4560;margin:2px 0 0;
+  width:100%;
+}
+
+.text-stage{
+  position:relative;flex:1;width:100%;
+  min-height:40px;
+  display:flex;align-items:center;justify-content:flex-start;
+}
+
+.slide{
+  position:absolute;left:0;right:0;top:0;bottom:0;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+  opacity:0;pointer-events:none;
+  /* 4 слайда × (1.5 fade-in + 1.5 hold + 1.5 fade-out) = 18s */
+  animation-duration:18s;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+}
+.slide1{animation-name:slide1}
+.slide2{animation-name:slide2}
+.slide3{animation-name:slide3}
+.slide4{animation-name:slide4}
+
+/* каждый слот 25% = 4.5s: 8.333% fade-in, 8.333% hold, 8.333% fade-out */
+@keyframes slide1{
+  0%{opacity:0}
+  8.333%{opacity:1}
+  16.667%{opacity:1}
+  25%{opacity:0}
+  25.001%,100%{opacity:0}
+}
+@keyframes slide2{
+  0%,25%{opacity:0}
+  33.333%{opacity:1}
+  41.667%{opacity:1}
+  50%{opacity:0}
+  50.001%,100%{opacity:0}
+}
+@keyframes slide3{
+  0%,50%{opacity:0}
+  58.333%{opacity:1}
+  66.667%{opacity:1}
+  75%{opacity:0}
+  75.001%,100%{opacity:0}
+}
+@keyframes slide4{
+  0%,75%{opacity:0}
+  83.333%{opacity:1}
+  91.667%{opacity:1}
+  100%{opacity:0}
+}
+
+.t-main{
+  font-size:12px;line-height:1.1;font-weight:400;color:#4a6082;
+  text-transform:lowercase;letter-spacing:.01em;
+}
+
+.row-top{display:flex;align-items:center;gap:4px;flex-wrap:nowrap}
+.pill{
+  display:inline-block;background:#c41e1e;color:#fff;
+  border-radius:999px;padding:2px 8px 3px;
+  font-size:10px;font-weight:700;line-height:1.1;
+  text-transform:lowercase;white-space:nowrap;
+}
+.pill-wide{font-size:9px;padding:2px 7px 3px;letter-spacing:.02em;text-transform:uppercase}
+.t-do{font-size:11px;color:#4a6082;line-height:1}
+.t-big{font-size:13px;line-height:1.05;color:#4a6082;margin-top:1px}
+.t-price{font-size:12px;line-height:1.15;color:#7289ac;margin-top:2px}
+.t-two{font-size:12px;line-height:1.12;color:#4a6082}
+
+.btn{
+  align-self:center;
+  width:88px;
+  background:#4a6082;border-radius:999px;
+  padding:5px 0;text-align:center;
+  margin-top:2px;
+}
+.btn-text{
+  display:inline-block;color:#fff;font-size:12px;
+  text-transform:lowercase;letter-spacing:.02em;
+  animation:btnPulse 1s ease-in-out infinite;
+}
+@keyframes btnPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.1)}
+}
+</style>
+</head>
+<body>
+<a class="banner" id="click_area" href="#" target="_blank">
+  <div class="photo"></div>
+  <div class="panel">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 22 18" aria-hidden="true">
+        <path d="M2 13.5 C7 10, 10 11.5, 11.5 8 C13 4.5, 16.5 5.5, 20 3" fill="none" stroke="#c41e1e" stroke-width="2.1" stroke-linecap="round"/>
+        <path d="M2 10 C7 6.5, 10 8, 11.5 4.5 C13 1, 16.5 2, 20 0" fill="none" stroke="#c41e1e" stroke-width="2.1" stroke-linecap="round"/>
+        <path d="M2 17 C7 13.5, 10 15, 11.5 11.5 C13 8, 16.5 9, 20 6.5" fill="none" stroke="#c41e1e" stroke-width="2.1" stroke-linecap="round"/>
+      </svg>
+      <span class="logo-name">Сириус</span>
+    </div>
+    <div class="logo-line"></div>
+
+    <div class="text-stage">
+      <div class="slide slide1">
+        <div class="t-main">время</div>
+        <div class="t-main">увидеть</div>
+        <div class="t-main">дельфинов</div>
+      </div>
+      <div class="slide slide2">
+        <div class="row-top">
+          <span class="pill">скидка</span>
+          <span class="t-do">до</span>
+        </div>
+        <div class="t-big">12 часов дня</div>
+      </div>
+      <div class="slide slide3">
+        <span class="pill pill-wide">ЭКОНОМИЯ</span>
+        <div class="t-price">500 ₽ в час</div>
+      </div>
+      <div class="slide slide4">
+        <div class="t-two">Капитан</div>
+        <div class="t-two">знает места</div>
+      </div>
+    </div>
+
+    <div class="btn"><span class="btn-text">заказ</span></div>
+  </div>
+</a>
+<script>
+document.getElementById("click_area").href = yandexHTML5BannerApi.getClickURLNum(1);
+</script>
+</body>
+</html>

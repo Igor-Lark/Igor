@@ -1,0 +1,229 @@
+<!--
+  Микроразметка JSON-LD для Tilda (HTML-блок / Head).
+  Актуально на 10.08.2026 по контенту страниц.
+  Цены — Number в RUB. Не является офертой.
+-->
+
+<!-- ========== https://boat-sochi.ru/delfin ========== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://boat-sochi.ru/delfin#webpage",
+      "url": "https://boat-sochi.ru/delfin",
+      "name": "Утром к дельфинам в Сириусе — прогулка на катере со скидкой",
+      "description": "Утренняя морская прогулка к дельфинам из Имеретинского порта. Катер «Сириус» с капитаном, скидка 500 ₽/час до 12:00. Бронь от 2 часов.",
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://boat-sochi.ru/#website" },
+      "about": { "@id": "https://boat-sochi.ru/delfin#service" }
+    },
+    {
+      "@type": "TouristTrip",
+      "@id": "https://boat-sochi.ru/delfin#service",
+      "name": "Утром к дельфинам — аренда каютного катера «Сириус»",
+      "description": "Индивидуальная аренда каютного катера «Сириус» с капитаном из Имеретинского порта. Утром дельфины чаще ближе к берегу. Скидка 500 ₽ за каждый час с 6:00 до 12:00. Минимум 2 часа.",
+      "touristType": ["семьи", "компании", "пары"],
+      "itinerary": {
+        "@type": "Place",
+        "name": "Имеретинский порт, линия 1",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Парусная, 1, Имеретинский порт, линия 1",
+          "addressLocality": "Сириус",
+          "addressRegion": "Краснодарский край",
+          "addressCountry": "RU"
+        }
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://boat-sochi.ru/delfin",
+        "priceCurrency": "RUB",
+        "price": "7500",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "7500",
+          "priceCurrency": "RUB",
+          "unitText": "HOUR",
+          "referenceQuantity": {
+            "@type": "QuantitativeValue",
+            "value": "1",
+            "unitCode": "HUR"
+          }
+        },
+        "availability": "https://schema.org/InStock",
+        "eligibleDuration": {
+          "@type": "QuantitativeValue",
+          "minValue": 2,
+          "unitCode": "HUR"
+        }
+      },
+      "provider": { "@id": "https://boat-sochi.ru/#organization" }
+    },
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://boat-sochi.ru/#organization",
+      "name": "boat-sochi — морские прогулки",
+      "url": "https://boat-sochi.ru/",
+      "telephone": "+7-917-675-05-55",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Парусная, 1, Имеретинский порт",
+        "addressLocality": "Сириус",
+        "addressRegion": "Краснодарский край",
+        "addressCountry": "RU"
+      },
+      "areaServed": ["Сириус", "Адлер", "Сочи"]
+    }
+  ]
+}
+</script>
+
+<!-- ========== https://boat-sochi.ru/progulki_na_yacht ========== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://boat-sochi.ru/progulki_na_yacht#webpage",
+      "url": "https://boat-sochi.ru/progulki_na_yacht",
+      "name": "Морская прогулка на парусной яхте Сочи / Сириус — 1 800 ₽",
+      "description": "Групповая прогулка на парусной яхте из Имеретинского порта: 1,5 часа, 1800 ₽ (2500 ₽ в 18:00), группа до 11 человек. Дельфины, закат, виды на Олимпийский парк.",
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://boat-sochi.ru/#website" },
+      "about": { "@id": "https://boat-sochi.ru/progulki_na_yacht#service" }
+    },
+    {
+      "@type": "TouristTrip",
+      "@id": "https://boat-sochi.ru/progulki_na_yacht#service",
+      "name": "Групповая морская прогулка на парусной яхте «Увидеть дельфинов и закат»",
+      "description": "Групповая прогулка на парусной яхте (флот из нескольких яхт) из Имеретинского порта. 1,5 часа, до 11 человек. Виды на Олимпийский парк и горы, высокий шанс увидеть дельфинов, купание по погоде.",
+      "touristType": ["семьи", "пары", "туристы"],
+      "itinerary": {
+        "@type": "Place",
+        "name": "Имеретинский порт, линия 2",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Парусная, 1, Имеретинский порт, линия 2",
+          "addressLocality": "Сириус",
+          "addressRegion": "Краснодарский край",
+          "addressCountry": "RU"
+        }
+      },
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Групповая прогулка (дневные слоты)",
+          "url": "https://boat-sochi.ru/progulki_na_yacht",
+          "priceCurrency": "RUB",
+          "price": "1800",
+          "availability": "https://schema.org/InStock",
+          "eligibleDuration": {
+            "@type": "QuantitativeValue",
+            "value": 90,
+            "unitCode": "MIN"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Групповая прогулка на закат (18:00)",
+          "url": "https://boat-sochi.ru/progulki_na_yacht",
+          "priceCurrency": "RUB",
+          "price": "2500",
+          "availability": "https://schema.org/InStock",
+          "eligibleDuration": {
+            "@type": "QuantitativeValue",
+            "value": 90,
+            "unitCode": "MIN"
+          }
+        }
+      ],
+      "provider": {
+        "@type": "LocalBusiness",
+        "@id": "https://boat-sochi.ru/progulki_na_yacht#provider",
+        "name": "boat-sochi — групповые прогулки на яхте",
+        "url": "https://boat-sochi.ru/progulki_na_yacht",
+        "telephone": "+7-918-304-40-00",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Парусная, 1, Имеретинский порт, линия 2",
+          "addressLocality": "Сириус",
+          "addressRegion": "Краснодарский край",
+          "addressCountry": "RU"
+        }
+      }
+    },
+    {
+      "@type": "Event",
+      "name": "Морская прогулка на парусной яхте (регулярные слоты)",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "description": "Регулярные групповые выходы 1,5 часа. Слоты: 9:00, 10:30, 12:00, 13:30, 15:00, 16:30, 18:00.",
+      "location": {
+        "@type": "Place",
+        "name": "Имеретинский порт, линия 2",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Парусная, 1",
+          "addressLocality": "Сириус",
+          "addressCountry": "RU"
+        }
+      },
+      "offers": {
+        "@type": "AggregateOffer",
+        "lowPrice": "1800",
+        "highPrice": "2500",
+        "priceCurrency": "RUB",
+        "availability": "https://schema.org/InStock",
+        "url": "https://boat-sochi.ru/progulki_na_yacht"
+      },
+      "organizer": {
+        "@type": "Organization",
+        "name": "boat-sochi",
+        "url": "https://boat-sochi.ru/",
+        "telephone": "+7-918-304-40-00"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://boat-sochi.ru/progulki_na_yacht#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Сколько стоит групповая прогулка на парусной яхте?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "1800 ₽ с человека; слот в 18:00 на закат — 2500 ₽. Один ребёнок до 5 лет на яхту — бесплатно."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Какое расписание выходов?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "9:00, 10:30, 12:00, 13:30, 15:00, 16:30, 18:00 (на закат). Длительность каждой прогулки — 1,5 часа."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Сколько человек в группе?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "До 11 человек. Формат — групповая прогулка на парусной яхте, не аренда судна целиком."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Откуда отправление?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Имеретинский порт, линия 2 (Сириус, Парусная, 1). Бронь: +7 918 304-40-00."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
