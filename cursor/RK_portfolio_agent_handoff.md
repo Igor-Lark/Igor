@@ -44,7 +44,7 @@
 | **ZK** | Закат на море (Поиск) | **уточнить номер** | судно **целиком**, закат 18:00–20:00; не билет 2 500 | **`/#services`** + UTM `zakat_my` | **+7 917 675-05-55** | `Zakat_agent_handoff.md` (ветка `cursor/zakat-na-more-4385`) |
 | **GP** | EPK_Gruppovye_Yahta_Progulki | план | **билет** 1 800 / закат 2 500, 1,5 ч, до 11, линия 2 | **только `/progulki_na_yacht`** | **+7 918 304-40-00** | [ЕПК групповые](https://cursor.com/agents/bc-9b652c0e-42f3-47bd-8f5b-bb6384a7be58) · `Gruppovye_progulki_agent_handoff.md` |
 | **TG** | Яхта Tigger Поиск+Карты | уточнять | VIP 50 000 ₽/ч от 2 ч, линия 3 | **только `/yacht_tigger`** | **+7 917 675-05-55** | [Tigger](https://cursor.com/agents/bc-8cda2c34-20d9-48ac-a87a-a0266e608641) · `Tigger_agent_handoff.md` |
-| **RB** | EPK_Gruppovaya_Rybalka_Popaj | **не запущена** | билет **2 800 ₽/чел., 3 ч**, слоты 07:30–16:30, «Моряк Попай» | **только `/gruppovaja_ribalka`** (страницы ещё нет) | **+7 918 304-40-00** | `Rybalka_agent_handoff.md` (ветка `cursor/gruppovaya-rybalka-4385`) |
+| **RB** | EPK_Gruppovaya_Rybalka_Popaj | **не запущена** | билет **2 800 ₽/чел., 3 ч**, слоты **9:30 / 12:30 / 15:30**, «Моряк Попай» | **только `/gruppovaja_ribalka`** | **+7 918 304-40-00** | `Rybalka_agent_handoff.md` |
 | **AX** | Alexum (если живая) | уточнять | VIP 40 000 ₽/ч, Морпорт | **только `/alexum`** | уточнять | не смешивать с TG и MP |
 | **GU** | EPK_Galereya_Uslug_BoatSochi | план | витрина организации в **галерее услуг** | сайт `/` + карточка Яндекс Бизнеса | **+7 917 675-05-55** | `Galereya_uslug_agent_handoff.md` (ветка `cursor/galereya-uslug-4385`) |
 
