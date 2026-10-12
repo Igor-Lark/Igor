@@ -164,8 +164,6 @@
       'https://wa.me/79183044000',
       'https://t.me/nata_rybiy',
       'https://max.ru/u/f9LHodD0cOI8OH4kIB7PsiV6jWNHRWg_O33iJTe5q_TJs73hHe1YBcSMwKk',
-      '',
-      'Или оставьте заявку на обратный звонок: https://boat-sochi.ru/#bot',
     ].join('\n');
 
     var ICON_ARROW =
