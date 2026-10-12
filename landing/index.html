@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Новый год на яхте в Сириусе 2027</title>
+  <meta name="description" content="Бронируйте яхту на Новый год или на любой день каникул. Катера и яхты с капитаном, Имеретинский порт, Сириус.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #c41e24;
+      --red-hover: #a8181d;
+      --navy: #1d3552;
+      --navy-btn: #3d4f63;
+      --navy-btn-hover: #2f3e4f;
+      --ink: #2b4258;
+      --muted: #5a7186;
+      --green: #6f9b6b;
+      --white: #fff;
+      --bg: #fff;
+      --max: 1180px;
+      --radius: 6px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Manrope, system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    .wrap {
+      width: min(var(--max), calc(100% - 48px));
+      margin: 0 auto;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      color: var(--white);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px 0 72px;
+      background:
+        linear-gradient(90deg, rgba(8, 14, 28, .62) 0%, rgba(8, 14, 28, .28) 48%, rgba(8, 14, 28, .18) 100%),
+        linear-gradient(180deg, rgba(8, 14, 28, .2) 0%, rgba(8, 14, 28, .45) 100%),
+        url("images/hero.jpg") center 40% / cover no-repeat,
+        #0b1524;
+    }
+    .hero-top {
+      width: min(var(--max), calc(100% - 48px));
+      margin: 0 auto;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      width: max-content;
+    }
+    .logo-mark {
+      width: 28px;
+      height: 22px;
+      display: grid;
+      gap: 3px;
+    }
+    .logo-mark span {
+      display: block;
+      height: 4px;
+      background: var(--red);
+      clip-path: polygon(0 0, 72% 0, 100% 100%, 28% 100%);
+    }
+    .logo-mark span:nth-child(1) { width: 100%; }
+    .logo-mark span:nth-child(2) { width: 86%; }
+    .logo-mark span:nth-child(3) { width: 72%; }
+    .logo-text {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      line-height: 1.15;
+      text-transform: uppercase;
+    }
+    .hero-body {
+      width: min(var(--max), calc(100% - 48px));
+      margin: 48px auto 0;
+      max-width: 720px;
+      align-self: flex-start;
+    }
+    .hero h1 {
+      font-weight: 400;
+      font-size: clamp(40px, 6.2vw, 72px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 .year {
+      display: block;
+      margin-top: 6px;
+    }
+    .hero-lead {
+      margin-top: 36px;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.45;
+      max-width: 360px;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 188px;
+      height: 48px;
+      padding: 0 28px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font: 600 13px/1 Manrope, sans-serif;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: .2s background, .2s border-color, .2s transform;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-red { background: var(--red); color: #fff; }
+    .btn-red:hover { background: var(--red-hover); }
+    .btn-navy { background: var(--navy-btn); color: #fff; }
+    .btn-navy:hover { background: var(--navy-btn-hover); }
+    .btn-ghost {
+      background: transparent;
+      color: #fff;
+      border-color: rgba(255,255,255,.85);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.12); }
+
+    /* HOLIDAYS */
+    .holidays {
+      padding: 88px 0 40px;
+    }
+    .holidays-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr 1fr;
+      gap: 48px 56px;
+      align-items: start;
+    }
+    .holidays-photo {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+    }
+    .holidays h2 {
+      grid-column: 2 / 4;
+      color: var(--navy);
+      font-weight: 400;
+      font-size: clamp(32px, 4.2vw, 52px);
+      line-height: 1.12;
+      letter-spacing: .01em;
+      text-transform: uppercase;
+    }
+    .year-lg {
+      font-size: clamp(42px, 4vw, 56px);
+      font-weight: 400;
+      color: #111;
+      letter-spacing: .02em;
+      margin: 8px 0 28px;
+    }
+    .holidays p {
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.55;
+      font-weight: 400;
+    }
+    .holidays p + p { margin-top: 22px; }
+    .col-left { padding-top: 8px; }
+
+    /* BOATS */
+    .boats {
+      padding: 56px 0 72px;
+    }
+    .boats h2 {
+      color: var(--navy);
+      font-weight: 400;
+      font-size: clamp(32px, 3.6vw, 46px);
+      line-height: 1.15;
+      margin-bottom: 36px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+    }
+    .card { text-align: center; }
+    .card-photo {
+      position: relative;
+      overflow: hidden;
+    }
+    .card-photo img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+    }
+    .badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.25;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: 999px;
+      max-width: 210px;
+    }
+    .badge-red { background: var(--red); }
+    .badge-green { background: var(--green); }
+    .card h3 {
+      margin-top: 22px;
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+    .specs {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .price {
+      margin: 22px 0 18px;
+      font-size: 24px;
+      font-weight: 600;
+      color: #111;
+    }
+    .card-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .card .btn { min-width: 148px; height: 44px; }
+
+    /* INFO */
+    .info {
+      padding: 24px 0 72px;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px 64px;
+      align-items: start;
+    }
+    .info h2 {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--navy);
+      margin-bottom: 72px;
+    }
+    .info p, .info h3 {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    .info h3 {
+      font-weight: 500;
+      display: inline;
+    }
+    .info .block { margin-bottom: 28px; }
+    .guarantee {
+      max-width: 420px;
+      margin-top: 80px;
+    }
+
+    /* GREETING */
+    .greet {
+      padding: 24px 0 100px;
+    }
+    .greet-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.05fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .greet h2 {
+      color: var(--navy);
+      font-weight: 400;
+      font-size: clamp(36px, 4.4vw, 52px);
+      line-height: 1.15;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+    .greet img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      object-position: center 20%;
+    }
+
+    /* sticky mobile call */
+    .callbar {
+      display: none;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 16, 28, .55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 50;
+    }
+    .modal.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      width: min(440px, 100%);
+      padding: 28px 24px;
+      border-radius: 12px;
+    }
+    .modal-box h3 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+    .modal-box p { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+    .modal-box label { display: block; font-size: 13px; margin: 10px 0 4px; }
+    .modal-box input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid #d5dde5;
+      border-radius: 8px;
+      padding: 0 12px;
+      font: 16px Manrope, sans-serif;
+    }
+    .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+    .modal-actions .btn { flex: 1; }
+
+    @media (max-width: 900px) {
+      .wrap, .hero-top, .hero-body { width: calc(100% - 32px); }
+      .hero {
+        min-height: 92vh;
+        padding: 20px 0 48px;
+        background-position: 70% center;
+      }
+      .hero h1 { font-size: 36px; }
+      .hero-lead { font-size: 16px; margin-top: 24px; }
+      .btn { min-width: 150px; }
+      .holidays { padding: 48px 0 16px; }
+      .holidays-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .holidays h2 { grid-column: auto; font-size: 28px; }
+      .holidays-photo { height: 280px; width: 70%; }
+      .year-lg { margin: 0 0 8px; }
+      .cards { grid-template-columns: 1fr; gap: 40px; }
+      .card-photo img { height: 240px; }
+      .info-grid, .greet-grid { grid-template-columns: 1fr; gap: 24px; }
+      .info h2 { margin-bottom: 16px; }
+      .guarantee { margin-top: 8px; }
+      .greet { padding-bottom: 96px; }
+      .greet img { height: 220px; }
+      .callbar {
+        display: flex;
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        z-index: 40;
+        gap: 8px;
+      }
+      .callbar .btn { flex: 1; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-top">
+      <a class="logo" href="#boats" aria-label="Морские прогулки">
+        <span class="logo-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="logo-text">Морские<br>прогулки</span>
+      </a>
+    </div>
+    <div class="hero-body">
+      <h1>Новый год<br>на яхте в Сириусе<br><span class="year">2027</span></h1>
+      <p class="hero-lead">Бронируйте яхту Новый год<br>или на любой день каникул</p>
+      <div class="hero-actions">
+        <a class="btn btn-red" href="#book">Забронировать</a>
+        <a class="btn btn-ghost" href="#boats">Подробнее</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="holidays" id="about">
+    <div class="wrap holidays-grid">
+      <img class="holidays-photo" src="images/fireworks.jpg" alt="Салют над побережьем">
+      <h2>Необычные<br>новогодние<br>каникулы</h2>
+      <div class="col-left">
+        <div class="year-lg">2027</div>
+        <p>Встретить Новый год можно на яхте в море. Оттуда будет хорошо видно все салюты, которые запускают в Сочи. Они длятся целый час, и ты смотришь на них не снизу, а как бы со стороны, на всю панораму огней вдоль берега.</p>
+      </div>
+      <div>
+        <p>Не нужно сидеть за столом, как обычно. Это совсем не похоже на привычный праздник в квартире или ресторане. Можно спокойно стоять на палубе, смотреть на огни и фейерверки.</p>
+        <p>Такой Новый год запомнится надолго именно потому, что он другой. Это ощущение свободы и необычная картинка останутся в памяти.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="boats" id="boats">
+    <div class="wrap">
+      <h2>Яхты и катера<br>на новогодние праздники</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="card-photo">
+            <img src="images/sirius-card.jpg" alt='Каютный катер Bayliner 285 «Сириус»'>
+            <span class="badge badge-red">забронировано<br>31.12.2025 — 01.01.2026</span>
+          </div>
+          <h3>Каютный катер Bayliner 285 "Сириус"</h3>
+          <p class="specs">длина 9 метров<br>пассажиров - до 7 человек</p>
+          <p class="price">8 000 ₽ / час</p>
+          <div class="card-actions">
+            <a class="btn btn-navy" href="https://boat-sochi.ru/yacht_sirius">Подробнее</a>
+            <a class="btn btn-red" href="#book">Заказать</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-photo">
+            <img src="images/lilu.jpg" alt='Парусная яхта Oceanis 50 «Лилу»'>
+            <span class="badge badge-green">доступно<br>для бронирования</span>
+          </div>
+          <h3>Парусная яхта Oceanis 50 "Лилу"</h3>
+          <p class="specs">длина 15 метров<br>пассажиров - до 10 человек</p>
+          <p class="price">15 000 ₽ / час</p>
+          <div class="card-actions">
+            <a class="btn btn-navy" href="https://boat-sochi.ru/">Подробнее</a>
+            <a class="btn btn-red" href="#book">Заказать</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="info" id="info">
+    <div class="wrap info-grid">
+      <div>
+        <h2>Честно об ограничениях и гарантиях</h2>
+        <p class="guarantee"><strong>Гарантия возврата без штрафов:</strong> Если формат мероприятия у причала вам не подойдет, либо если порт будет полностью закрыт для посещения — мы гарантируем возврат 100% суммы предоплаты в день обращения.</p>
+      </div>
+      <div>
+        <p class="block">В связи с текущей ситуацией на побережье и временными ограничениями в акватории, на момент запуска раннего бронирования формат проведения вашего мероприятия будет напрямую зависеть от официальных распоряжений морских служб безопасности:</p>
+        <p class="block"><strong>Морской круиз:</strong> При полной отмене ограничений мы осуществляем запланированный выход в открытое море — вас ждет роскошное зимнее путешествие вдоль сияющего огнями побережья Сириуса.</p>
+        <p class="block"><strong>VIP-причал:</strong> Если к новогодним праздникам выход на рейд будет по-прежнему ограничен, мероприятие пройдет в формате закрытого премиум-приёма на борту яхты у причала Имеретинского порта. К вашим услугам — роскошная локация, ресторанное обслуживание (кейтеринг) и атмосфера элитного морского клуба в самом сердце праздничного курорта.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="greet">
+    <div class="wrap greet-grid">
+      <h2>С новым<br>годом !</h2>
+      <img src="images/newyear.jpg" alt="Дед Мороз и Снегурочка на яхте">
+    </div>
+  </section>
+
+  <div class="callbar">
+    <a class="btn btn-navy" href="tel:+79176750555">Позвонить</a>
+    <a class="btn btn-red" href="#book">Забронировать</a>
+  </div>
+
+  <div class="modal" id="book" hidden>
+    <div class="modal-box">
+      <h3>Бронирование</h3>
+      <p>Имеретинский порт, Сириус. Напишите дату и телефон — перезвоним.</p>
+      <form id="book-form">
+        <label for="name">Имя</label>
+        <input id="name" name="name" autocomplete="name" required>
+        <label for="phone">Телефон</label>
+        <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+7" required>
+        <label for="date">Дата</label>
+        <input id="date" name="date" type="date" value="2026-12-31">
+        <div class="modal-actions">
+          <a class="btn btn-navy" href="tel:+79176750555">+7 917 675-0555</a>
+          <button class="btn btn-red" type="submit">Отправить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('book');
+    const openers = document.querySelectorAll('a[href="#book"]');
+    const form = document.getElementById('book-form');
+
+    function openModal(e) {
+      if (e) e.preventDefault();
+      modal.hidden = false;
+      modal.classList.add('open');
+    }
+    function closeModal() {
+      modal.classList.remove('open');
+      modal.hidden = true;
+    }
+    openers.forEach((el) => el.addEventListener('click', openModal));
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = form.name.value.trim();
+      const phone = form.phone.value.trim();
+      const date = form.date.value;
+      const text = encodeURIComponent('Бронь яхты на ' + date + '. ' + name + ', ' + phone);
+      window.location.href = 'https://t.me/+79176750555?text=' + text;
+    });
+  </script>
+</body>
+</html>
