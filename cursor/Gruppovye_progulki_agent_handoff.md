@@ -191,6 +191,7 @@ UTM:
 - Контекст соседней РК: `cursor/Morskie_progulki_campaign_memory.md` (не путать продукты)
 - НГ 2026/27: секция в `cursor/Gruppovye_progulki_campaign_memory.md` (09.10.2026)
 - Срез 10.10: `cursor/Analiz_RK_Gruppovye_progulki_EPK_2026-10-10.docx` — 0 ₽ / 252 / 2 / 0, голод конверсий
+- JSON-LD посадки: `cursor/progulki_na_yacht_jsonld.html` (слоты 9:30–17:00, закат 2 500; старый блок с 18:00 заменить)
 
 ---
 

@@ -1,0 +1,179 @@
+<!-- JSON-LD /progulki_na_yacht · канон 15.10.2026
+     Слоты: 9:30 · 11:00 · 12:30 · 14:00 · 15:30 · 17:00 (закат 2 500)
+     Билет, не аренда целиком. Яхту не называть. Тел. +7 918 304-40-00
+     В Тильде: заменить старый блок <script type="application/ld+json"> целиком.
+     Старый JSON-LD ещё с 18:00 и расписанием 9:00–18:00 — его удалить. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://boat-sochi.ru/progulki_na_yacht#webpage",
+      "url": "https://boat-sochi.ru/progulki_na_yacht",
+      "name": "Морская прогулка на парусной яхте Сочи / Сириус — 1 800 ₽",
+      "description": "Групповая прогулка на парусной яхте: 1,5 часа, 1800 ₽ (закат 17:00 — 2500 ₽), до 11 человек. Сириус, Голубая 1, Имеретинский порт, линия 2.",
+      "inLanguage": "ru-RU",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "boat-sochi.ru",
+        "url": "https://boat-sochi.ru/"
+      },
+      "about": {
+        "@id": "https://boat-sochi.ru/progulki_na_yacht#product"
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://boat-sochi.ru/progulki_na_yacht#product",
+      "name": "Билет на групповую морскую прогулку на парусной яхте",
+      "description": "Место в группе на парусной яхте, не аренда судна целиком. 1,5 часа, до 11 человек. Слоты: 9:30, 11:00, 12:30, 14:00, 15:30, 17:00 (закат). Виды на Олимпийский парк и горы. Дельфины встречаются часто, без гарантии. Купание — по погоде и решению капитана. Один ребёнок до 5 лет на яхту бесплатно; в слот 17:00 — полная стоимость.",
+      "image": "https://static.tildacdn.com/tild3732-3530-4863-b839-326566333966/2_group_small.jpg",
+      "brand": {
+        "@type": "Brand",
+        "name": "boat-sochi"
+      },
+      "category": "Морская прогулка",
+      "url": "https://boat-sochi.ru/progulki_na_yacht",
+      "duration": "PT1H30M",
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Формат",
+          "value": "Билет / место в группе"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Размер группы",
+          "value": "до 11 человек"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Расписание",
+          "value": "9:30, 11:00, 12:30, 14:00, 15:30, 17:00"
+        }
+      ],
+      "offers": {
+        "@type": "AggregateOffer",
+        "url": "https://boat-sochi.ru/progulki_na_yacht",
+        "priceCurrency": "RUB",
+        "lowPrice": "1800",
+        "highPrice": "2500",
+        "offerCount": "2",
+        "availability": "https://schema.org/InStock",
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Дневные слоты 9:30–15:30",
+            "price": "1800",
+            "priceCurrency": "RUB",
+            "url": "https://boat-sochi.ru/progulki_na_yacht",
+            "availability": "https://schema.org/InStock",
+            "eligibleQuantity": {
+              "@type": "QuantitativeValue",
+              "value": 1,
+              "unitText": "человек"
+            }
+          },
+          {
+            "@type": "Offer",
+            "name": "Закат 17:00",
+            "price": "2500",
+            "priceCurrency": "RUB",
+            "url": "https://boat-sochi.ru/progulki_na_yacht",
+            "availability": "https://schema.org/InStock",
+            "eligibleQuantity": {
+              "@type": "QuantitativeValue",
+              "value": 1,
+              "unitText": "человек"
+            }
+          }
+        ]
+      },
+      "provider": {
+        "@id": "https://boat-sochi.ru/progulki_na_yacht#localbusiness"
+      }
+    },
+    {
+      "@type": "TouristTrip",
+      "@id": "https://boat-sochi.ru/progulki_na_yacht#trip",
+      "name": "Групповая морская прогулка на парусной яхте",
+      "description": "Групповая прогулка на парусной яхте (флот из нескольких яхт, имя не фиксируем). 1,5 часа, до 11 человек. Билет за место, не аренда целиком.",
+      "touristType": "Семейный отдых",
+      "itinerary": {
+        "@type": "Place",
+        "@id": "https://boat-sochi.ru/progulki_na_yacht#pier",
+        "name": "Имеретинский порт, линия 2",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "ул. Голубая, 1, Имеретинский порт, линия 2",
+          "addressLocality": "Сириус",
+          "addressRegion": "Краснодарский край",
+          "addressCountry": "RU"
+        }
+      },
+      "offers": {
+        "@id": "https://boat-sochi.ru/progulki_na_yacht#product"
+      },
+      "provider": {
+        "@id": "https://boat-sochi.ru/progulki_na_yacht#localbusiness"
+      }
+    },
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://boat-sochi.ru/progulki_na_yacht#localbusiness",
+      "name": "boat-sochi — групповые прогулки",
+      "url": "https://boat-sochi.ru/progulki_na_yacht",
+      "telephone": "+79183044000",
+      "image": "https://static.tildacdn.com/tild3732-3530-4863-b839-326566333966/2_group_small.jpg",
+      "priceRange": "1800-2500 RUB",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "ул. Голубая, 1, Имеретинский порт, линия 2",
+        "addressLocality": "Сириус",
+        "addressRegion": "Краснодарский край",
+        "addressCountry": "RU"
+      },
+      "areaServed": ["Сириус", "Сочи", "Адлер"]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://boat-sochi.ru/progulki_na_yacht#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Сколько стоит групповая прогулка?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "1800 ₽ с человека. Слот на закат 17:00 — 2500 ₽. Один ребёнок до 5 лет на яхту бесплатно; в 17:00 — полная стоимость."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Какое расписание?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Каждый день: 9:30, 11:00, 12:30, 14:00, 15:30, 17:00 (закат). Длительность 1,5 часа."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Откуда отправление?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Сириус, ул. Голубая, 1. Имеретинский порт, линия 2. Бронь: +7 918 304-40-00."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Это аренда яхты целиком?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Нет. Это билет — место в группе до 11 человек."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
