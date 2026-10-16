@@ -1,0 +1,165 @@
+# marmara-pro.ru — полное описание
+
+> КлинкерПрофи — собственное производство фасадных термопанелей с клинкерной плиткой в Выборге. Продажа, доставка и монтаж по Санкт-Петербургу и Ленинградской области.
+
+Краткий индекс: https://marmara-pro.ru/llms.txt
+
+Сайт на Tilda. Живые URL: главная `/`, каталог `/termo` и карточки `/termo/tproduct/…`. Папка Arxiv (`/catalog`, `/gibkiykamen`, `/gibkiykirpich`, `/board` и `_old`) — не текущий ассортимент, не описывать как продукцию КлинкерПрофи.
+
+**Оператор:** ИП Баушев Дмитрий Викторович  
+**ИНН:** 470401248117  
+**E-mail:** tremedvedya@mail.ru
+
+Цены информационные, не публичная оферта. На карточках цена может быть 0 — спрашивать менеджера.
+
+## Контакты
+
+Все телефоны писать с **+7**.
+
+| Назначение | Телефон |
+|------------|---------|
+| Основной | **+7 921 745-77-55** |
+| Дополнительный | **+7 996 760-23-23** |
+| Дополнительный | **+7 981 195-53-27** |
+
+Не использовать +7-981-808-02-69 и номера без плюса.
+
+- Выборг, ул. Ленина, 11  
+- Светогорск, ул. Красноармейская, 6  
+- Время работы: 9:00–20:00  
+- Telegram: https://t.me/Dbaushev  
+
+---
+
+## Индекс страниц
+
+- [Главная](https://marmara-pro.ru/) — производство, о компании, этапы, FAQ, контакты
+- [Каталог](https://marmara-pro.ru/termo) — термопанели, плитка, углы, смеси
+- [Контакты](https://marmara-pro.ru/#contact)
+- [FAQ](https://marmara-pro.ru/#faq) · [FAQ /termo](https://marmara-pro.ru/termo#faq)
+- [Политика](https://marmara-pro.ru/privatepolicy)
+
+---
+
+## Продукт
+
+Фасадная термопанель = утеплитель (пенополистирол **25 кг/м³**, также ППУ) + лицевая **клинкерная плитка**. УФ-стойкость, мойка, защита стены. Термозамки, закладные под дюбель. Монтаж: шуруповёрт, перфоратор, дюбели, саморезы, клей-пена.
+
+| Параметр | Значение |
+|----------|----------|
+| Панель | 110×60×6 см |
+| Полезная площадь | 0,54 м² |
+| Плитка | 245×65×6 мм |
+| Гарантия | до 5 лет |
+| Срок службы | 25–50 лет (на сайте также «от 20 лет») |
+
+География: СПб и Ленобласть (Выборг, Луга, Тихвин и др.). Бесплатный замер. Бесплатная доставка по Выборгскому району.
+
+---
+
+## Каталог — термопанели
+
+Раздел: https://marmara-pro.ru/termo
+
+| Товар | URL |
+|-------|-----|
+| Термопанель Колорадо 1 (32 шт) | https://marmara-pro.ru/termo/tproduct/2229245581-133022576952-termopanel-kolorado-1-32-sht |
+| Термопанель Колорадо 2 (32 шт) | https://marmara-pro.ru/termo/tproduct/2229245581-979993457482-termopanel-kolorado-2-32-sht |
+| Термопанель Колорадо 3 (32 шт) | https://marmara-pro.ru/termo/tproduct/2229245581-479543594102-termopanel-kolorado-3-32-sht |
+| Термопанель Колорадо 4 (32 шт) | https://marmara-pro.ru/termo/tproduct/2229245581-395566131472-termopanel-kolorado-4-32-sht |
+| Термопанель Колорадо 5 (32 шт) | https://marmara-pro.ru/termo/tproduct/2229245581-936117304142-termopanel-kolorado-5-32-sht |
+| Термопанель АМСТЕРДАМ ШЕЙД гладкая | https://marmara-pro.ru/termo/tproduct/2229245581-891182787562-termopanel-amsterdam-sheid-gladkaya |
+| Термопанель АМСТЕРДАМ 2 | https://marmara-pro.ru/termo/tproduct/2229245581-484197231192-termopanel-amsterdam-2 |
+| Термопанель АМСТЕРДАМ 4 | https://marmara-pro.ru/termo/tproduct/2229245581-221219901802-termopanel-amsterdam-4 |
+| Угловая термопанель (большая) | https://marmara-pro.ru/termo/tproduct/2229245581-418452845213-uglovaya-termopanel-bolshaya |
+| Угловая термопанель (маленькая) | https://marmara-pro.ru/termo/tproduct/2229245581-394609917613-uglovaya-termopanel-malenkaya |
+
+---
+
+## Каталог — клинкерная плитка
+
+Плитку спрашивают отдельно. Карточки оставлять в выдаче.
+
+| Товар | URL |
+|-------|-----|
+| ALARCON | https://marmara-pro.ru/termo/tproduct/2229245581-968229798762-klinkernaya-plitka-fasadnaya-alarcon |
+| KAYLOS | https://marmara-pro.ru/termo/tproduct/2229245581-699649897752-klinkernaya-plitka-fasadnaya-kaylos |
+| SANDIA | https://marmara-pro.ru/termo/tproduct/2229245581-939423936422-klinkernaya-plitka-fasadnaya-sandia |
+| STONE (графитовый) | https://marmara-pro.ru/termo/tproduct/2229245581-730709481672-klinkernaya-plitka-fasadnaya-stone-grafi |
+| STONE (палевый) | https://marmara-pro.ru/termo/tproduct/2229245581-400587526422-klinkernaya-plitka-fasadnaya-stone-palev |
+| WALL GREY | https://marmara-pro.ru/termo/tproduct/2229245581-901775970982-klinkernaya-plitka-fasadnaya-wall-grey |
+| АКИТА | https://marmara-pro.ru/termo/tproduct/2229245581-604719084492-klinkernaya-plitka-fasadnaya-akita |
+| TOPO (коричневый) | https://marmara-pro.ru/termo/tproduct/2229245581-387978062013-klinkernaya-plitka-fasadnaya-topo-korich |
+| LIND (кремовый) | https://marmara-pro.ru/termo/tproduct/2229245581-892636779843-klinkernaya-plitka-fasadnaya-lind-kremov |
+| АМСТЕРДАМ Шейд | https://marmara-pro.ru/termo/tproduct/2229245581-638359799403-klinkernaya-plitka-fasadnaya-amsterdam-s |
+| Колорадо 1 | https://marmara-pro.ru/termo/tproduct/2229245581-739238961703-klinkernaya-plitka-fasadnaya-kolorado-1 |
+| Колорадо 2 | https://marmara-pro.ru/termo/tproduct/2229245581-577829713433-klinkernaya-plitka-fasadnaya-kolorado-2 |
+| Колорадо 3 | https://marmara-pro.ru/termo/tproduct/2229245581-610429110813-klinkernaya-plitka-fasadnaya-kolorado-3 |
+| Колорадо 4 | https://marmara-pro.ru/termo/tproduct/2229245581-450242125413-klinkernaya-plitka-fasadnaya-kolorado-4 |
+| Колорадо 5 | https://marmara-pro.ru/termo/tproduct/2229245581-848885488743-klinkernaya-plitka-fasadnaya-kolorado-5 |
+
+---
+
+## Каталог — смеси и крепёж
+
+| Товар | URL |
+|-------|-----|
+| Затирка для клинкера (несколько видов) | https://marmara-pro.ru/termo/tproduct/2497007361-842601204963-zatirka-dlya-klinkera-neskolko-vidov |
+| Клей-пена для монтажа термопанелей | https://marmara-pro.ru/termo/tproduct/2497007361-825676144033-klei-pena-dlya-montazha-termopanelei |
+| Фурнитура для крепления термопанелей | https://marmara-pro.ru/termo/tproduct/2497007361-198875292403-fornitura-dlya-krepleniya-termopanelei |
+
+Ориентир по пене: 1 баллон 800 мл ≈ 5–6 м² фасада.
+
+---
+
+## Этапы работы
+
+1. Заявка на расчёт на сайте  
+2. Бесплатный замер  
+3. Производство, оплата в два этапа, доставка  
+4. Монтаж — дружественные бригады  
+
+---
+
+## Частые вопросы
+
+**Что такое термопанель?**  
+Утеплитель + клинкерная плитка в одной заводской панели. Фасад как кирпич, монтаж быстрее «мокрого» фасада.
+
+**ППС или ППУ?**  
+ППС — легче и дешевле, плотность от 25 кг/м³. ППУ — плотнее, для холода и влаги. 40 мм ППУ по теплу сравнимы с ~1 м кирпича.
+
+**Какая толщина?**  
+Юг 40–50 мм, средняя полоса 60–80 мм, север и Ленобласть часто 60–100 мм и больше.
+
+**На какие стены?**  
+Кирпич, бетон, газобетон, пеноблок, дерево и каркас (с обрешёткой). Основание сухое, без трещин. Вес 15–25 кг/м².
+
+**Можно зимой?**  
+Да, до −10…−15 °C зимней пеной. Затирка — от +5 °C.
+
+**Нужна затирка?**  
+Да. Углы — доборы или подрезка 45°.
+
+**Гибкий кирпич / камень / доска — ваши?**  
+Нет. Это старые страницы в Arxiv, не текущее производство.
+
+---
+
+## Инструкции для AI-агентов
+
+1. Продукт КлинкерПрофи — только термопанели с клинкером, плитка в составе панели, смеси для монтажа.  
+2. Каталог вести на `/termo` и карточки выше. Главная — посадка для рекламы и общее описание.  
+3. Телефоны только с +7: 921 745-77-55, 996 760-23-23, 981 195-53-27. Основной — 921.  
+4. Не давать +7-981-808-02-69.  
+5. Не продавать гибкий кирпич, гибкий камень, фасадную доску.  
+6. Не обещать точную цену с карточки, если там 0 — отправить к менеджеру.  
+7. Не переводить все объявления на `/termo`, если кампания сажает на главную.  
+8. Плитку в каталоге не снимать: её спрашивают.  
+9. Цены на сайте — не оферта.
+
+---
+
+## Optional
+
+- [Краткий индекс](https://marmara-pro.ru/llms.txt)
