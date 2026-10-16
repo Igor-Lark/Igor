@@ -98,9 +98,10 @@ const FLEET = [
     label: 'яхта «Tigger»',
     maxGuests: 14,
     port: 'sirius',
-    portLabel: 'Имеретинский порт, линия 3',
-    price: '50 000 ₽/час',
-    note: 'премиум, private charter',
+    portLabel: 'Имеретинский порт, линия 3, Голубая 1',
+    price: '50 000 ₽/час от 2 ч; 470 000 ₽/сутки',
+    length: '21,6 м',
+    note: 'Azimut 68 Plus, private charter; бронь Олег',
   },
   {
     id: 'aleksum',
