@@ -1,0 +1,330 @@
+<!--
+  Schema.org JSON-LD для ГЛАВНОЙ:
+  https://marmara-pro.ru/
+
+  Куда вставить в Tilda:
+  1. Откройте страницу главной (корень сайта, не /main и не /termo)
+  2. Настройки страницы → Дополнительно → HTML-код внутри <head>
+  3. Удалите СТАРЫЙ блок application/ld+json, если он уже есть
+     (на живой главной сейчас короткий JSON-LD с 4 вопросами FAQ)
+  4. Вставьте ОДИН блок <script> ниже
+  5. Опубликуйте страницу
+
+  Проверка:
+  https://webmaster.yandex.ru/tools/microtest/
+  https://validator.schema.org/
+
+  В разметке: КлинкерПрофи, ИП Баушев, ИНН 470401248117,
+  телефоны +7-921-745-77-55, +7-996-760-23-23, +7-981-195-53-27.
+  Нет 981-808, нет гибкого кирпича / камня / доски, URL только /.
+-->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://marmara-pro.ru/#webpage",
+      "url": "https://marmara-pro.ru/",
+      "name": "Производство термопанелей с клинкером в Выборге — КлинкерПрофи",
+      "description": "Собственное производство фасадных термопанелей с клинкерной плиткой в Выборге. Продажа, доставка и монтаж по Санкт-Петербургу и Ленинградской области.",
+      "inLanguage": "ru-RU",
+      "isPartOf": {
+        "@id": "https://marmara-pro.ru/#website"
+      },
+      "about": {
+        "@id": "https://marmara-pro.ru/#organization"
+      },
+      "mainEntity": [
+        {
+          "@id": "https://marmara-pro.ru/#organization"
+        },
+        {
+          "@id": "https://marmara-pro.ru/#faq"
+        }
+      ],
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://static.tildacdn.com/tild3834-3932-4138-a432-643130396538/photo.jpg"
+      },
+      "publisher": {
+        "@id": "https://marmara-pro.ru/#organization"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://marmara-pro.ru/#website",
+      "url": "https://marmara-pro.ru/",
+      "name": "КлинкерПрофи",
+      "alternateName": [
+        "КлинкерПрофи",
+        "Marmara PRO"
+      ],
+      "description": "Производство термопанелей с клинкерной плиткой в Выборге",
+      "inLanguage": "ru-RU",
+      "publisher": {
+        "@id": "https://marmara-pro.ru/#organization"
+      }
+    },
+    {
+      "@type": [
+        "Organization",
+        "LocalBusiness",
+        "HomeAndConstructionBusiness"
+      ],
+      "@id": "https://marmara-pro.ru/#organization",
+      "name": "КлинкерПрофи",
+      "alternateName": "Marmara PRO",
+      "legalName": "ИП Баушев Дмитрий Викторович",
+      "taxID": "470401248117",
+      "url": "https://marmara-pro.ru/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://static.tildacdn.com/tild6661-3037-4234-b636-643434333430/Group_6302_1.svg"
+      },
+      "image": "https://static.tildacdn.com/tild3834-3932-4138-a432-643130396538/photo.jpg",
+      "description": "Собственное производство фасадных термопанелей с клинкерной плиткой в Выборге. Продажа, монтаж, доставка по Санкт-Петербургу и Ленинградской области.",
+      "email": "tremedvedya@mail.ru",
+      "telephone": [
+        "+7-921-745-77-55",
+        "+7-996-760-23-23",
+        "+7-981-195-53-27"
+      ],
+      "address": [
+        {
+          "@type": "PostalAddress",
+          "streetAddress": "ул. Ленина, 11",
+          "addressLocality": "Выборг",
+          "addressRegion": "Ленинградская область",
+          "addressCountry": "RU"
+        },
+        {
+          "@type": "PostalAddress",
+          "streetAddress": "ул. Красноармейская, 6",
+          "addressLocality": "Светогорск",
+          "addressRegion": "Ленинградская область",
+          "addressCountry": "RU"
+        }
+      ],
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 60.7106,
+        "longitude": 28.7448
+      },
+      "areaServed": [
+        {
+          "@type": "AdministrativeArea",
+          "name": "Ленинградская область"
+        },
+        {
+          "@type": "City",
+          "name": "Санкт-Петербург"
+        },
+        {
+          "@type": "City",
+          "name": "Выборг"
+        },
+        {
+          "@type": "City",
+          "name": "Приозерск"
+        },
+        {
+          "@type": "City",
+          "name": "Светогорск"
+        }
+      ],
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+          ],
+          "opens": "09:00",
+          "closes": "20:00"
+        }
+      ],
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "telephone": "+7-921-745-77-55",
+          "contactType": "customer service",
+          "areaServed": "RU",
+          "availableLanguage": [
+            "Russian"
+          ],
+          "hoursAvailable": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "09:00",
+            "closes": "20:00"
+          }
+        },
+        {
+          "@type": "ContactPoint",
+          "telephone": "+7-996-760-23-23",
+          "contactType": "customer service",
+          "areaServed": "RU",
+          "availableLanguage": [
+            "Russian"
+          ]
+        },
+        {
+          "@type": "ContactPoint",
+          "telephone": "+7-981-195-53-27",
+          "contactType": "customer service",
+          "areaServed": "RU",
+          "availableLanguage": [
+            "Russian"
+          ]
+        }
+      ],
+      "sameAs": [
+        "https://t.me/Dbaushev",
+        "https://wa.me/79217457755"
+      ],
+      "knowsAbout": [
+        "термопанели",
+        "клинкерная плитка",
+        "фасадное утепление",
+        "монтаж фасадных панелей"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Каталог термопанелей КлинкерПрофи",
+        "url": "https://marmara-pro.ru/termo",
+        "itemListElement": [
+          {
+            "@type": "OfferCatalog",
+            "name": "Фасадные термопанели с клинкером",
+            "url": "https://marmara-pro.ru/termo"
+          },
+          {
+            "@type": "OfferCatalog",
+            "name": "Клинкерная плитка",
+            "url": "https://marmara-pro.ru/termo"
+          },
+          {
+            "@type": "OfferCatalog",
+            "name": "Смеси и крепёж для монтажа",
+            "url": "https://marmara-pro.ru/termo"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://marmara-pro.ru/#faq",
+      "url": "https://marmara-pro.ru/#faq",
+      "inLanguage": "ru-RU",
+      "isPartOf": {
+        "@id": "https://marmara-pro.ru/#webpage"
+      },
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Что такое термопанели с клинкерным кирпичом?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Термопанель — готовая фасадная система «два в одном»: слой утеплителя (пенополистирол, пенополиуретан или экструдированный пенополистирол) и декоративная облицовка из клинкерной плитки, соединённые на заводе в единую конструкцию. Клинкер — обожжённая глина с низким водопоглощением (2–4 %), высокой прочностью и морозостойкостью. Фасад выглядит как настоящая кирпичная кладка, но монтируется быстрее и даёт утепление за один этап."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Чем они лучше обычного кирпича и «мокрого» фасада?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Утепление и отделка за один этап, быстрый монтаж, не нужна идеально ровная стена, не требуют покраски, срок службы 25–50 лет."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Что выгоднее — термопанели или классическая отделка?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Термопанели — быстрый монтаж, долговечность, утепление и отделка за один этап, экономия на отоплении. Классический кирпич — когда нужен натуральный материал. «Мокрый» фасад — требует покраски каждые 5–10 лет."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Что выбрать: пенополистирол (ППС) или пенополиуретан (ППУ)?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Пенополистирол (ППС) — лёгкий, экономичный утеплитель, плотность от 25 кг/м³. Пенополиуретан (ППУ) — более плотный (от 35 кг/м³), влагостойкий и долговечный. 40 мм пенополиуретана по теплоизоляции сопоставимы с ~1 м кирпичной кладки. ППС — умеренный климат, стандартные задачи. ППУ — холодный и влажный климат, повышенные требования к утеплению."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Какую толщину термопанелей выбрать?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Южные области — 40–50 мм. Средняя полоса России — 60–80 мм. Северные регионы — 100 мм и более. Максимальное утепление — 100+ мм. Для постоянного проживания в Ленинградской области часто выбирают 60–100 мм и более в зависимости от стены и проекта."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "На какие стены можно монтировать термопанели?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Кирпич, бетон, газобетон, пеноблок, керамоблок, деревянные и каркасные дома (с обрешёткой). Основание — прочное, сухое, без трещин. Вес системы — 15–25 кг/м²."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Как происходит монтаж? Можно ли сделать своими руками?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Сухой метод: подготовка → цокольный профиль → клей-пена → дюбели → стыковка «шип-паз» → подрезка → затирка швов. Самостоятельный монтаж возможен; при площади более 100–150 м² рекомендуется профессиональная бригада."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Сколько клей-пены нужно на фасад?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ориентир — 1 баллон 800 мл на ~6 м² фасада (клей наносят полосами, не сплошным слоем). На неровных стенах или с запасом закладывают ~1 баллон на 5 м². Ориентир цены — 800 ₽ за баллон; точное количество — после замера у менеджера КлинкерПрофи."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Нужна ли затирка швов и как оформляются углы?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, затирка обязательна. Используют морозостойкий затирочный состав для фасадных термопанелей — наносят шпателем или затирочным мешком. Углы оформляют специальными элементами, подрезкой под 45° или доборами. Цвет затирки подбирают под тон клинкера."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Можно ли монтировать термопанели зимой?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, монтаж возможен до −10…−15 °C с зимней клей-пеной. Затирку швов выполняют при +5 °C и выше: часто панели ставят зимой, а швы затирают весной."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Сколько служат термопанели и нужен ли уход?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Термопанели служат 25–50 лет. Клинкер не выгорает, покраска не нужна. Уход — мягкая мойка и осмотр швов. Повреждённую панель можно заменить локально."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
