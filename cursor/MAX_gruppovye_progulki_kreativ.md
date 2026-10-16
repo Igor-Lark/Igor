@@ -39,3 +39,5 @@ https://boat-sochi.ru/progulki_na_yacht?utm_source=max&utm_medium=cpc&utm_campai
 ```
 
 Добор, если есть поле до 95 знаков: на сайте скидки нет (в пост 764 влезает короче, запас 51).
+
+НГ-2027: `cursor/MAX_gruppovye_progulki_ng2027.md` — без скидки, слоты 9:30–17:00.

@@ -214,7 +214,7 @@ UTM:
 
 Канал: реклама в мессенджере MAX (посев / Директ «мессенджеры»), не цель «клик MAX» на сайте.
 
-Посадка только `/progulki_na_yacht`. Креатив: `cursor/MAX_gruppovye_progulki_kreativ.md`.
+Посадка только `/progulki_na_yacht`. Креатив MAX сентябрь: `cursor/MAX_gruppovye_progulki_kreativ.md` (акция −20% кончилась). НГ-2027: `cursor/MAX_gruppovye_progulki_ng2027.md`.
 
 | Параметр | Значение | Зачем |
 |----------|----------|--------|
