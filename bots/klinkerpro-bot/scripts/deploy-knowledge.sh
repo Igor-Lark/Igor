@@ -6,7 +6,7 @@
 #   bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
 #
 set -euo pipefail
-BRANCH="${BRANCH:-cursor/facade-openings-calc-bfbc}"
+BRANCH="${BRANCH:-cursor/klinker-kb-site-bfbc}"
 BOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 REPO_ROOT="$(cd "$BOT_DIR/../.." && pwd)"
 
@@ -18,6 +18,13 @@ git checkout "$BRANCH"
 git pull origin "$BRANCH"
 
 echo "Git: $(git rev-parse --short HEAD) (branch: $(git branch --show-current))"
+FILE_VER="$(grep -oE 'FACADE_CALC_VERSION = [0-9]+' "$BOT_DIR/src/facade-calc.js" | head -1 || true)"
+echo "File: $FILE_VER"
+if ! grep -q 'FACADE_CALC_VERSION = 9' "$BOT_DIR/src/facade-calc.js"; then
+  echo "ERROR: на диске не v9. Нужна ветка cursor/klinker-kb-site-bfbc (коммит с площадью в кв.м)."
+  echo "Сделайте: git fetch origin cursor/klinker-kb-site-bfbc && git checkout -B cursor/klinker-kb-site-bfbc origin/cursor/klinker-kb-site-bfbc"
+  exit 1
+fi
 
 cd "$BOT_DIR"
 if [[ -f package.json ]] && grep -q '"prices:sync"' package.json; then
@@ -55,10 +62,11 @@ HEALTH=$(curl -sf "http://127.0.0.1:${PORT:-3001}/health" || true)
 echo ""
 echo "$HEALTH"
 echo ""
-if echo "$HEALTH" | grep -qE '"facadeCalcVersion":(7|8)'; then
-  echo "OK: facadeCalcVersion в health"
+if echo "$HEALTH" | grep -q '"facadeCalcVersion":9'; then
+  echo "OK: facadeCalcVersion 9"
 else
-  echo "WARN: нет facadeCalcVersion 6/7 — проверьте pull и pm2"
+  echo "ERROR: health не v9 (процесс со старого кода). cwd pm2:"
+  pm2 describe klinkerpro | egrep 'exec cwd|script path|status' || true
   exit 1
 fi
 

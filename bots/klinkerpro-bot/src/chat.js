@@ -22,7 +22,7 @@ function calcDisclaimerOpts(hasCalc) {
   return {
     hasCalc,
     managerPhone: managerPhoneLink(),
-    contactsUrl: SITE_MAIN + '#contacts',
+    contactsUrl: SITE_MAIN + '#contact',
     contactsBlock: buildClientContactsBlock(),
   };
 }

@@ -9,7 +9,8 @@
     "max:chat-id": "node scripts/max-find-chat-id.js",
     "max:user-id": "node scripts/max-find-user-id.js",
     "health:ping": "node scripts/ping-bot-health.js",
-    "prices:sync": "node scripts/sync-prices-from-site.js"
+    "prices:sync": "node scripts/sync-prices-from-site.js",
+    "test:calc": "node scripts/test-facade-calc.js"
   },
   "engines": {
     "node": ">=18"

@@ -2,7 +2,7 @@
 
 **Быстрые ссылки**
 
-- [Скрипт деплоя базы знаний (GitHub)](https://github.com/Igor-Lark/Igor/blob/cursor/facade-openings-calc-bfbc/bots/klinkerpro-bot/scripts/deploy-knowledge.sh)
+- [Скрипт деплоя базы знаний (GitHub)](https://github.com/Igor-Lark/Igor/blob/cursor/klinker-kb-site-bfbc/bots/klinkerpro-bot/scripts/deploy-knowledge.sh)
 - [Раздел «Обновление инструкций бота» в этом файле](#10-обновление-инструкций-бота-база-знаний)
 - [Проверка после деплоя — health](https://klinker.webtaxi2.ru/health)
 - [Виджет на сайте — embed.js](https://klinker.webtaxi2.ru/embed.js)
@@ -28,8 +28,8 @@ bash /var/www/igor-klinker/deploy-klinker-bot.sh
 ```bash
 find /var/www /root /home -maxdepth 5 -path '*/klinkerpro-bot/scripts/deploy-knowledge.sh' 2>/dev/null
 cd /var/www/igor-klinker   # подставьте каталог **на два уровня выше** найденного scripts/
-git fetch origin cursor/facade-openings-calc-bfbc
-git checkout cursor/facade-openings-calc-bfbc
+git fetch origin cursor/klinker-kb-site-bfbc
+git checkout cursor/klinker-kb-site-bfbc
 git pull
 bash deploy-klinker-bot.sh
 ```
@@ -41,7 +41,7 @@ bash bots/klinkerpro-bot/scripts/verify-klinker-deploy.sh
 pm2 describe klinkerpro | egrep 'exec cwd|script path'
 ```
 
-Скрипт деплоя пересоздаёт `klinkerpro` из `bots/klinkerpro-bot/ecosystem.config.cjs` (ветка **`cursor/facade-openings-calc-bfbc`**).
+Скрипт деплоя пересоздаёт `klinkerpro` из `bots/klinkerpro-bot/ecosystem.config.cjs` (ветка **`cursor/klinker-kb-site-bfbc`**).
 
 Бот: виджет на **marmara-pro.ru** + заявки в **MAX**.  
 URL: **https://klinker.webtaxi2.ru** · порт процесса: **3001** (boat-sochi обычно **3000**).
@@ -86,8 +86,8 @@ dig +short klinker.webtaxi2.ru
 ```bash
 cd ~/igor   # или /var/www/igor — как у вас лежит boat
 git fetch origin
-git checkout cursor/facade-openings-calc-bfbc
-git pull origin cursor/facade-openings-calc-bfbc
+git checkout cursor/klinker-kb-site-bfbc
+git pull origin cursor/klinker-kb-site-bfbc
 cd bots/klinkerpro-bot
 ```
 
@@ -96,7 +96,7 @@ cd bots/klinkerpro-bot
 ```bash
 git clone https://github.com/Igor-Lark/Igor.git ~/igor
 cd ~/igor
-git checkout cursor/facade-openings-calc-bfbc
+git checkout cursor/klinker-kb-site-bfbc
 cd bots/klinkerpro-bot
 ```
 
@@ -321,15 +321,15 @@ cd /var/www/igor-klinker          # или ~/igor — ваш путь к реп�
 bash bots/klinkerpro-bot/scripts/deploy-knowledge.sh
 ```
 
-Скрипт делает `git pull` ветки `cursor/facade-openings-calc-bfbc`, **`npm run prices:sync`** (цены с [marmara-pro.ru/termo](https://marmara-pro.ru/termo)) и перезапуск **pm2** `klinkerpro`.
+Скрипт делает `git pull` ветки `cursor/klinker-kb-site-bfbc`, **`npm run prices:sync`** (цены с [marmara-pro.ru/termo](https://marmara-pro.ru/termo)) и перезапуск **pm2** `klinkerpro`.
 
 Вручную:
 
 ```bash
 cd /var/www/igor-klinker
 git fetch origin
-git checkout cursor/facade-openings-calc-bfbc
-git pull origin cursor/facade-openings-calc-bfbc
+git checkout cursor/klinker-kb-site-bfbc
+git pull origin cursor/klinker-kb-site-bfbc
 pm2 restart klinkerpro
 curl -s http://127.0.0.1:3001/health
 ```

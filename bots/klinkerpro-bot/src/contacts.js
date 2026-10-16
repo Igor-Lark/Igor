@@ -1,7 +1,7 @@
 'use strict';
 
 const SITE_TERMO = 'https://marmara-pro.ru/termo';
-const SITE_MAIN = 'https://marmara-pro.ru/main';
+const SITE_MAIN = 'https://marmara-pro.ru';
 /** MAX в шапке сайта marmara-pro.ru */
 const MAX_MESSENGER_URL =
   'https://max.ru/u/f9LHodD0cOIpC25EaD4tYfNKs2IixN6hR4GPJ7lLCZmLWlK0NXznAW7oYyM';

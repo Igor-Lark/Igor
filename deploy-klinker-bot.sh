@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-# Запуск на VPS из корня клона репозитория Igor:
-#   cd /var/www/igor-klinker && bash deploy-klinker-bot.sh
+# Сначала тянет ветку v9, потом запускает deploy-knowledge.sh.
+# Иначе на VPS остаётся старый скрипт и health навсегда v8.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
+BRANCH="${BRANCH:-cursor/klinker-kb-site-bfbc}"
+cd "$ROOT"
+git fetch origin "$BRANCH"
+git checkout -B "$BRANCH" "origin/$BRANCH"
 SCRIPT="$ROOT/bots/klinkerpro-bot/scripts/deploy-knowledge.sh"
 if [[ ! -f "$SCRIPT" ]]; then
   echo "Не найден: $SCRIPT"
-  echo "Вы не в каталоге репозитория Igor. Обычно:"
-  echo "  cd /var/www/igor-klinker"
-  echo "  bash deploy-klinker-bot.sh"
   exit 1
 fi
 exec bash "$SCRIPT" "$@"

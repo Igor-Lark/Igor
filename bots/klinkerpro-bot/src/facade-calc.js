@@ -2,7 +2,7 @@
 
 const { getCalcPricing } = require('./pricing');
 
-const FACADE_CALC_VERSION = 8;
+const FACADE_CALC_VERSION = 9;
 const pricing = getCalcPricing();
 const A_PANEL = pricing.aPanelM2;
 const PANEL_PRICE = pricing.panelPriceRub;
@@ -170,7 +170,69 @@ function parseOpeningsFromText(text) {
   }
 
   const totalArea = items.reduce((s, it) => s + it.areaTotal, 0);
-  return { items, totalArea };
+  if (totalArea > 0) return { items, totalArea };
+
+  const stated = parseStatedOpeningsArea(raw);
+  if (stated) {
+    return {
+      items: [
+        {
+          kind: 'stated',
+          count: 1,
+          w: 0,
+          h: 0,
+          areaEach: stated,
+          areaTotal: stated,
+        },
+      ],
+      totalArea: stated,
+    };
+  }
+  return { items, totalArea: 0 };
+}
+
+/** «проёмы 15 м²», «площадь проёмов 10 кв.м» — без размеров окон/дверей. */
+function parseStatedOpeningsArea(text) {
+  const t = String(text).toLowerCase().replace(/\s+/g, ' ');
+  const m = t.match(
+    /(?:площад[ьи]\s+)?про[её]м\S{0,16}\s*(?:всего|суммарно|вместе)?\s*(?:составляет|равна|около|примерно|=|:)?\s*(\d+(?:[.,]\d+)?)\s*(?:кв\.?\s*м|м²|м2|квадрат)/i
+  );
+  if (!m) return null;
+  const n = parseNum(m[1]);
+  if (!n || n < 0.3 || n > 800) return null;
+  return n;
+}
+
+/**
+ * Площадь фасада, если клиент дал кв.м вместо L×W×H.
+ * Не путать с площадью панели (0,62), баллона (~6) и проёмов.
+ * @returns {number | null}
+ */
+function parseFacadeAreaFromText(text) {
+  const t = String(text).toLowerCase().replace(/\s+/g, ' ');
+  const openingStated = parseStatedOpeningsArea(t);
+
+  const patterns = [
+    /площад[ьи](?:\s+(?:стен|фасада|дома|облицовки|под\s+облицовк\w+))?\s*(?:составляет|равна|около|примерно|=|:)?\s*(\d+(?:[.,]\d+)?)\s*(?:кв\.?\s*м|м²|м2|квадрат)?/i,
+    /фасад(?:а|у)?\s+(?:площад[ьюи]\s+)?(\d+(?:[.,]\d+)?)\s*(?:кв\.?\s*м|м²|м2|квадрат)/i,
+    /(?:посчит|расчит|расч[её]т|прикид|нужно|надо|отдел)\w*\s+(?:на\s+)?(\d+(?:[.,]\d+)?)\s*(?:кв\.?\s*м|м²|м2|квадрат)/i,
+    /(\d+(?:[.,]\d+)?)\s*(?:кв\.?\s*м|м²|м2)(?:\s+(?:фасада|стен|дома|под\s+облицовк\w+))?/i,
+  ];
+
+  for (const re of patterns) {
+    const m = t.match(re);
+    if (!m) continue;
+    const S = parseNum(m[1]);
+    if (!S || S < 5 || S > 4000) continue;
+    if (openingStated && Math.abs(S - openingStated) < 0.011) continue;
+    const before = t.slice(Math.max(0, m.index - 28), m.index);
+    if (/про[её]м/.test(before)) continue;
+    const around = t.slice(Math.max(0, m.index - 36), m.index + String(m[0]).length + 12);
+    if (/панел|баллон|пен[аые]|затир|плитк/.test(around)) continue;
+    if (S <= 1.5) continue;
+    return S;
+  }
+  return null;
 }
 
 /**
@@ -305,6 +367,34 @@ function extractDimensionsFromHistory(history) {
   return null;
 }
 
+/**
+ * Что свежее в диалоге: размеры L×W×H или готовая площадь в кв.м.
+ * @returns {{ type: 'dims', L: number, W: number, H: number } | { type: 'area', S: number } | null}
+ */
+function extractCalcInputFromHistory(history) {
+  let dims = null;
+  let dimsIdx = -1;
+  let area = null;
+  let areaIdx = -1;
+  (history || []).forEach((msg, i) => {
+    if (msg.role !== 'user') return;
+    const d = parseDimensionsFromText(msg.content);
+    if (d) {
+      dims = d;
+      dimsIdx = i;
+    }
+    const a = parseFacadeAreaFromText(msg.content);
+    if (a) {
+      area = a;
+      areaIdx = i;
+    }
+  });
+  if (area && areaIdx >= dimsIdx) return { type: 'area', S: area };
+  if (dims) return { type: 'dims', L: dims.L, W: dims.W, H: dims.H };
+  if (area) return { type: 'area', S: area };
+  return null;
+}
+
 /** Площадь 4 стен: (ширина×высота + длина×высота) × 2 = 2×(L×H + W×H). */
 function wallAreaGross(L, W, H) {
   return 2 * (L * H + W * H);
@@ -322,24 +412,14 @@ function fmtInt(n) {
  * @param {number} H
  * @param {ReturnType<typeof parseOpeningsFromText> | null} [openings]
  */
-function computeEstimate(L, W, H, openings) {
-  const S_gross = wallAreaGross(L, W, H);
-  const S_openings = openings && openings.totalArea > 0 ? openings.totalArea : 0;
-  const S = Math.max(0, S_gross - S_openings);
+function materialsFromNetArea(S) {
   const N = Math.ceil(S / A_PANEL);
   const S_order = N * A_PANEL;
   const N_foam = Math.ceil(S_order / FOAM_M2_PER_CAN);
   const M_grout = S_order * GROUT_KG_PER_M2;
   const N_grout = Math.ceil(M_grout / GROUT_BAG_KG);
   const N_anchors = N * ANCHORS_PER_PANEL;
-
   return {
-    L,
-    W,
-    H,
-    S_gross,
-    S_openings,
-    openingItems: openings ? openings.items : [],
     S,
     N,
     S_order,
@@ -352,15 +432,48 @@ function computeEstimate(L, W, H, openings) {
   };
 }
 
+function computeEstimate(L, W, H, openings) {
+  const S_gross = wallAreaGross(L, W, H);
+  const S_openings = openings && openings.totalArea > 0 ? openings.totalArea : 0;
+  const S = Math.max(0, S_gross - S_openings);
+  return {
+    L,
+    W,
+    H,
+    S_gross,
+    S_openings,
+    openingItems: openings ? openings.items : [],
+    areaInput: false,
+    ...materialsFromNetArea(S),
+  };
+}
+
+/** Расчёт от площади фасада в кв.м (клиент не дал L×W×H). */
+function computeEstimateFromArea(S_gross, openings) {
+  const S_openings = openings && openings.totalArea > 0 ? openings.totalArea : 0;
+  const S = Math.max(0, Number(S_gross) - S_openings);
+  return {
+    L: null,
+    W: null,
+    H: null,
+    S_gross: Number(S_gross),
+    S_openings,
+    openingItems: openings ? openings.items : [],
+    areaInput: true,
+    ...materialsFromNetArea(S),
+  };
+}
+
 /**
  * @param {{ role: string, content: string }[]} history
  * @returns {ReturnType<typeof computeEstimate> | null}
  */
 function estimateFromHistory(history) {
-  const dims = extractDimensionsFromHistory(history);
-  if (!dims) return null;
+  const input = extractCalcInputFromHistory(history);
+  if (!input) return null;
   const openings = extractOpeningsFromHistory(history);
-  return computeEstimate(dims.L, dims.W, dims.H, openings);
+  if (input.type === 'area') return computeEstimateFromArea(input.S, openings);
+  return computeEstimate(input.L, input.W, input.H, openings);
 }
 
 function fmtArea(n) {
@@ -386,6 +499,11 @@ function summarizeOpeningsForClient(items) {
   const lines = [];
   const windows = items.filter((it) => it.kind === 'window');
   const doors = items.filter((it) => it.kind === 'door');
+  const stated = items.filter((it) => it.kind === 'stated');
+  if (stated.length) {
+    const area = stated.reduce((s, it) => s + it.areaTotal, 0);
+    lines.push(`проёмы (как вы указали) → ${fmtArea(area)} кв.м`);
+  }
   if (windows.length) {
     const count = windows.reduce((s, it) => s + it.count, 0);
     const area = windows.reduce((s, it) => s + it.areaTotal, 0);
@@ -421,12 +539,21 @@ function buildClientItogo(est) {
  * @param {ReturnType<typeof computeEstimate>} est
  */
 function buildCalcClientNarrative(est) {
-  const wall = formatWallAreaBreakdown(est.L, est.W, est.H);
-  const head =
-    est.S_openings > 0
-      ? `Приблизительный расчёт **с вычетом проёмов** для дома ${est.L}×${est.W}×${est.H} м (4 стены):`
-      : `Приблизительный расчёт **без вычета проёмов** для дома ${est.L}×${est.W}×${est.H} м (4 стены):`;
-  const lines = [head, '', `Площадь стен (4 стены): ${wall.formula}.`];
+  const lines = [];
+  if (est.areaInput) {
+    const head =
+      est.S_openings > 0
+        ? `Приблизительный расчёт **с вычетом проёмов** по площади фасада **${fmtArea(est.S_gross)} кв.м** (размеры стен не указаны):`
+        : `Приблизительный расчёт **без вычета проёмов** по площади фасада **${fmtArea(est.S_gross)} кв.м** (размеры стен не указаны):`;
+    lines.push(head, '', `Площадь, которую вы указали: **${fmtArea(est.S_gross)} кв.м**.`);
+  } else {
+    const wall = formatWallAreaBreakdown(est.L, est.W, est.H);
+    const head =
+      est.S_openings > 0
+        ? `Приблизительный расчёт **с вычетом проёмов** для дома ${est.L}×${est.W}×${est.H} м (4 стены):`
+        : `Приблизительный расчёт **без вычета проёмов** для дома ${est.L}×${est.W}×${est.H} м (4 стены):`;
+    lines.push(head, '', `Площадь стен (4 стены): ${wall.formula}.`);
+  }
   if (est.S_openings > 0) {
     const openingLines = summarizeOpeningsForClient(est.openingItems);
     if (openingLines.length) {
@@ -437,6 +564,11 @@ function buildCalcClientNarrative(est) {
     lines.push(
       `Сумма проёмов: ${fmtArea(est.S_openings)} кв.м.`,
       `Под термопанели, клей и затирку: ${fmtArea(est.S_gross)} − ${fmtArea(est.S_openings)} = **${fmtArea(est.S)} кв.м**.`
+    );
+  } else if (est.areaInput) {
+    lines.push(
+      `Под термопанели, клей и затирку: **${fmtArea(est.S)} кв.м**.`,
+      'Если в эту площадь входят окна и двери — пришлите число и размеры проёмов (или суммарную площадь проёмов в кв.м), пересчитаю точнее.'
     );
   } else {
     lines.push(`Под термопанели, клей и затирку: **${fmtArea(est.S)} кв.м** (уточните число и размеры окон и дверей, если нужен вычет проёмов).`);
@@ -454,7 +586,7 @@ function userMessageHasOpeningSpecs(text) {
 }
 
 function userRequestsFacadeCalc(text) {
-  return /расч[её]т|расчит|посчит|прикидк|смет|площад|термопанел|размер.*дом|дом\s+\d|сколько|стоим|стоит|отдел/i.test(
+  return /расч[её]т|расчит|посчит|прикидк|смет|площад|термопанел|размер.*дом|дом\s+\d|сколько|стоим|стоит|отдел|кв\.?\s*м|м²|м2|квадрат/i.test(
     String(text)
   );
 }
@@ -466,10 +598,26 @@ function userRequestsFacadeCalc(text) {
  */
 function resolveEstimateForChat(history, lastUserText) {
   let est = estimateFromHistory(history);
+  if (lastUserText) {
+    const areaNow = parseFacadeAreaFromText(lastUserText);
+    const dimsNow = parseDimensionsFromText(lastUserText);
+    if (areaNow && !dimsNow) {
+      const openings =
+        parseOpeningsFromText(lastUserText).totalArea > 0
+          ? parseOpeningsFromText(lastUserText)
+          : extractOpeningsFromHistory(history);
+      return computeEstimateFromArea(areaNow, openings);
+    }
+  }
   if (!est || !lastUserText || est.S_openings > 0) return est;
-  if (!userMessageHasOpeningSpecs(lastUserText)) return est;
   const openings = parseOpeningsFromText(lastUserText);
   if (!openings.totalArea) return est;
+  if (est.areaInput) {
+    return computeEstimateFromArea(est.S_gross, openings);
+  }
+  if (!userMessageHasOpeningSpecs(lastUserText) && !parseStatedOpeningsArea(lastUserText)) {
+    return est;
+  }
   const dims =
     extractDimensionsFromHistory(history) || parseDimensionsFromText(lastUserText);
   if (!dims) return est;
@@ -478,7 +626,9 @@ function resolveEstimateForChat(history, lastUserText) {
 
 /** Серверный текст расчёта — модель часто ошибается в площади (например 66 вместо 120 м²). */
 function shouldUseServerCalcNarrative(est, lastUserText) {
-  if (!est || !est.L || !est.W || !est.H) return false;
+  if (!est) return false;
+  if (est.areaInput && est.S_gross > 0) return true;
+  if (!est.L || !est.W || !est.H) return false;
   const asks = lastUserText && userRequestsFacadeCalc(lastUserText);
   if (est.S_openings > 0 && est.openingItems && est.openingItems.length) {
     return asks || true;
@@ -490,6 +640,9 @@ function formatOpeningLines(items) {
   if (!items || !items.length) return '';
   return items
     .map((it) => {
+      if (it.kind === 'stated') {
+        return `проёмы ${fmtArea(it.areaTotal)} кв.м`;
+      }
       const label = it.kind === 'door' ? 'двери' : 'окна';
       return `${it.count} ${label} ${fmtArea(it.w)}×${fmtArea(it.h)} м → ${fmtArea(it.areaTotal)} кв.м`;
     })
@@ -502,12 +655,20 @@ function formatOpeningLines(items) {
  */
 function buildCalcSystemBlock(est) {
   const { L, W, H, S_gross, S_openings, S, N, N_foam, N_grout, N_anchors, S_order } = est;
-  const wall = formatWallAreaBreakdown(L, W, H);
   const lines = [
     '=== РАСЧЁТ СЕРВЕРА (только для модели, клиенту не цитировать этот блок и не приводить чужие «контрольные» размеры) ===',
-    `Размеры клиента: длина ${L} м, ширина ${W} м, высота стен ${H} м (4 стены).`,
-    `Площадь стен (брутто): S_gross = (W×H + L×H) × 2 = ${wall.formulaCompact}. **Итог S_gross = ${fmtArea(S_gross)} кв.м.** Не путать с L×W×H и не забывать ×2 на пару стен.`,
   ];
+  if (est.areaInput) {
+    lines.push(
+      `Клиент дал **площадь фасада ${fmtArea(S_gross)} кв.м**, без длины/ширины/высоты. **Не** выдумывай размеры дома. S_gross = ${fmtArea(S_gross)} кв.м.`
+    );
+  } else {
+    const wall = formatWallAreaBreakdown(L, W, H);
+    lines.push(
+      `Размеры клиента: длина ${L} м, ширина ${W} м, высота стен ${H} м (4 стены).`,
+      `Площадь стен (брутто): S_gross = (W×H + L×H) × 2 = ${wall.formulaCompact}. **Итог S_gross = ${fmtArea(S_gross)} кв.м.** Не путать с L×W×H и не забывать ×2 на пару стен.`
+    );
+  }
 
   if (S_openings > 0) {
     lines.push(
@@ -538,7 +699,7 @@ function buildCalcSystemBlock(est) {
 
 /** Исправляет неверный итог в строке с формулой площади. */
 function fixWallAreaInReply(reply, est) {
-  if (!est || !reply) return reply;
+  if (!est || !reply || est.areaInput || !est.L) return reply;
   const { L, W, H, S, S_gross } = est;
   const areaTarget = est.S_openings > 0 ? S : S_gross;
   let s = String(reply);
@@ -629,10 +790,13 @@ function appendCalcDisclaimer(reply, opts) {
 module.exports = {
   FACADE_CALC_VERSION,
   parseDimensionsFromText,
+  parseFacadeAreaFromText,
+  parseStatedOpeningsArea,
   parseOpeningsFromText,
   extractOpeningsFromHistory,
   extractDimensionsFromHistory,
   computeEstimate,
+  computeEstimateFromArea,
   estimateFromHistory,
   resolveEstimateForChat,
   userRequestsFacadeCalc,
