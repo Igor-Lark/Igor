@@ -13,9 +13,11 @@ const path = require('path');
 const BOT_DIR = path.join(__dirname, '..');
 const OUT_JSON = path.join(BOT_DIR, 'data', 'pricing-from-site.json');
 const CATALOG_MD = path.join(BOT_DIR, 'knowledge', 'site-termo-catalog.md');
-const STORE_PART_UID = process.env.TILDA_STORE_PART_UID || '840610530462';
+const STORE_PART_UIDS = (process.env.TILDA_STORE_PART_UID || '840610530462,872878773772')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
 const SITE_URL = 'https://marmara-pro.ru/termo';
-const API_URL = `https://store.tildaapi.com/api/getproductslist/?storepartuid=${STORE_PART_UID}`;
 
 function parseRub(text) {
   if (!text) return null;
@@ -43,13 +45,18 @@ function fmtRub(n) {
 }
 
 async function fetchProducts() {
-  const res = await fetch(API_URL, { headers: { Accept: 'application/json' } });
-  if (!res.ok) throw new Error(`Tilda API ${res.status}`);
-  const data = await res.json();
-  if (!data.products || !Array.isArray(data.products)) {
-    throw new Error('Tilda API: нет products');
+  const all = [];
+  for (const uid of STORE_PART_UIDS) {
+    const url = `https://store.tildaapi.com/api/getproductslist/?storepartuid=${uid}`;
+    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error(`Tilda API ${res.status} part ${uid}`);
+    const data = await res.json();
+    if (!data.products || !Array.isArray(data.products)) {
+      throw new Error(`Tilda API: нет products (part ${uid})`);
+    }
+    all.push(...data.products);
   }
-  return data.products;
+  return all;
 }
 
 function buildFromProducts(products) {
@@ -62,12 +69,12 @@ function buildFromProducts(products) {
   for (const p of products) {
     const title = (p.title || '').trim();
     const ch = charMap(p);
-    const isTermo = /^термопанел/i.test(title);
+    const isTermo = /^(угловая\s+)?термопанел/i.test(title);
     const isTile = /клинкерная плитка/i.test(title);
 
     if (isTermo) {
       const panelRub = parseRub(ch['Стоимость панели']) || priceFromDescr(p.descr);
-      const m2Rub = parseRub(ch['(стоимость 1 м2)']) || priceFromDescr(p.descr);
+      const m2Rub = parseRub(ch['(стоимость 1 м2)']) || null;
       if (panelRub) panelPrices.push(panelRub);
       if (m2Rub) panelM2Prices.push(m2Rub);
       termopanels.push({ title, panelRub, m2Rub, url: p.url || null });
@@ -110,7 +117,7 @@ function buildFromProducts(products) {
 
   return {
     source: SITE_URL,
-    tildaStorePartUid: STORE_PART_UID,
+    tildaStorePartUid: STORE_PART_UIDS.join(','),
     syncedAt: new Date().toISOString(),
     calc,
     termopanels,
@@ -146,9 +153,9 @@ function patchCatalogMd(payload) {
       .map((t) => {
         const same =
           t.panelRub === calc.panelPriceRub && t.m2Rub === calc.panelPriceM2Rub;
-        return same
-          ? `- ${t.title}`
-          : `- ${t.title} — ${fmtRub(t.panelRub)} ₽/шт., ${fmtRub(t.m2Rub)} ₽/м²`;
+        if (same) return `- ${t.title}`;
+        if (t.panelRub && !t.m2Rub) return `- ${t.title} — ${fmtRub(t.panelRub)} ₽/шт.`;
+        return `- ${t.title} — ${fmtRub(t.panelRub)} ₽/шт., ${fmtRub(t.m2Rub)} ₽/м²`;
       })
       .join('\n') + '\n';
 
@@ -166,8 +173,8 @@ function patchCatalogMd(payload) {
   );
 
   md = md.replace(
-    /Обновление прайса каталога:.*/,
-    `Обновление прайса: \`npm run prices:sync\` (данные с ${SITE_URL}, API Tilda store part \`${STORE_PART_UID}\`). Последняя синхронизация в репозитории: ${syncedAt.slice(0, 10)}.`
+    /Обновление прайса(?: каталога)?:.*/,
+    `Обновление прайса: \`npm run prices:sync\` (данные с ${SITE_URL}, API Tilda store part \`${STORE_PART_UIDS.join(',')}\`). Последняя синхронизация в репозитории: ${syncedAt.slice(0, 10)}.`
   );
 
   fs.writeFileSync(CATALOG_MD, md, 'utf8');

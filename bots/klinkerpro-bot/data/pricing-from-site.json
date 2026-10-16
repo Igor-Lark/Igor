@@ -1,7 +1,7 @@
 {
   "source": "https://marmara-pro.ru/termo",
-  "tildaStorePartUid": "840610530462",
-  "syncedAt": "2026-07-29T10:38:59.113Z",
+  "tildaStorePartUid": "840610530462,872878773772",
+  "syncedAt": "2026-10-16T18:31:06.589Z",
   "calc": {
     "aPanelM2": 0.62,
     "panelPriceRub": 1550,
@@ -18,6 +18,18 @@
       "panelRub": 1550,
       "m2Rub": 2500,
       "url": "https://marmara-pro.ru/termo/tproduct/2229245581-133022576952-termopanel-kolorado-1-32-sht"
+    },
+    {
+      "title": "Угловая термопанель (большая)",
+      "panelRub": 2400,
+      "m2Rub": null,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-418452845213-uglovaya-termopanel-bolshaya"
+    },
+    {
+      "title": "Угловая термопанель (маленькая)",
+      "panelRub": 2200,
+      "m2Rub": null,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-394609917613-uglovaya-termopanel-malenkaya"
     },
     {
       "title": "Термопанель Колорадо 2 (32 шт)",
@@ -97,6 +109,46 @@
       "title": "Клинкерная плитка фасадная АКИТА",
       "priceM2Rub": 1300,
       "url": "https://marmara-pro.ru/termo/tproduct/2229245581-604719084492-klinkernaya-plitka-fasadnaya-akita"
+    },
+    {
+      "title": "Клинкерная плитка фасадная TOPO (коричневая)",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-387978062013-klinkernaya-plitka-fasadnaya-topo-korich"
+    },
+    {
+      "title": "Клинкерная плитка фасадная LIND (кремовая)",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-892636779843-klinkernaya-plitka-fasadnaya-lind-kremov"
+    },
+    {
+      "title": "Клинкерная плитка фасадная АМСТЕРДАМ Шейд",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-638359799403-klinkernaya-plitka-fasadnaya-amsterdam-s"
+    },
+    {
+      "title": "Клинкерная плитка фасадная Колорадо 1",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-739238961703-klinkernaya-plitka-fasadnaya-kolorado-1"
+    },
+    {
+      "title": "Клинкерная плитка фасадная Колорадо 2",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-577829713433-klinkernaya-plitka-fasadnaya-kolorado-2"
+    },
+    {
+      "title": "Клинкерная плитка фасадная Колорадо 3",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-610429110813-klinkernaya-plitka-fasadnaya-kolorado-3"
+    },
+    {
+      "title": "Клинкерная плитка фасадная Колорадо 4",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-450242125413-klinkernaya-plitka-fasadnaya-kolorado-4"
+    },
+    {
+      "title": "Клинкерная плитка фасадная Колорадо 5",
+      "priceM2Rub": 1300,
+      "url": "https://marmara-pro.ru/termo/tproduct/2229245581-848885488743-klinkernaya-plitka-fasadnaya-kolorado-5"
     }
   ]
 }
