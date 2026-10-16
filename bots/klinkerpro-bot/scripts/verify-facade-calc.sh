@@ -52,3 +52,24 @@ if echo "$resp" | python3 -c 'import json,sys; exit(0 if json.load(sys.stdin).ge
 else
   echo "WARN: ответ не от server-calc (возможно старый код)"
 fi
+
+echo ""
+echo "Chat (площадь 120 кв.м, без размеров стен):"
+payload='{"messages":[{"role":"user","content":"посчитай на 120 кв.м"}]}'
+resp=$(curl -sf "$BASE/api/chat" -H 'Content-Type: application/json' -d "$payload")
+echo "provider: $(echo "$resp" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("provider",""))')"
+echo "--- ответ (текст для клиента) ---"
+echo "$resp" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("reply",""))'
+echo "---"
+if echo "$resp" | grep -q '194 шт'; then
+  echo "OK: 194 термопанели на 120 кв.м"
+else
+  echo "FAIL: ожидалось 194 шт. для 120 кв.м"
+  exit 1
+fi
+if echo "$resp" | grep -q 'без вычета проёмов'; then
+  echo "OK: оговорка про проёмы"
+else
+  echo "FAIL: нет оговорки «без вычета проёмов»"
+  exit 1
+fi
