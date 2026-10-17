@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="ad.size" content="width=300,height=250">
+<title>boat-sochi · Яхта Tigger · 300x250</title>
+<style>
+html,body{margin:0;padding:0;width:300px;height:250px;overflow:hidden;background:#0a2a40}
+*{box-sizing:border-box}
+a.banner{
+  display:block;width:300px;height:250px;position:relative;overflow:hidden;
+  text-decoration:none;cursor:pointer;
+  font-family:"Helvetica Neue",Helvetica,Arial,"Segoe UI",sans-serif;
+  color:#fff;
+}
+.bg-wrap{
+  position:absolute;inset:0;overflow:hidden;z-index:0;
+}
+.bg{
+  position:absolute;left:0;top:0;width:100%;height:100%;
+  background:#0a2a40 center center / cover no-repeat url('bg_300x250.jpg');
+  transform:scale(1) translate(0,0);
+  transform-origin:center center;
+  will-change:transform;
+  /* 12s zoom-in + 3.5s pan + 12s zoom-out = 27.5s */
+  animation:cam 27.5s linear infinite;
+}
+/*
+  1) zoom 1 → 1.5 от центра за 12с
+  2) камера влево / фронтально к девушке (при scale 1.5)
+  3) zoom 1.5 → 1 обратно за 12с (панорама возвращается для бесшовного цикла)
+*/
+@keyframes cam{
+  0%{transform:scale(1) translate(0,0)}
+  43.636%{transform:scale(1.5) translate(0,0)}           /* 12s */
+  56.364%{transform:scale(1.5) translate(-11%,5%)}       /* +3.5s pan */
+  100%{transform:scale(1) translate(0,0)}                /* +12s back */
+}
+.copy{
+  position:absolute;z-index:2;left:0;top:0;right:0;bottom:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:18px 16px 18px 18px;
+  pointer-events:none;
+  text-shadow:0 1px 3px rgba(0,0,0,.45), 0 0 12px rgba(0,0,0,.25);
+}
+.copy .line{display:block;line-height:1.15;margin:0}
+.copy .yacht{
+  font-size:18px;font-weight:500;letter-spacing:.02em;
+  margin-bottom:2px;
+}
+.copy .name{
+  font-size:40px;font-weight:700;letter-spacing:-.02em;
+  margin-bottom:10px;
+}
+.copy .price{
+  font-size:18px;font-weight:500;letter-spacing:.01em;
+  margin-bottom:8px;
+}
+.copy .tag{
+  font-size:13px;font-weight:400;letter-spacing:.04em;
+  opacity:.95;text-transform:lowercase;
+}
+</style>
+</head>
+<body>
+<a class="banner" id="click_area" href="#" target="_blank">
+  <div class="bg-wrap">
+    <div class="bg"></div>
+  </div>
+  <div class="copy">
+    <span class="line yacht">яхта</span>
+    <span class="line name">Tigger</span>
+    <span class="line price">от 50 000 ₽</span>
+    <span class="line tag">private charter</span>
+  </div>
+</a>
+<script>
+(function () {
+  var a = document.getElementById("click_area");
+  try {
+    if (typeof yandexHTML5BannerApi !== "undefined" && yandexHTML5BannerApi.getClickURLNum) {
+      a.href = yandexHTML5BannerApi.getClickURLNum(1);
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
