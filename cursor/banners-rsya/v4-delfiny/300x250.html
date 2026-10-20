@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="ad.size" content="width=300,height=250">
+<title>boat-sochi · Утром к дельфинам · 300x250</title>
+<style>
+html,body{margin:0;padding:0;width:300px;height:250px;overflow:hidden;background:#063452}
+*{box-sizing:border-box}
+a.banner{
+  display:block;width:300px;height:250px;text-decoration:none;color:#fff;
+  font-family:"Trebuchet MS","Segoe UI",Geneva,Verdana,sans-serif;
+  position:relative;cursor:pointer;overflow:hidden;
+}
+.bg{
+  position:absolute;inset:0;
+  background:#063452 center/cover no-repeat url('bg_300x250.jpg');
+  transform:scale(1.03);
+  animation:ken 9s ease-in-out infinite alternate;
+}
+@keyframes ken{
+  from{transform:scale(1.03) translate(0,0)}
+  to{transform:scale(1.08) translate(-1%,0)}
+}
+.brand{
+  position:absolute;z-index:3;
+  font-size:11px;font-weight:700;letter-spacing:.04em;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.28);padding:3px 7px;border-radius:3px;
+  top:8px; left:8px;
+}
+.loc{font-weight:700;color:#FFE08A}
+.h1{font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+.h2{font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+.cta{
+  display:inline-block;background:#2EE6A6;color:#04304a;font-weight:800;
+  border-radius:6px;text-transform:uppercase;letter-spacing:.03em;
+  box-shadow:0 4px 14px rgba(0,0,0,.35);
+  border:2px solid rgba(255,255,255,.35);
+}
+
+/* текст едет справа налево через весь слайд и останавливается у левого края */
+.item{
+  opacity:0;
+  transform:translateX(260px);
+  animation:toLeft .85s cubic-bezier(.22,.75,.2,1) forwards;
+}
+.item.d0{animation-delay:0s}
+.item.d1{animation-delay:.5s}
+.item.d2{animation-delay:1s}
+.item.d3{animation-delay:1.5s}
+@keyframes toLeft{
+  to{opacity:1; transform:translateX(0)}
+}
+.item.d3 .cta{
+  animation:pulse 1.4s ease-in-out 2.35s infinite;
+}
+@keyframes pulse{
+  0%,100%{transform:scale(1); filter:brightness(1)}
+  50%{transform:scale(1.06); filter:brightness(1.08)}
+}
+
+.panel{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:flex-start;
+  padding:14px 10px 14px 12px;
+  background:linear-gradient(90deg, rgba(0,15,30,.88) 0%, rgba(4,35,60,.72) 42%, transparent 78%);
+}
+.stack{
+  display:flex; flex-direction:column; align-items:flex-start; text-align:left;
+  max-width:96%; gap:5px; overflow:hidden;
+}
+.loc{font-size:10px; letter-spacing:.07em; text-transform:uppercase}
+.h1{font-size:22px; line-height:1.1; margin:0}
+.h2{
+  font-size:13px; line-height:1.25; margin:0; opacity:.95;
+}
+.h2 .price{font-size:18px; font-weight:800; letter-spacing:.02em}
+.cta{font-size:13px; padding:9px 14px; margin-top:4px}
+</style>
+</head>
+<body>
+<a class="banner" id="click_area" href="#" target="_blank">
+  <div class="bg"></div>
+  <div class="brand">boat-sochi.ru</div>
+  <div class="panel">
+    <div class="stack">
+      <div class="loc item d0">Адлер / Сириус</div>
+      <div class="h1 item d1">Утром<br>к дельфинам</div>
+      <div class="h2 item d2">Скидка до 12 дня<br><span class="price">7500 ₽</span></div>
+      <div class="item d3"><span class="cta">Забронировать</span></div>
+    </div>
+  </div>
+</a>
+<script>
+document.getElementById("click_area").href = yandexHTML5BannerApi.getClickURLNum(1);
+</script>
+</body>
+</html>
